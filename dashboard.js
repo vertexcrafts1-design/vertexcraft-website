@@ -1,4 +1,6 @@
 const API_BASE = "https://vertexcraft-api.vertexcrafts1.workers.dev";
+const SESSION_TOKEN_KEY = "vertexcraft_dashboard_session";
+let sessionToken = sessionStorage.getItem(SESSION_TOKEN_KEY) || "";
 let currentUser = null;
 let punishments = [];
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -6,12 +8,12 @@ const labels={ban:"Bann",warn:"Verwarnung",kick:"Kick",mute:"Mute",unban:"Unban"
 const icons={ban:"⛔",warn:"⚠",kick:"↪",mute:"🔇",unban:"✓",unwarn:"✓",other:"•"};
 function esc(v=""){return String(v).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
 function date(v){if(!v)return"–";const d=new Date(Number.isFinite(Number(v))?Number(v):v);return isNaN(d)?"–":new Intl.DateTimeFormat("de-DE",{dateStyle:"medium",timeStyle:"short"}).format(d)}
-async function call(path,options={}){const r=await fetch(API_BASE+path,{...options,credentials:"include",headers:{"Content-Type":"application/json",...(options.headers||{})}});let data={};try{data=await r.json()}catch{}if(!r.ok)throw Object.assign(new Error(data.error||"request_failed"),{status:r.status,data});return data}
+async function call(path,options={}){const headers={"Content-Type":"application/json",...(options.headers||{})};if(sessionToken)headers.Authorization=`Bearer ${sessionToken}`;const r=await fetch(API_BASE+path,{...options,credentials:"omit",headers});let data={};try{data=await r.json()}catch{}if(!r.ok)throw Object.assign(new Error(data.error||"request_failed"),{status:r.status,data});return data}
 function isAdmin(){return currentUser&&["owner","dev"].includes(currentUser.role)}
 function applyRole(){const admin=isAdmin();$$('[data-role="admin"]').forEach(el=>el.hidden=!admin);$('#dashboardRolePill').textContent=currentUser.role==="owner"?"Owner · Vollzugriff":currentUser.role==="dev"?"Developer · Vollzugriff":"Team · Leserechte";$('#dashboardRolePill').className='role-pill '+currentUser.role;$('#loginGate').classList.add('hidden');document.body.classList.add('authenticated');}
-async function checkSession(){try{currentUser=await call('/auth/me');applyRole();await refreshAll()}catch{$('#loginGate').classList.remove('hidden')}}
-$('#dashboardLoginForm').addEventListener('submit',async e=>{e.preventDefault();$('#loginError').textContent='';try{currentUser=await call('/auth/login',{method:'POST',body:JSON.stringify({username:$('#loginUsername').value.trim(),password:$('#loginPassword').value})});applyRole();await refreshAll()}catch{$('#loginError').textContent='Benutzername oder Passwort ist falsch.'}})
-$('#logoutDashboard').addEventListener('click',async()=>{try{await call('/auth/logout',{method:'POST',body:'{}'})}catch{}location.reload()})
+async function checkSession(){if(!sessionToken){$('#loginGate').classList.remove('hidden');return;}try{currentUser=await call('/auth/me');applyRole();await refreshAll()}catch{sessionToken='';sessionStorage.removeItem(SESSION_TOKEN_KEY);$('#loginGate').classList.remove('hidden')}}
+$('#dashboardLoginForm').addEventListener('submit',async e=>{e.preventDefault();$('#loginError').textContent='';const button=e.submitter||$('#dashboardLoginForm button[type=\"submit\"]');if(button){button.disabled=true;button.textContent='Anmeldung läuft …';}try{const response=await call('/auth/login',{method:'POST',body:JSON.stringify({username:$('#loginUsername').value.trim(),password:$('#loginPassword').value})});sessionToken=response.token||'';if(!sessionToken)throw new Error('missing_session_token');sessionStorage.setItem(SESSION_TOKEN_KEY,sessionToken);currentUser={user:response.user,role:response.role,authenticated:true};applyRole();await refreshAll()}catch(error){sessionToken='';sessionStorage.removeItem(SESSION_TOKEN_KEY);$('#loginError').textContent=error.status===401?'Benutzername oder Passwort ist falsch.':'Anmeldung fehlgeschlagen. Prüfe Worker und Secrets.';}finally{if(button){button.disabled=false;button.textContent='Anmelden';}}})
+$('#logoutDashboard').addEventListener('click',async()=>{try{await call('/auth/logout',{method:'POST',body:'{}'})}catch{}sessionToken='';sessionStorage.removeItem(SESSION_TOKEN_KEY);location.reload()})
 async function refreshAll(){await Promise.all([loadPunishments(),testApi()])}
 async function testApi(){try{await call('/auth/me');setApi('online','Online')}catch{setApi('offline','Nicht erreichbar')}}
 function setApi(state,text){$('#sidebarApiDot').className=state;$('#sidebarApiText').textContent=text;$('#apiStatusValue').textContent=text;$('#sidebarApiUrl').textContent='Secure Worker API';$('#systemApiUrl').textContent=API_BASE}
