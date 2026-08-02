@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700">
+<defs>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#17152b"/>
+    <stop offset="0.55" stop-color="#40316d"/>
+    <stop offset="1" stop-color="#d89a7c"/>
+  </linearGradient>
+  <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#5a73aa"/>
+    <stop offset="1" stop-color="#18263e"/>
+  </linearGradient>
+  <filter id="glow"><feGaussianBlur stdDeviation="18"/></filter>
+</defs>
+<rect width="1200" height="700" fill="url(#sky)"/>
+<circle cx="930" cy="155" r="65" fill="#efd7af"/>
+<circle cx="930" cy="155" r="95" fill="#efd7af" opacity=".18" filter="url(#glow)"/>
+<path d="M0 410L150 280 260 360 430 210 610 390 790 245 1000 380 1200 270V700H0Z" fill="#201d35"/>
+<path d="M0 455L170 330 280 420 470 270 620 430 810 305 1010 430 1200 335V700H0Z" fill="#30274a"/>
+<rect y="485" width="1200" height="215" fill="url(#water)"/>
+<path d="M0 515H1200M0 565H1200M0 625H1200" stroke="#8aa0ce" opacity=".13"/>
+<!-- floating island -->
+<g transform="translate(250 190)">
+  <path d="M80 200H580L520 260 460 300 405 390 345 310 280 370 220 280 150 250Z" fill="#453550"/>
+  <rect x="80" y="170" width="500" height="55" rx="4" fill="#55734d"/>
+  <rect x="80" y="165" width="500" height="20" fill="#86ad64"/>
+  <!-- castle -->
+  <rect x="260" y="45" width="145" height="125" fill="#bbb3c5"/>
+  <rect x="220" y="80" width="55" height="90" fill="#a69dad"/>
+  <rect x="390" y="75" width="60" height="95" fill="#a69dad"/>
+  <path d="M210 80V55H230V68H248V55H268V80Z" fill="#c9c2d2"/>
+  <path d="M250 45V15H275V28H300V15H325V28H350V15H375V28H410V45Z" fill="#d3ccd9"/>
+  <path d="M380 75V48H400V60H420V48H440V75Z" fill="#c9c2d2"/>
+  <rect x="318" y="110" width="32" height="60" rx="16" fill="#5a4778"/>
+  <rect x="245" y="112" width="14" height="24" fill="#705a93"/>
+  <rect x="412" y="108" width="15" height="25" fill="#705a93"/>
+  <!-- trees -->
+  <rect x="120" y="90" width="24" height="80" fill="#6d4935"/>
+  <rect x="92" y="55" width="80" height="65" rx="8" fill="#416642"/>
+  <rect x="500" y="105" width="20" height="65" fill="#6d4935"/>
+  <rect x="470" y="72" width="82" height="62" rx="8" fill="#4b754a"/>
+  <!-- river -->
+  <path d="M330 185C320 215 355 235 340 270" stroke="#74a9df" stroke-width="24" fill="none"/>
+</g>
+<g opacity=".7">
+ <rect x="90" y="100" width="8" height="8" fill="#fff"/>
+ <rect x="180" y="150" width="5" height="5" fill="#fff"/>
+ <rect x="1050" y="90" width="7" height="7" fill="#fff"/>
+ <rect x="1090" y="210" width="5" height="5" fill="#fff"/>
+</g>
+</svg>

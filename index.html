@@ -3,83 +3,66 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="VertexCraft – Next Generation SMP für Java und Bedrock.">
+  <meta name="description" content="VertexCraft – Next Generation SMP für Java und Bedrock. Eigene Systeme, Events und eine starke Community.">
+  <meta name="theme-color" content="#0a0a12">
+  <meta property="og:title" content="VertexCraft – Next Generation SMP">
+  <meta property="og:description" content="Dein Abenteuer. Deine Welt. Spiele auf VertexCraft mit Java oder Bedrock.">
+  <meta property="og:image" content="assets/logo.png">
   <title>VertexCraft – Next Generation SMP</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="assets/logo.png">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="background-glow glow-one"></div>
-  <div class="background-glow glow-two"></div>
+  <div class="page-glow glow-a"></div>
+  <div class="page-glow glow-b"></div>
 
   <header class="site-header">
-    <a class="brand" href="#start">
-      <span class="brand-mark">V</span>
+    <a class="brand" href="#start" aria-label="VertexCraft Startseite">
+      <img src="assets/logo.png" alt="VertexCraft Logo">
       <span>VertexCraft</span>
     </a>
-
-    <button class="menu-button" id="menuButton" aria-label="Menü öffnen" aria-expanded="false">
-      ☰
-    </button>
-
+    <button class="menu-button" id="menuButton" aria-label="Menü öffnen" aria-expanded="false">☰</button>
     <nav class="nav" id="mainNav">
       <a href="#start">Start</a>
       <a href="#features">Features</a>
       <a href="#spielen">Spielen</a>
       <a href="#news">News</a>
-      <a class="nav-button" href="#discord">Discord</a>
+      <a href="regeln.html">Regeln</a>
+      <a class="social-link" href="https://www.tiktok.com/@vertex.craft?is_from_webapp=1&sender_device=pc" target="_blank" rel="noopener noreferrer">TikTok</a>
+      <a class="nav-button" href="https://discord.gg/gjDgG4X7yw" target="_blank" rel="noopener noreferrer">Discord</a>
     </nav>
   </header>
 
   <main>
     <section class="hero" id="start">
-      <div class="hero-copy">
-        <span class="eyebrow">JAVA & BEDROCK</span>
+      <div class="hero-media">
+        <img src="assets/vertex-world.svg" alt="Blockige Fantasy-Welt mit schwebender VertexCraft-Insel und Burg">
+        <div class="hero-overlay"></div>
+      </div>
+      <div class="hero-content">
+        <div class="hero-logo-wrap">
+          <img src="assets/logo.png" alt="VertexCraft">
+        </div>
+        <span class="eyebrow">JAVA & BEDROCK · SEASON 1</span>
         <h1>Dein Abenteuer.<br><span>Deine Welt.</span></h1>
-        <p>
-          Erlebe ein modernes SMP mit eigenen Systemen, einzigartigen Features
-          und einer Community, die gemeinsam wächst.
-        </p>
-
+        <p>Ein modernes Next Generation SMP mit eigenen Systemen, einzigartigen Features und einer Community, die gemeinsam wächst.</p>
         <div class="hero-actions">
           <button class="primary-button copy-ip" data-ip="play-vertex.com">
-            <span>play-vertex.com</span>
+            <strong>play-vertex.com</strong>
             <small>Zum Kopieren klicken</small>
           </button>
-          <a class="secondary-button" href="#discord">Discord beitreten</a>
+          <a class="secondary-button" href="https://discord.gg/gjDgG4X7yw" target="_blank" rel="noopener noreferrer">Discord beitreten</a>
         </div>
-
         <div class="quick-stats">
-          <div>
-            <strong>Java</strong>
-            <span>1.21+</span>
-          </div>
-          <div>
-            <strong>Bedrock</strong>
-            <span>Port 25565</span>
-          </div>
-          <div>
-            <strong>Status</strong>
-            <span class="online-dot">Online</span>
-          </div>
+          <div><strong>Java</strong><span>1.21+</span></div>
+          <div><strong>Bedrock</strong><span>Port 25565</span></div>
+          <div><strong>Status</strong><span class="online-dot">● Online</span></div>
         </div>
       </div>
+    </section>
 
-      <div class="hero-card">
-        <div class="server-card-top">
-          <span class="status-badge">● SERVER ONLINE</span>
-          <span>Season 1</span>
-        </div>
-        <div class="server-logo">VC</div>
-        <h2>VertexCraft</h2>
-        <p>Next Generation SMP</p>
-        <div class="server-ip-row">
-          <code>play-vertex.com</code>
-          <button class="mini-copy copy-ip" data-ip="play-vertex.com">Kopieren</button>
-        </div>
-      </div>
+    <section class="ticker" aria-label="VertexCraft Vorteile">
+      <span>✦ EIGENE SYSTEME</span><span>✦ JAVA & BEDROCK</span><span>✦ EVENTS</span><span>✦ COMMUNITY</span><span>✦ SEASON-UPDATES</span>
     </section>
 
     <section class="section" id="features">
@@ -88,28 +71,23 @@
         <h2>Mehr als nur ein normaler SMP</h2>
         <p>Eigene Systeme, faire Progression und eine Welt, die sich stetig weiterentwickelt.</p>
       </div>
-
       <div class="feature-grid">
-        <article class="feature-card">
-          <span class="feature-icon">⚔</span>
-          <h3>Eigene Systeme</h3>
-          <p>Claims, Clans, Quests, Wirtschaft und weitere Features direkt für VertexCraft entwickelt.</p>
-        </article>
-        <article class="feature-card">
-          <span class="feature-icon">✦</span>
-          <h3>Faire Wirtschaft</h3>
-          <p>Coins, Shards und Kristalle mit Auction House, Orders und einem klaren Fortschrittssystem.</p>
-        </article>
-        <article class="feature-card">
-          <span class="feature-icon">⌘</span>
-          <h3>Java & Bedrock</h3>
-          <p>Spiele gemeinsam mit Freunden – unabhängig davon, welche Minecraft-Version sie nutzen.</p>
-        </article>
-        <article class="feature-card">
-          <span class="feature-icon">♛</span>
-          <h3>Events & Seasons</h3>
-          <p>Regelmäßige Events, neue Inhalte und Season-Updates sorgen für langfristige Motivation.</p>
-        </article>
+        <article class="feature-card"><span class="feature-icon">⚔</span><h3>Eigene Systeme</h3><p>Claims, Clans, Quests, Wirtschaft und weitere Features werden gezielt für VertexCraft entwickelt.</p></article>
+        <article class="feature-card"><span class="feature-icon">✦</span><h3>Faire Wirtschaft</h3><p>Coins, Shards und Kristalle mit Auction House, Orders und einem klaren Fortschrittssystem.</p></article>
+        <article class="feature-card"><span class="feature-icon">⌘</span><h3>Crossplay</h3><p>Java- und Bedrock-Spieler erleben VertexCraft gemeinsam auf demselben Server.</p></article>
+        <article class="feature-card"><span class="feature-icon">♛</span><h3>Events & Seasons</h3><p>Neue Inhalte, Wettbewerbe und saisonale Updates sorgen für langfristige Motivation.</p></article>
+      </div>
+    </section>
+
+    <section class="world-showcase">
+      <div class="world-image"><img src="assets/portal-world.svg" alt="Blockige Fantasy-Landschaft mit leuchtendem violettem Portal"></div>
+      <div class="world-copy">
+        <span class="eyebrow">EINE WELT VOLLER MÖGLICHKEITEN</span>
+        <h2>Baue auf. Steige auf. Schreib Geschichte.</h2>
+        <p>Errichte dein Zuhause, handle mit anderen Spielern, gründe einen Clan und stelle dich neuen Herausforderungen. VertexCraft wächst zusammen mit seiner Community.</p>
+        <div class="mini-features">
+          <span>Eigene Claims</span><span>Clans & ClanWars</span><span>Quests</span><span>Auktionshaus</span><span>Battle Pass</span><span>Crates & Cosmetics</span>
+        </div>
       </div>
     </section>
 
@@ -118,30 +96,12 @@
         <span class="eyebrow">JETZT SPIELEN</span>
         <h2>In wenigen Sekunden auf dem Server</h2>
         <p>Füge die Serveradresse in Minecraft hinzu und starte dein Abenteuer.</p>
+        <button class="outline-copy copy-ip" data-ip="play-vertex.com">IP kopieren: play-vertex.com</button>
       </div>
-
       <div class="join-steps">
-        <div class="step">
-          <span>1</span>
-          <div>
-            <strong>Minecraft öffnen</strong>
-            <p>Java oder Bedrock Edition starten.</p>
-          </div>
-        </div>
-        <div class="step">
-          <span>2</span>
-          <div>
-            <strong>Server hinzufügen</strong>
-            <p>Als Adresse <code>play-vertex.com</code> verwenden.</p>
-          </div>
-        </div>
-        <div class="step">
-          <span>3</span>
-          <div>
-            <strong>Beitreten</strong>
-            <p>Bedrock-Spieler verwenden zusätzlich Port <code>25565</code>.</p>
-          </div>
-        </div>
+        <div class="step"><span>1</span><div><strong>Minecraft öffnen</strong><p>Java oder Bedrock Edition starten.</p></div></div>
+        <div class="step"><span>2</span><div><strong>Server hinzufügen</strong><p>Als Adresse <code>play-vertex.com</code> verwenden.</p></div></div>
+        <div class="step"><span>3</span><div><strong>Beitreten</strong><p>Bedrock-Spieler nutzen zusätzlich Port <code>25565</code>.</p></div></div>
       </div>
     </section>
 
@@ -150,48 +110,30 @@
         <span class="eyebrow">AKTUELLES</span>
         <h2>Neuigkeiten von VertexCraft</h2>
       </div>
-
       <div class="news-grid">
-        <article class="news-card featured">
-          <span class="news-label">SEASON 1</span>
-          <h3>Eine neue Reise beginnt</h3>
-          <p>Neue Systeme, überarbeitete Welten und viele Verbesserungen warten auf dich.</p>
-          <a href="#discord">Mehr auf Discord →</a>
-        </article>
-        <article class="news-card">
-          <span class="news-label">COMMUNITY</span>
-          <h3>Werde Teil des Projekts</h3>
-          <p>Gib Feedback, melde Fehler und gestalte die Zukunft von VertexCraft mit.</p>
-          <a href="#discord">Community beitreten →</a>
-        </article>
+        <article class="news-card featured"><span class="news-label">SEASON 1</span><h3>Eine neue Reise beginnt</h3><p>Neue Systeme, überarbeitete Welten und viele Verbesserungen warten auf dich.</p><a href="https://discord.gg/gjDgG4X7yw" target="_blank" rel="noopener noreferrer">Mehr auf Discord →</a></article>
+        <article class="news-card"><span class="news-label">COMMUNITY</span><h3>Gestalte VertexCraft mit</h3><p>Gib Feedback, melde Fehler und bring deine eigenen Ideen in das Projekt ein.</p><a href="https://www.tiktok.com/@vertex.craft?is_from_webapp=1&sender_device=pc" target="_blank" rel="noopener noreferrer">TikTok ansehen →</a></article>
       </div>
     </section>
 
-    <section class="discord-cta" id="discord">
-      <div>
-        <span class="eyebrow">VERTEXCRAFT COMMUNITY</span>
-        <h2>Sei bei allem dabei</h2>
-        <p>Updates, Support, Events und Ankündigungen findest du auf unserem Discord.</p>
-      </div>
-      <a class="primary-button link-button" href="#" id="discordLink">Discord öffnen</a>
+    <section class="social-section">
+      <div class="social-card discord-card"><span class="social-kicker">DISCORD</span><h2>Updates, Support & Events</h2><p>Werde Teil unserer Community und verpasse keine Ankündigung.</p><a href="https://discord.gg/gjDgG4X7yw" target="_blank" rel="noopener noreferrer">Discord öffnen</a></div>
+      <div class="social-card tiktok-card"><span class="social-kicker">TIKTOK</span><h2>Clips & Einblicke</h2><p>Sieh dir aktuelle Eindrücke, Fortschritte und kurze Videos an.</p><a href="https://www.tiktok.com/@vertex.craft?is_from_webapp=1&sender_device=pc" target="_blank" rel="noopener noreferrer">@vertex.craft</a></div>
     </section>
   </main>
 
   <footer>
-    <div>
-      <strong>VertexCraft</strong>
-      <p>Next Generation SMP</p>
-    </div>
+    <div class="footer-brand"><img src="assets/logo.png" alt=""><div><strong>VertexCraft</strong><p>Next Generation SMP</p></div></div>
     <div class="footer-links">
-      <a href="#">Regeln</a>
-      <a href="#">Impressum</a>
-      <a href="#">Datenschutz</a>
+      <a href="regeln.html">Regeln</a>
+      <a href="impressum.html">Impressum</a>
+      <a href="datenschutz.html">Datenschutz</a>
+      <a href="https://www.tiktok.com/@vertex.craft?is_from_webapp=1&sender_device=pc" target="_blank" rel="noopener noreferrer">TikTok</a>
     </div>
-    <p class="copyright">© <span id="year"></span> VertexCraft. Nicht mit Mojang oder Microsoft verbunden.</p>
+    <p class="copyright">© <span id="year"></span> VertexCraft. VertexCraft ist nicht mit Mojang Studios oder Microsoft verbunden.</p>
   </footer>
 
   <div class="toast" id="toast">Server-IP kopiert!</div>
-
   <script src="script.js"></script>
 </body>
 </html>

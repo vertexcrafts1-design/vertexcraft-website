@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#11131e"/>
+    <stop offset="1" stop-color="#30224f"/>
+  </linearGradient>
+  <linearGradient id="portal" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#b894ff"/>
+    <stop offset="1" stop-color="#6337bb"/>
+  </linearGradient>
+</defs>
+<rect width="1200" height="700" fill="url(#bg)"/>
+<path d="M0 480L170 365 290 420 430 325 575 450 720 350 900 430 1050 340 1200 420V700H0Z" fill="#1c2430"/>
+<rect y="510" width="1200" height="190" fill="#151b25"/>
+<!-- block floor -->
+<g stroke="#252e3d" stroke-width="2">
+  <path d="M0 560H1200M0 620H1200M0 680H1200"/>
+  <path d="M80 510L20 700M180 510L140 700M300 510L270 700M450 510L430 700M620 510L620 700M790 510L810 700M940 510L980 700M1080 510L1150 700"/>
+</g>
+<!-- portal -->
+<g transform="translate(430 105)">
+  <rect x="0" y="0" width="340" height="420" rx="8" fill="#16131e"/>
+  <rect x="42" y="42" width="256" height="336" rx="4" fill="url(#portal)"/>
+  <path d="M60 80C120 35 190 120 280 70M55 180C150 120 210 235 290 170M60 290C145 245 220 340 285 285" stroke="#e7dcff" stroke-width="12" opacity=".35" fill="none"/>
+  <g fill="#33253f">
+    <rect x="-16" y="-18" width="90" height="70"/>
+    <rect x="266" y="-18" width="90" height="70"/>
+    <rect x="-16" y="368" width="90" height="70"/>
+    <rect x="266" y="368" width="90" height="70"/>
+  </g>
+</g>
+<!-- crystals -->
+<g fill="#9b7ad7">
+  <path d="M250 500L280 390 310 500Z"/>
+  <path d="M295 500L325 430 350 500Z"/>
+  <path d="M870 500L905 365 938 500Z"/>
+  <path d="M920 500L950 420 980 500Z"/>
+</g>
+<g fill="#d8c9ff" opacity=".5">
+  <path d="M275 455L280 390 292 455Z"/>
+  <path d="M900 435L905 365 918 438Z"/>
+</g>
+</svg>
