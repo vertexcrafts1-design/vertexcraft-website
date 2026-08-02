@@ -10,6 +10,20 @@
   <title>Dashboard – VertexCraft</title>
 </head>
 <body class="dashboard-body">
+  <section class="login-gate" id="loginGate">
+    <div class="login-card">
+      <img src="assets/logo.png" alt="VertexCraft Logo">
+      <span class="portal-badge">GESCHÜTZTER BEREICH</span>
+      <h1>Dashboard Login</h1>
+      <p>Melde dich mit deinem VertexCraft-Teamkonto an.</p>
+      <form id="dashboardLoginForm">
+        <label><span>Benutzername</span><input id="loginUsername" autocomplete="username" required></label>
+        <label><span>Passwort</span><input id="loginPassword" type="password" autocomplete="current-password" required></label>
+        <button class="primary-button" type="submit">Anmelden</button>
+      </form>
+      <div class="login-error" id="loginError"></div>
+    </div>
+  </section>
   <div class="page-glow glow-a"></div>
   <div class="page-glow glow-b"></div>
 
@@ -28,7 +42,7 @@
       <a href="#punishments" data-view="punishments"><span>⚠</span>Strafen</a>
       <a href="#battlepass" data-view="battlepass"><span>✦</span>Battle Pass</a>
       <a href="#events" data-view="events"><span>⚔</span>Events</a>
-      <a href="#system" data-view="system"><span>⚙</span>System</a>
+      <a href="#system" data-view="system" data-role="admin"><span>⚙</span>System</a>
     </nav>
 
     <div class="sidebar-footer">
@@ -52,10 +66,11 @@
       </div>
       <div class="dashboard-top-actions">
         <button class="dashboard-icon-button" id="refreshDashboard" title="Aktualisieren">↻</button>
-        <button class="dashboard-profile" id="openApiSettings">
+        <button class="dashboard-profile" id="openApiSettings" data-role="admin">
           <span>VC</span>
           <div><strong>System</strong><small>API-Einstellungen</small></div>
         </button>
+        <button class="dashboard-icon-button" id="logoutDashboard" title="Abmelden">⇥</button>
       </div>
     </header>
 
@@ -101,7 +116,7 @@
               <div><span>SCHNELLZUGRIFF</span><h2>Aktionen</h2></div>
             </div>
             <div class="quick-action-grid">
-              <a href="strafen-verwaltung.html"><i>＋</i><span>Maßnahme eintragen</span></a>
+              <a href="#punishments" data-jump-view="punishments" data-role="admin"><i>＋</i><span>Strafen verwalten</span></a>
               <a href="strafen.html"><i>⌕</i><span>Strafhistorie öffnen</span></a>
               <a href="battlepass.html"><i>✦</i><span>Battle Pass ansehen</span></a>
               <a href="events.html"><i>⚔</i><span>Events verwalten</span></a>
@@ -136,26 +151,37 @@
 
       <section class="dashboard-view" data-dashboard-view="players">
         <div class="dashboard-page-intro">
-          <div><span class="eyebrow">SPIELERSUCHE</span><h2>Spielerprofil finden</h2><p>Suche einen Spieler und öffne dessen öffentliche Strafhistorie. Weitere Serverwerte können später ergänzt werden.</p></div>
+          <div><span class="eyebrow">SPIELERVERZEICHNIS</span><h2>Alle Spieler durchsuchen</h2><p>Tippe bereits einen Buchstaben ein. Das Dashboard zeigt sofort passende Spieler, Rang, Kontostand, Status und Strafenzähler.</p></div>
         </div>
-        <div class="dashboard-search-card">
-          <div class="dashboard-search-box">
-            <span>⌕</span>
-            <input id="dashboardPlayerSearch" placeholder="Spielername eingeben …">
-            <button id="dashboardPlayerSearchButton">Suchen</button>
+        <div class="player-directory-layout">
+          <div class="dashboard-search-card player-search-panel">
+            <div class="dashboard-search-box player-live-search">
+              <span>⌕</span>
+              <input id="dashboardPlayerSearch" placeholder="Name oder UUID – z. B. G …" autocomplete="off">
+              <button id="dashboardPlayerSearchButton">Suchen</button>
+            </div>
+            <div class="player-search-meta">
+              <span id="playerSearchStatus">Gib mindestens einen Buchstaben ein.</span>
+              <button id="showRecentPlayers" type="button">Zuletzt gesehen</button>
+            </div>
+            <div id="dashboardPlayerSuggestions" class="player-suggestion-grid"></div>
           </div>
-          <div id="dashboardPlayerResult" class="dashboard-player-result">
-            <div class="dashboard-empty-illustration">⌕</div>
-            <h3>Noch kein Spieler gesucht</h3>
-            <p>Gib oben einen Spielernamen ein.</p>
-          </div>
+          <aside class="player-directory-info">
+            <article><span>LIVE</span><strong>Spielerdaten</strong><p>Online-Status, Rang und Geld werden direkt vom Server geladen.</p></article>
+            <article><span>HISTORY</span><strong>Strafen</strong><p>Auch Spieler ohne Bans oder Warns besitzen ein vollständiges Profil.</p></article>
+          </aside>
+        </div>
+        <div id="dashboardPlayerResult" class="dashboard-player-result player-profile-stage">
+          <div class="dashboard-empty-illustration">⌕</div>
+          <h3>Wähle einen Spieler aus</h3>
+          <p>Die Detailansicht erscheint anschließend hier.</p>
         </div>
       </section>
 
       <section class="dashboard-view" data-dashboard-view="punishments">
         <div class="dashboard-page-intro">
           <div><span class="eyebrow">STRAFENSYSTEM</span><h2>Alle Maßnahmen</h2><p>Live-Daten aus VertexCore über VertexPunishmentsWeb.</p></div>
-          <a class="primary-button" href="strafen-verwaltung.html">Neue Maßnahme</a>
+          <span class="role-pill" id="dashboardRolePill">–</span>
         </div>
         <div class="dashboard-filter-bar">
           <input id="dashboardPunishmentSearch" type="search" placeholder="Spieler, Grund oder Teammitglied suchen …">
