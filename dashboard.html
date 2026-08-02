@@ -7,7 +7,7 @@
   <meta name="description" content="VertexCraft Dashboard">
   <link rel="icon" href="assets/logo.png">
   <link rel="stylesheet" href="style.css">
-  <title>Dashboard – VertexCraft</title>
+  <title>VertexCraft Dashboard</title>
 </head>
 <body class="dashboard-body">
   <section class="login-gate" id="loginGate">
@@ -21,7 +21,7 @@
         <label><span>Passwort</span><input id="loginPassword" type="password" autocomplete="current-password" required></label>
         <button class="primary-button" type="submit">Anmelden</button>
       </form>
-      <div class="login-error" id="loginError"></div><div class="login-diagnostic" id="loginDiagnostic">Inline-Login wird initialisiert …</div>
+      <div class="login-error" id="loginError"></div><div class="login-diagnostic" id="loginDiagnostic">Login-System wird geladen …</div>
     </div>
   </section>
   <div class="page-glow glow-a"></div>
@@ -224,45 +224,54 @@
 
       <section class="dashboard-view" data-dashboard-view="system">
         <div class="dashboard-page-intro">
-          <div><span class="eyebrow">SYSTEM</span><h2>API & Verbindung</h2><p>Hier kannst du die verwendete API-Adresse testen und ändern.</p></div>
+          <div>
+            <span class="eyebrow">SYSTEM</span>
+            <h2>Verbindung & Rechte</h2>
+            <p>Diagnose für Worker, Minecraft-API und dein aktuell angemeldetes Konto.</p>
+          </div>
+          <button class="primary-button" id="systemRunFullCheck">Komplett prüfen</button>
         </div>
+
         <div class="dashboard-system-grid">
           <article class="dashboard-panel">
-            <h3>Aktuelle API</h3>
+            <h3>Worker-API</h3>
             <code id="systemApiUrl">–</code>
-            <button id="systemTestApi">Verbindung testen</button>
+            <div class="system-status-row"><span>Status</span><strong id="systemWorkerStatus">Unbekannt</strong></div>
+            <button id="systemTestApi">Worker testen</button>
           </article>
+
           <article class="dashboard-panel">
-            <h3>Nächster Schritt</h3>
-            <p>Die HTTP-API muss über HTTPS erreichbar werden. Vorgesehene Adresse:</p>
-            <code>https://api.play-vertex.com</code>
+            <h3>Minecraft-API</h3>
+            <code>origin-api.play-vertex.com:25798</code>
+            <div class="system-status-row"><span>Status</span><strong id="systemOriginStatus">Unbekannt</strong></div>
+            <div class="system-status-row"><span>Plugin</span><strong id="systemPluginVersion">–</strong></div>
+          </article>
+
+          <article class="dashboard-panel">
+            <h3>Angemeldetes Konto</h3>
+            <div class="system-status-row"><span>Benutzer</span><strong id="systemCurrentUser">–</strong></div>
+            <div class="system-status-row"><span>Rolle</span><strong id="systemCurrentRole">–</strong></div>
+            <div class="system-status-row"><span>Verwalten</span><strong id="systemCanManage">–</strong></div>
+          </article>
+
+          <article class="dashboard-panel">
+            <h3>Verwaltungszugriff</h3>
+            <p>Owner und Developer können aktive Bans aufheben und gespeicherte Maßnahmen löschen. Das Team besitzt ausschließlich Leserechte.</p>
+            <div class="system-status-row"><span>Management-Token</span><strong id="systemManageStatus">Wird geprüft</strong></div>
           </article>
         </div>
+
+        <article class="dashboard-panel system-log-panel">
+          <div class="dashboard-panel-head">
+            <div><span>DIAGNOSE</span><h2>Technische Ausgabe</h2></div>
+          </div>
+          <pre id="systemDiagnosticLog">Noch keine Prüfung ausgeführt.</pre>
+        </article>
       </section>
     </main>
   </div>
 
-  <div class="modal" id="apiSettingsModal" aria-hidden="true">
-    <div class="modal-backdrop" data-close-api-settings></div>
-    <div class="modal-card api-settings-card">
-      <button class="modal-close" data-close-api-settings>×</button>
-      <span class="portal-badge">API-EINSTELLUNGEN</span>
-      <h2>Verbindung konfigurieren</h2>
-      <p>Die Adresse wird nur in deinem Browser gespeichert.</p>
-      <label class="dashboard-setting-label">
-        <span>API-Basisadresse</span>
-        <input id="apiBaseInput" value="http://176.9.113.40:25798">
-      </label>
-      <div class="api-settings-actions">
-        <button class="primary-button" id="saveApiSettings">Speichern & testen</button>
-        <button class="secondary-button" id="useFutureHttps">HTTPS-Vorgabe einsetzen</button>
-      </div>
-      <div class="api-test-result" id="apiSettingsResult"></div>
-    </div>
-  </div>
-
   <div class="toast" id="toast">Kopiert!</div>
-  <script src="script.js"></script>
   <script>
 console.info("[VertexCraft] dashboard-v3.js geladen");
 window.__vertexDashboardLoaded = true;
@@ -281,9 +290,34 @@ const labels={ban:"Bann",warn:"Verwarnung",kick:"Kick",mute:"Mute",unban:"Unban"
 const icons={ban:"⛔",warn:"⚠",kick:"↪",mute:"🔇",unban:"✓",unwarn:"✓",other:"•"};
 function esc(v=""){return String(v).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
 function date(v){if(!v)return"–";const d=new Date(Number.isFinite(Number(v))?Number(v):v);return isNaN(d)?"–":new Intl.DateTimeFormat("de-DE",{dateStyle:"medium",timeStyle:"short"}).format(d)}
-async function call(path,options={}){const headers={"Content-Type":"application/json",...(options.headers||{})};if(sessionToken)headers.Authorization=`Bearer ${sessionToken}`;const r=await fetch(API_BASE+path,{...options,credentials:"omit",headers});let data={};try{data=await r.json()}catch{}if(!r.ok)throw Object.assign(new Error(data.error||"request_failed"),{status:r.status,data});return data}
+async function call(path,options={}){
+  const headers={"Content-Type":"application/json",...(options.headers||{})};
+  if(sessionToken)headers.Authorization=`Bearer ${sessionToken}`;
+  let response;
+  try{
+    response=await fetch(API_BASE+path,{...options,credentials:"omit",cache:"no-store",headers});
+  }catch(networkError){
+    throw Object.assign(new Error("network_error"),{status:0,data:{error:"network_error",message:String(networkError)}});
+  }
+  const raw=await response.text();
+  let data={};
+  try{data=raw?JSON.parse(raw):{}}catch{data={error:"invalid_json",raw};}
+  if(!response.ok)throw Object.assign(new Error(data.error||"request_failed"),{status:response.status,data});
+  return data;
+}
 function isAdmin(){return currentUser&&["owner","dev"].includes(currentUser.role)}
-function applyRole(){const admin=isAdmin();$$('[data-role="admin"]').forEach(el=>el.hidden=!admin);$('#dashboardRolePill').textContent=currentUser.role==="owner"?"Owner · Vollzugriff":currentUser.role==="dev"?"Developer · Vollzugriff":"Team · Leserechte";$('#dashboardRolePill').className='role-pill '+currentUser.role;$('#loginGate').classList.add('hidden');document.body.classList.add('authenticated');}
+function applyRole(){
+  const admin=isAdmin();
+  $$('[data-role="admin"]').forEach(el=>el.hidden=!admin);
+  $('#dashboardRolePill').textContent=currentUser.role==="owner"?"Owner · Vollzugriff":currentUser.role==="dev"?"Developer · Vollzugriff":"Team · Leserechte";
+  $('#dashboardRolePill').className='role-pill '+currentUser.role;
+  $('#systemCurrentUser').textContent=currentUser.user||'–';
+  $('#systemCurrentRole').textContent=roleLabel(currentUser.role);
+  $('#systemCanManage').textContent=admin?'Ja':'Nein';
+  $('#systemManageStatus').textContent=admin?'Für Konto freigeschaltet':'Nur Leserechte';
+  $('#loginGate').classList.add('hidden');
+  document.body.classList.add('authenticated');
+}
 async function checkSession(){if(!sessionToken){$('#loginGate').classList.remove('hidden');return;}try{currentUser=await call('/auth/me');applyRole();await refreshAll()}catch{sessionToken='';sessionStorage.removeItem(SESSION_TOKEN_KEY);$('#loginGate').classList.remove('hidden')}}
 const loginForm = document.getElementById("dashboardLoginForm");
 if (loginForm) {
@@ -360,11 +394,44 @@ if (loginForm) {
   console.error("[VertexCraft] Login-Formular wurde nicht gefunden.");
 }
 $('#logoutDashboard').addEventListener('click',async()=>{try{await call('/auth/logout',{method:'POST',body:'{}'})}catch{}sessionToken='';sessionStorage.removeItem(SESSION_TOKEN_KEY);location.reload()})
-async function refreshAll(){await Promise.all([loadPunishments(),testApi()])}
-async function testApi(){try{await call('/auth/me');setApi('online','Online')}catch{setApi('offline','Nicht erreichbar')}}
+async function refreshAll(){
+  await testApi();
+  await loadPunishments();
+}
+async function testApi(){
+  try{
+    await call('/auth/me');
+    setApi('online','Online');
+    return true;
+  }catch(error){
+    setApi('offline',error.status===401?'Sitzung abgelaufen':'Nicht erreichbar');
+    return false;
+  }
+}
 function setApi(state,text){$('#sidebarApiDot').className=state;$('#sidebarApiText').textContent=text;$('#apiStatusValue').textContent=text;$('#sidebarApiUrl').textContent='Secure Worker API';$('#systemApiUrl').textContent=API_BASE}
 function normalize(p){return Array.isArray(p)?p:Array.isArray(p?.items)?p.items:[]}
-async function loadPunishments(){try{punishments=normalize(await call('/api/punishments?limit=250&offset=0&type=all'));renderStats();renderRecent();renderList()}catch(e){if(e.status===401)return location.reload();punishments=[];renderStats();$('#dashboardRecentPunishments').innerHTML='<div class="dashboard-loading">Daten konnten nicht geladen werden.</div>'}}
+async function loadPunishments(){
+  try{
+    const payload=await call('/api/punishments?limit=250&offset=0&type=all');
+    punishments=normalize(payload);
+    renderStats();
+    renderRecent();
+    renderList();
+  }catch(error){
+    if(error.status===401){
+      sessionToken='';
+      sessionStorage.removeItem(SESSION_TOKEN_KEY);
+      location.reload();
+      return;
+    }
+    punishments=[];
+    renderStats();
+    const detail=error.data?.message||error.data?.error||error.message||'Unbekannter Fehler';
+    $('#dashboardRecentPunishments').innerHTML=`<div class="dashboard-empty-panel"><h3>Daten konnten nicht geladen werden</h3><p>${esc(detail)} · HTTP ${error.status||'Netzwerk'}</p><button id="retryPunishments">Erneut versuchen</button></div>`;
+    $('#dashboardPunishmentList').innerHTML=`<div class="dashboard-empty-panel"><h3>Keine Live-Daten</h3><p>${esc(detail)}</p></div>`;
+    setTimeout(()=>$('#retryPunishments')?.addEventListener('click',loadPunishments),0);
+  }
+}
 function renderStats(){$('#dashActiveBans').textContent=punishments.filter(x=>x.type==='ban'&&x.active).length;$('#dashWarnings').textContent=punishments.filter(x=>x.type==='warn').length;$('#dashTotalPunishments').textContent=punishments.length}
 function card(x,compact=false){const admin=isAdmin();return `<article class="${compact?'dash-recent-item':'dash-full-punishment'} type-${esc(x.type||'other')}"><div class="dash-punishment-icon">${icons[x.type]||'•'}</div><div class="dash-punishment-copy"><div><span>${labels[x.type]||'Maßnahme'}</span><strong>${esc(x.player||'Unbekannt')}</strong></div><p>${esc(x.reason||'Kein Grund')}</p><small>${date(x.createdAt)} · ${esc(x.staff||'Console')} · ${esc(x.id||'')}</small></div><span class="dash-punishment-status ${x.active?'active':'closed'}">${x.active?'Aktiv':'Beendet'}</span>${!compact&&admin?`<div class="punishment-actions">${x.type==='ban'&&x.active?`<button data-manage="unban" data-id="${esc(x.id)}">Unban</button>`:''}<button class="danger" data-manage="delete" data-id="${esc(x.id)}">Löschen</button></div>`:''}</article>`}
 function renderRecent(){const rows=[...punishments].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,5);$('#dashboardRecentPunishments').innerHTML=rows.length?rows.map(x=>card(x,true)).join(''):'<div class="dashboard-empty-panel"><h3>Keine Einträge</h3></div>'}
@@ -462,14 +529,65 @@ async function searchPlayer(){
   if(playerSearchItems.length===1)openPlayerProfile(playerSearchItems[0].uuid||playerSearchItems[0].name);
 }
 
+
+async function runFullSystemCheck(){
+  const log=$('#systemDiagnosticLog');
+  if(log)log.textContent='Prüfung läuft …';
+  try{
+    const status=await call('/system/status');
+    const workerOk=Boolean(status.worker?.ok);
+    const originOk=Boolean(status.origin?.ok);
+    $('#systemWorkerStatus').textContent=workerOk?'Online':'Fehler';
+    $('#systemOriginStatus').textContent=originOk?'Online':'Nicht erreichbar';
+    $('#systemPluginVersion').textContent=status.origin?.body?extractPluginInfo(status.origin.body):'VertexPunishmentsWeb';
+    $('#systemCurrentUser').textContent=status.user?.name||currentUser?.user||'–';
+    $('#systemCurrentRole').textContent=roleLabel(status.user?.role||currentUser?.role);
+    $('#systemCanManage').textContent=status.permissions?.managePunishments?'Ja':'Nein';
+    $('#systemManageStatus').textContent=status.permissions?.managePunishments?'Für Konto freigeschaltet':'Nur Leserechte';
+    if(log)log.textContent=JSON.stringify(status,null,2);
+    toast(originOk?'Alle Systeme erreichbar':'Worker erreichbar, Minecraft-API fehlerhaft');
+  }catch(error){
+    $('#systemWorkerStatus').textContent='Fehler';
+    $('#systemOriginStatus').textContent='Unbekannt';
+    if(log)log.textContent=JSON.stringify({
+      status:error.status,
+      error:error.data||error.message
+    },null,2);
+  }
+}
+function roleLabel(role){
+  return role==='owner'?'Owner':role==='dev'?'Developer':role==='team'?'Team':'Unbekannt';
+}
+function extractPluginInfo(body){
+  try{
+    const parsed=typeof body==='string'?JSON.parse(body):body;
+    return parsed.plugin||'VertexPunishmentsWeb';
+  }catch{return 'VertexPunishmentsWeb';}
+}
+
 function openView(v){$$('.dashboard-nav a').forEach(a=>a.classList.toggle('active',a.dataset.view===v));$$('.dashboard-view').forEach(s=>s.classList.toggle('active',s.dataset.dashboardView===v));const t={overview:['VERTEXCRAFT DASHBOARD','Übersicht'],players:['SPIELERVERWALTUNG','Spieler'],punishments:['VERTEXCORE LIVE-DATEN','Strafen'],battlepass:['SEASON-SYSTEM','Battle Pass'],events:['COMMUNITY & TURNIERE','Events'],system:['VERBINDUNG','System']}[v]||['VERTEXCRAFT DASHBOARD','Übersicht'];$('#viewEyebrow').textContent=t[0];$('#viewTitle').textContent=t[1];$('#dashboardSidebar').classList.remove('open')}
 $$('.dashboard-nav a[data-view]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();if(a.hidden)return;openView(a.dataset.view)}));$$('[data-jump-view]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();openView(a.dataset.jumpView)}));$('#dashboardMenuButton').addEventListener('click',()=>$('#dashboardSidebar').classList.toggle('open'));$('#refreshDashboard').addEventListener('click',refreshAll);$('#dashboardPlayerSearchButton').addEventListener('click',searchPlayer);
 $('#dashboardPlayerSearch').addEventListener('keydown',e=>e.key==='Enter'&&searchPlayer());
 $('#dashboardPlayerSearch').addEventListener('input',e=>{clearTimeout(playerSearchTimer);const q=e.target.value.trim();if(!q){$('#playerSearchStatus').textContent='Gib mindestens einen Buchstaben ein.';$('#dashboardPlayerSuggestions').innerHTML='';return;}playerSearchTimer=setTimeout(()=>searchPlayerDirectory(q),180)});
 $('#dashboardPlayerSuggestions').addEventListener('click',e=>{const button=e.target.closest('[data-player-index]');if(!button)return;const p=playerSearchItems[Number(button.dataset.playerIndex)];if(p)openPlayerProfile(p.uuid||p.name)});
-$('#showRecentPlayers').addEventListener('click',()=>searchPlayerDirectory('',true));$('#dashboardPunishmentSearch').addEventListener('input',renderList);$('#dashboardPunishmentType').addEventListener('change',renderList);$('#dashboardPunishmentReload').addEventListener('click',loadPunishments);$('#openApiSettings').addEventListener('click',()=>{alert('Die API-Adresse ist fest und nur für Owner/Developer sichtbar. Änderungen erfolgen direkt im Worker.')});$('#systemTestApi').addEventListener('click',testApi);
+$('#showRecentPlayers').addEventListener('click',()=>searchPlayerDirectory('',true));$('#dashboardPunishmentSearch').addEventListener('input',renderList);$('#dashboardPunishmentType').addEventListener('change',renderList);$('#dashboardPunishmentReload').addEventListener('click',loadPunishments);$('#openApiSettings').addEventListener('click',()=>openView('system'));$('#systemTestApi').addEventListener('click',runFullSystemCheck);$('#systemRunFullCheck').addEventListener('click',runFullSystemCheck);
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
-openView('overview');checkSession();
+
+document.querySelectorAll(".copy-ip").forEach(button => {
+  button.addEventListener("click", async () => {
+    const ip = button.dataset.ip || "play-vertex.com";
+    try {
+      await navigator.clipboard.writeText(ip);
+      toast("Server-IP kopiert");
+    } catch {
+      toast(ip);
+    }
+  });
+});
+
+openView('overview');
+checkSession();
+
 
 </script>
 </body>

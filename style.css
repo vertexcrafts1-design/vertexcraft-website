@@ -806,3 +806,40 @@ footer{display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center;p
   line-height:1.5;
   text-align:center
 }
+
+.system-status-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  padding:12px 0;
+  border-bottom:1px solid var(--border)
+}
+.system-status-row:last-of-type{border-bottom:0}
+.system-status-row span{color:var(--muted);font-size:12px}
+.system-status-row strong{font-size:13px;text-align:right}
+.system-log-panel{margin-top:16px}
+.system-log-panel pre{
+  max-height:430px;
+  overflow:auto;
+  margin:0;
+  padding:16px;
+  border:1px solid var(--border);
+  border-radius:13px;
+  background:#090a10;
+  color:#cfc8e6;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  font-size:12px;
+  line-height:1.55
+}
+.dashboard-empty-panel button{
+  margin-top:12px;
+  padding:10px 14px;
+  border:1px solid rgba(182,156,255,.22);
+  border-radius:10px;
+  background:rgba(139,92,246,.1);
+  color:var(--purple2);
+  font-weight:800;
+  cursor:pointer
+}
