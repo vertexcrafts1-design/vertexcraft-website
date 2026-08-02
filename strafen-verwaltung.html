@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="theme-color" content="#0a0a12">
+  <link rel="icon" href="assets/logo.png">
+  <link rel="stylesheet" href="style.css">
+  <title>Strafenverwaltung – VertexCraft</title>
+</head>
+<body>
+  <div class="page-glow glow-a"></div>
+  <div class="page-glow glow-b"></div>
+
+  <header class="site-header">
+    <a class="brand" href="index.html">
+      <img src="assets/logo.png" alt="VertexCraft Logo">
+      <span>VertexCraft</span>
+    </a>
+    <button class="menu-button" id="menuButton" aria-label="Menü öffnen" aria-expanded="false">☰</button>
+    <nav class="nav" id="mainNav">
+      <a href="index.html">Startseite</a><a href="dashboard.html">Dashboard</a>
+      <a href="strafen.html">Öffentliche Strafen</a>
+      <a class="nav-button" href="strafen-verwaltung.html">Verwaltung</a>
+    </nav>
+  </header>
+
+  <main class="portal-main">
+    <section class="admin-hero">
+      <div>
+        <span class="eyebrow">VERTEXCRAFT TEAMTOOL</span>
+        <h1>Strafen erfassen</h1>
+        <p>
+          Erfasse Bans, Warns, Mutes, Kicks, Unbans und weitere Maßnahmen.
+          Diese offene Testversion speichert die Daten zunächst lokal in deinem Browser.
+        </p>
+      </div>
+      <div class="admin-warning">
+        <strong>Testmodus</strong>
+        <p>Die Daten sind nur auf diesem Browser gespeichert und noch nicht serverweit synchronisiert.</p>
+      </div>
+    </section>
+
+    <section class="admin-layout">
+      <form class="punishment-form" id="punishmentForm">
+        <div class="form-head">
+          <div>
+            <span class="portal-badge">NEUER EINTRAG</span>
+            <h2>Maßnahme hinzufügen</h2>
+          </div>
+          <button type="reset" class="ghost-button">Leeren</button>
+        </div>
+
+        <div class="form-grid">
+          <label>
+            <span>Spielername *</span>
+            <input name="player" id="player" required maxlength="32" placeholder="z. B. Gamefly">
+          </label>
+
+          <label>
+            <span>UUID</span>
+            <input name="uuid" id="uuid" maxlength="36" placeholder="Optional">
+          </label>
+
+          <label>
+            <span>Maßnahme *</span>
+            <select name="type" id="type" required>
+              <option value="ban">Bann</option>
+              <option value="warn">Verwarnung</option>
+              <option value="mute">Mute</option>
+              <option value="kick">Kick</option>
+              <option value="unban">Unban / Aufhebung</option>
+              <option value="other">Sonstige Maßnahme</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Status *</span>
+            <select name="status" id="status" required>
+              <option value="active">Aktiv</option>
+              <option value="closed">Abgeschlossen</option>
+            </select>
+          </label>
+
+          <label class="full-width">
+            <span>Grund *</span>
+            <input name="reason" id="reason" required maxlength="180" placeholder="Öffentlicher Strafgrund">
+          </label>
+
+          <label>
+            <span>Teammitglied *</span>
+            <input name="staff" id="staff" required maxlength="32" placeholder="z. B. Moderator">
+          </label>
+
+          <label>
+            <span>Dauer</span>
+            <input name="duration" id="duration" maxlength="80" placeholder="z. B. 7 Tage / Permanent">
+          </label>
+
+          <label>
+            <span>Beginn *</span>
+            <input type="datetime-local" name="createdAt" id="createdAt" required>
+          </label>
+
+          <label>
+            <span>Ablauf</span>
+            <input type="datetime-local" name="expiresAt" id="expiresAt">
+          </label>
+
+          <label class="full-width">
+            <span>Interne Notiz</span>
+            <textarea name="internalNote" id="internalNote" rows="4" maxlength="500" placeholder="Nur für diese lokale Verwaltungsansicht"></textarea>
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="primary-button">Eintrag speichern</button>
+          <button type="button" class="secondary-button" id="exportData">JSON exportieren</button>
+          <label class="secondary-button import-label">
+            JSON importieren
+            <input type="file" id="importData" accept="application/json" hidden>
+          </label>
+        </div>
+      </form>
+
+      <aside class="admin-sidebar">
+        <article>
+          <span>Gespeicherte Einträge</span>
+          <strong id="localEntryCount">0</strong>
+        </article>
+        <article>
+          <span>Aktive Maßnahmen</span>
+          <strong id="localActiveCount">0</strong>
+        </article>
+        <button id="clearAllData" class="danger-button">Alle lokalen Daten löschen</button>
+      </aside>
+    </section>
+
+    <section class="admin-list-section">
+      <div class="section-heading compact">
+        <span class="eyebrow">LOKALE DATEN</span>
+        <h2>Erfasste Maßnahmen</h2>
+      </div>
+
+      <div class="admin-table-toolbar">
+        <input id="adminSearch" type="search" placeholder="Spieler oder Grund suchen …">
+        <select id="adminFilter">
+          <option value="all">Alle Maßnahmen</option>
+          <option value="ban">Bans</option>
+          <option value="warn">Warns</option>
+          <option value="mute">Mutes</option>
+          <option value="kick">Kicks</option>
+          <option value="unban">Unbans</option>
+          <option value="other">Sonstige</option>
+        </select>
+      </div>
+
+      <div class="admin-entries" id="adminEntries"></div>
+
+      <div class="empty-state" id="adminEmptyState">
+        <div>＋</div>
+        <h2>Noch keine Einträge</h2>
+        <p>Erstelle oben deine erste Maßnahme.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-brand">
+      <img src="assets/logo.png" alt="">
+      <div><strong>VertexCraft</strong><p>Next Generation SMP</p></div>
+    </div>
+    <div class="footer-links">
+      <a href="index.html">Startseite</a>
+      <a href="strafen.html">Öffentliche Strafen</a>
+      <a href="strafen-verwaltung.html">Verwaltung</a>
+    </div>
+    <p class="copyright">© <span id="year"></span> VertexCraft.</p>
+  </footer>
+
+  <div class="toast" id="toast">Gespeichert!</div>
+  <script src="script.js"></script>
+  <script src="strafen-verwaltung.js"></script>
+</body>
+</html>

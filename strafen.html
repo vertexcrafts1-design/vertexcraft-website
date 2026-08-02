@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="theme-color" content="#0a0a12">
+  <meta name="description" content="Öffentliche Strafübersicht von VertexCraft.">
+  <link rel="icon" href="assets/logo.png">
+  <link rel="stylesheet" href="style.css">
+  <title>Strafen – VertexCraft</title>
+</head>
+<body>
+  <div class="page-glow glow-a"></div>
+  <div class="page-glow glow-b"></div>
+
+  <header class="site-header">
+    <a class="brand" href="index.html">
+      <img src="assets/logo.png" alt="VertexCraft Logo">
+      <span>VertexCraft</span>
+    </a>
+    <button class="menu-button" id="menuButton" aria-label="Menü öffnen" aria-expanded="false">☰</button>
+    <nav class="nav" id="mainNav">
+      <a href="index.html">Startseite</a><a href="dashboard.html">Dashboard</a>
+      <a href="battlepass.html">Battle Pass</a>
+      <a href="events.html">Events</a>
+      <a href="strafen.html">Strafen</a><a href="strafen-verwaltung.html" class="nav-button">Verwaltung</a>
+      <a href="regeln.html">Regeln</a>
+      <a href="https://discord.gg/gjDgG4X7yw" target="_blank" rel="noopener noreferrer">Discord</a>
+    </nav>
+  </header>
+
+  <main class="portal-main">
+    <section class="sanctions-hero">
+      <div>
+        <span class="eyebrow">VERTEXCRAFT STRAFSYSTEM</span>
+        <h1>Transparente Maßnahmen</h1>
+        <p>
+          Suche nach Spielern und sieh öffentliche Bans, Verwarnungen,
+          Kicks, Mutes und Aufhebungen in einer übersichtlichen Historie.
+        </p>
+      </div>
+
+      <div class="sanction-stats" id="sanctionStats">
+        <article><span>Aktive Bans</span><strong id="activeBanCount">0</strong></article>
+        <article><span>Verwarnungen</span><strong id="warningCount">0</strong></article>
+        <article><span>Weitere Maßnahmen</span><strong id="otherCount">0</strong></article>
+      </div>
+    </section>
+
+    <section class="sanctions-panel">
+      <div class="sanctions-search-wrap">
+        <label for="playerSearch">Spieler suchen</label>
+        <div class="sanctions-search">
+          <span>⌕</span>
+          <input
+            id="playerSearch"
+            type="search"
+            placeholder="Spielername oder UUID eingeben …"
+            autocomplete="off"
+          >
+          <button id="clearSearch" type="button">Löschen</button>
+        </div>
+        <p class="search-hint">Zum Beispiel: Gamefly, Player123 oder eine UUID.</p>
+      </div>
+
+      <div class="sanctions-tabs" role="tablist">
+        <button class="sanction-tab active" data-sanction-filter="all">Alle</button>
+        <button class="sanction-tab" data-sanction-filter="ban">Bans</button>
+        <button class="sanction-tab" data-sanction-filter="warn">Warns</button>
+        <button class="sanction-tab" data-sanction-filter="mute">Mutes</button>
+        <button class="sanction-tab" data-sanction-filter="kick">Kicks</button>
+        <button class="sanction-tab" data-sanction-filter="unban">Aufhebungen</button>
+      </div>
+
+      <div class="sanctions-toolbar">
+        <p><strong id="resultCount">0</strong> Einträge gefunden</p>
+        <select id="sortSelect" aria-label="Sortierung">
+          <option value="newest">Neueste zuerst</option>
+          <option value="oldest">Älteste zuerst</option>
+          <option value="player">Spieler A–Z</option>
+        </select>
+      </div>
+
+      <div class="sanctions-list" id="sanctionsList"></div>
+
+      <div class="empty-state" id="emptyState" hidden>
+        <div>⌕</div>
+        <h2>Keine Einträge gefunden</h2>
+        <p>Prüfe den Spielernamen oder wähle eine andere Kategorie.</p>
+      </div>
+    </section>
+
+    <section class="sanctions-info">
+      <article>
+        <span>01</span>
+        <div>
+          <h3>Öffentliche Übersicht</h3>
+          <p>Es werden ausschließlich notwendige Informationen zur Maßnahme angezeigt.</p>
+        </div>
+      </article>
+      <article>
+        <span>02</span>
+        <div>
+          <h3>Spielerhistorie</h3>
+          <p>Ein Klick auf einen Eintrag öffnet die vollständige öffentliche Historie des Spielers.</p>
+        </div>
+      </article>
+      <article>
+        <span>03</span>
+        <div>
+          <h3>Keine sensiblen Daten</h3>
+          <p>IP-Adressen, interne Notizen und Beweise werden nicht öffentlich dargestellt.</p>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <div class="modal" id="playerHistoryModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-history></div>
+    <div class="history-modal-card">
+      <button class="modal-close" data-close-history aria-label="Schließen">×</button>
+
+      <div class="history-player-head">
+        <div class="player-avatar" id="historyAvatar">V</div>
+        <div>
+          <span class="portal-badge">SPIELERHISTORIE</span>
+          <h2 id="historyPlayerName">Spieler</h2>
+          <p id="historyPlayerUuid">UUID</p>
+        </div>
+      </div>
+
+      <div class="history-summary">
+        <div><span>Gesamt</span><strong id="historyTotal">0</strong></div>
+        <div><span>Aktiv</span><strong id="historyActive">0</strong></div>
+        <div><span>Letzter Eintrag</span><strong id="historyLatest">–</strong></div>
+      </div>
+
+      <div class="history-timeline" id="historyTimeline"></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-brand">
+      <img src="assets/logo.png" alt="">
+      <div><strong>VertexCraft</strong><p>Next Generation SMP</p></div>
+    </div>
+    <div class="footer-links">
+      <a href="index.html">Startseite</a>
+      <a href="battlepass.html">Battle Pass</a>
+      <a href="events.html">Events</a>
+      <a href="strafen.html">Strafen</a>
+      <a href="regeln.html">Regeln</a>
+      <a href="impressum.html">Impressum</a>
+      <a href="datenschutz.html">Datenschutz</a>
+    </div>
+    <p class="copyright">© <span id="year"></span> VertexCraft. Nicht mit Mojang Studios oder Microsoft verbunden.</p>
+  </footer>
+
+  <script src="script.js"></script>
+  <script src="strafen.js"></script>
+</body>
+</html>

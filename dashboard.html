@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="theme-color" content="#0a0a12">
+  <meta name="description" content="VertexCraft Dashboard">
+  <link rel="icon" href="assets/logo.png">
+  <link rel="stylesheet" href="style.css">
+  <title>Dashboard – VertexCraft</title>
+</head>
+<body class="dashboard-body">
+  <div class="page-glow glow-a"></div>
+  <div class="page-glow glow-b"></div>
+
+  <aside class="dashboard-sidebar" id="dashboardSidebar">
+    <a class="dashboard-brand" href="index.html">
+      <img src="assets/logo.png" alt="VertexCraft Logo">
+      <div>
+        <strong>VertexCraft</strong>
+        <span>Dashboard</span>
+      </div>
+    </a>
+
+    <nav class="dashboard-nav">
+      <a class="active" href="#overview" data-view="overview"><span>⌂</span>Übersicht</a>
+      <a href="#players" data-view="players"><span>⌕</span>Spieler</a>
+      <a href="#punishments" data-view="punishments"><span>⚠</span>Strafen</a>
+      <a href="#battlepass" data-view="battlepass"><span>✦</span>Battle Pass</a>
+      <a href="#events" data-view="events"><span>⚔</span>Events</a>
+      <a href="#system" data-view="system"><span>⚙</span>System</a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="api-mini-status">
+        <span id="sidebarApiDot"></span>
+        <div>
+          <strong id="sidebarApiText">API wird geprüft</strong>
+          <small id="sidebarApiUrl">–</small>
+        </div>
+      </div>
+      <a href="index.html">← Zur Website</a>
+    </div>
+  </aside>
+
+  <div class="dashboard-shell">
+    <header class="dashboard-topbar">
+      <button class="dashboard-menu-button" id="dashboardMenuButton">☰</button>
+      <div>
+        <p id="viewEyebrow">VERTEXCRAFT DASHBOARD</p>
+        <h1 id="viewTitle">Übersicht</h1>
+      </div>
+      <div class="dashboard-top-actions">
+        <button class="dashboard-icon-button" id="refreshDashboard" title="Aktualisieren">↻</button>
+        <button class="dashboard-profile" id="openApiSettings">
+          <span>VC</span>
+          <div><strong>System</strong><small>API-Einstellungen</small></div>
+        </button>
+      </div>
+    </header>
+
+    <main class="dashboard-content">
+      <section class="dashboard-view active" data-dashboard-view="overview">
+        <div class="dashboard-alert" id="mixedContentAlert" hidden>
+          <strong>HTTPS-Verbindung erforderlich</strong>
+          <p>Die Website läuft über HTTPS, deine API aktuell über HTTP. Richte später <code>https://api.play-vertex.com</code> ein, damit Live-Daten im Browser geladen werden können.</p>
+        </div>
+
+        <div class="dashboard-stat-grid">
+          <article class="dashboard-stat purple">
+            <div><span>API-Status</span><strong id="apiStatusValue">Prüfen …</strong></div>
+            <i>●</i>
+          </article>
+          <article class="dashboard-stat red">
+            <div><span>Aktive Bans</span><strong id="dashActiveBans">–</strong></div>
+            <i>⛔</i>
+          </article>
+          <article class="dashboard-stat amber">
+            <div><span>Verwarnungen</span><strong id="dashWarnings">–</strong></div>
+            <i>⚠</i>
+          </article>
+          <article class="dashboard-stat blue">
+            <div><span>Gesamte Maßnahmen</span><strong id="dashTotalPunishments">–</strong></div>
+            <i>≡</i>
+          </article>
+        </div>
+
+        <div class="dashboard-main-grid">
+          <article class="dashboard-panel dashboard-wide">
+            <div class="dashboard-panel-head">
+              <div><span>LIVE-DATEN</span><h2>Letzte Maßnahmen</h2></div>
+              <a href="#punishments" data-jump-view="punishments">Alle ansehen →</a>
+            </div>
+            <div class="dashboard-punishment-list" id="dashboardRecentPunishments">
+              <div class="dashboard-loading">Daten werden geladen …</div>
+            </div>
+          </article>
+
+          <article class="dashboard-panel">
+            <div class="dashboard-panel-head">
+              <div><span>SCHNELLZUGRIFF</span><h2>Aktionen</h2></div>
+            </div>
+            <div class="quick-action-grid">
+              <a href="strafen-verwaltung.html"><i>＋</i><span>Maßnahme eintragen</span></a>
+              <a href="strafen.html"><i>⌕</i><span>Strafhistorie öffnen</span></a>
+              <a href="battlepass.html"><i>✦</i><span>Battle Pass ansehen</span></a>
+              <a href="events.html"><i>⚔</i><span>Events verwalten</span></a>
+            </div>
+          </article>
+
+          <article class="dashboard-panel">
+            <div class="dashboard-panel-head">
+              <div><span>SERVER</span><h2>VertexCraft</h2></div>
+            </div>
+            <div class="server-overview-card">
+              <img src="assets/logo.png" alt="">
+              <strong>play-vertex.com</strong>
+              <span>Java & Bedrock</span>
+              <button class="copy-ip" data-ip="play-vertex.com">IP kopieren</button>
+            </div>
+          </article>
+
+          <article class="dashboard-panel dashboard-wide">
+            <div class="dashboard-panel-head">
+              <div><span>ENTWICKLUNG</span><h2>Dashboard-Roadmap</h2></div>
+            </div>
+            <div class="dashboard-roadmap">
+              <div class="done"><span>✓</span><div><strong>Strafen-API</strong><small>Bans, Warns, Kicks und Historien</small></div></div>
+              <div class="active"><span>●</span><div><strong>HTTPS & Domain</strong><small>api.play-vertex.com sicher verbinden</small></div></div>
+              <div><span>○</span><div><strong>Spielerprofile</strong><small>Rang, Coins, Spielzeit, Clan und Statistiken</small></div></div>
+              <div><span>○</span><div><strong>Discord-Teamlogin</strong><small>Zugriff anhand der Team-Rolle</small></div></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="dashboard-view" data-dashboard-view="players">
+        <div class="dashboard-page-intro">
+          <div><span class="eyebrow">SPIELERSUCHE</span><h2>Spielerprofil finden</h2><p>Suche einen Spieler und öffne dessen öffentliche Strafhistorie. Weitere Serverwerte können später ergänzt werden.</p></div>
+        </div>
+        <div class="dashboard-search-card">
+          <div class="dashboard-search-box">
+            <span>⌕</span>
+            <input id="dashboardPlayerSearch" placeholder="Spielername eingeben …">
+            <button id="dashboardPlayerSearchButton">Suchen</button>
+          </div>
+          <div id="dashboardPlayerResult" class="dashboard-player-result">
+            <div class="dashboard-empty-illustration">⌕</div>
+            <h3>Noch kein Spieler gesucht</h3>
+            <p>Gib oben einen Spielernamen ein.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="dashboard-view" data-dashboard-view="punishments">
+        <div class="dashboard-page-intro">
+          <div><span class="eyebrow">STRAFENSYSTEM</span><h2>Alle Maßnahmen</h2><p>Live-Daten aus VertexCore über VertexPunishmentsWeb.</p></div>
+          <a class="primary-button" href="strafen-verwaltung.html">Neue Maßnahme</a>
+        </div>
+        <div class="dashboard-filter-bar">
+          <input id="dashboardPunishmentSearch" type="search" placeholder="Spieler, Grund oder Teammitglied suchen …">
+          <select id="dashboardPunishmentType">
+            <option value="all">Alle Kategorien</option>
+            <option value="ban">Bans</option>
+            <option value="warn">Warns</option>
+            <option value="kick">Kicks</option>
+            <option value="unban">Unbans</option>
+          </select>
+          <button id="dashboardPunishmentReload">Neu laden</button>
+        </div>
+        <div class="dashboard-full-list" id="dashboardPunishmentList"></div>
+      </section>
+
+      <section class="dashboard-view" data-dashboard-view="battlepass">
+        <div class="dashboard-page-intro">
+          <div><span class="eyebrow">SEASON 1</span><h2>Battle Pass</h2><p>Übersicht der vorbereiteten Season-Stufen und Belohnungen.</p></div>
+          <a class="primary-button" href="battlepass.html">Battle-Pass-Seite öffnen</a>
+        </div>
+        <div class="dashboard-feature-placeholder">
+          <div class="placeholder-icon">✦</div>
+          <h3>Battle-Pass-Anbindung vorbereitet</h3>
+          <p>Sobald VertexBattlePass eine API bereitstellt, erscheinen hier echte Spielerfortschritte, aktive Quests und eingelöste Belohnungen.</p>
+          <div class="placeholder-tags"><span>Level</span><span>XP</span><span>Quests</span><span>Rewards</span></div>
+        </div>
+      </section>
+
+      <section class="dashboard-view" data-dashboard-view="events">
+        <div class="dashboard-page-intro">
+          <div><span class="eyebrow">COMMUNITY</span><h2>Events</h2><p>Geplante und laufende VertexCraft-Events.</p></div>
+          <a class="primary-button" href="events.html">Eventseite öffnen</a>
+        </div>
+        <div class="dashboard-event-grid">
+          <article><span>WETTBEWERB</span><h3>Build Battle</h3><p>Termin folgt</p><strong>Demnächst</strong></article>
+          <article><span>PVP</span><h3>Clan Wars</h3><p>1v1 · 3v3 · 5v5</p><strong>In Planung</strong></article>
+          <article><span>COMMUNITY</span><h3>Hide & Seek</h3><p>Community Event</p><strong>Geplant</strong></article>
+        </div>
+      </section>
+
+      <section class="dashboard-view" data-dashboard-view="system">
+        <div class="dashboard-page-intro">
+          <div><span class="eyebrow">SYSTEM</span><h2>API & Verbindung</h2><p>Hier kannst du die verwendete API-Adresse testen und ändern.</p></div>
+        </div>
+        <div class="dashboard-system-grid">
+          <article class="dashboard-panel">
+            <h3>Aktuelle API</h3>
+            <code id="systemApiUrl">–</code>
+            <button id="systemTestApi">Verbindung testen</button>
+          </article>
+          <article class="dashboard-panel">
+            <h3>Nächster Schritt</h3>
+            <p>Die HTTP-API muss über HTTPS erreichbar werden. Vorgesehene Adresse:</p>
+            <code>https://api.play-vertex.com</code>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal" id="apiSettingsModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-api-settings></div>
+    <div class="modal-card api-settings-card">
+      <button class="modal-close" data-close-api-settings>×</button>
+      <span class="portal-badge">API-EINSTELLUNGEN</span>
+      <h2>Verbindung konfigurieren</h2>
+      <p>Die Adresse wird nur in deinem Browser gespeichert.</p>
+      <label class="dashboard-setting-label">
+        <span>API-Basisadresse</span>
+        <input id="apiBaseInput" value="http://176.9.113.40:25798">
+      </label>
+      <div class="api-settings-actions">
+        <button class="primary-button" id="saveApiSettings">Speichern & testen</button>
+        <button class="secondary-button" id="useFutureHttps">HTTPS-Vorgabe einsetzen</button>
+      </div>
+      <div class="api-test-result" id="apiSettingsResult"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Kopiert!</div>
+  <script src="script.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>
