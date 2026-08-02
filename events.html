@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="theme-color" content="#0a0a12">
+  <link rel="icon" href="assets/logo.png">
+  <link rel="stylesheet" href="style.css">
+<title>Events – VertexCraft</title></head>
+<body>
+<div class="page-glow glow-a"></div><div class="page-glow glow-b"></div>
+<header class="site-header">
+  <a class="brand" href="index.html"><img src="assets/logo.png" alt="VertexCraft Logo"><span>VertexCraft</span></a>
+  <button class="menu-button" id="menuButton" aria-label="Menü öffnen" aria-expanded="false">☰</button>
+  <nav class="nav" id="mainNav">
+    <a href="index.html">Startseite</a>
+    <a href="battlepass.html">Battle Pass</a>
+    <a href="events.html">Events</a>
+    <a href="regeln.html">Regeln</a>
+    <a href="https://www.tiktok.com/@vertex.craft?is_from_webapp=1&sender_device=pc" target="_blank" rel="noopener noreferrer">TikTok</a>
+    <a class="nav-button" href="https://discord.gg/gjDgG4X7yw" target="_blank" rel="noopener noreferrer">Discord</a>
+  </nav>
+</header>
+
+<main class="portal-main">
+  <section class="portal-hero events-hero">
+    <div>
+      <span class="eyebrow">VERTEXCRAFT EVENTS</span>
+      <h1>Gemeinsam erleben</h1>
+      <p>Von Build Battles über Clan Wars bis zu Community-Abenden – hier findest du alle geplanten Eventtypen.</p>
+      <div class="hero-actions"><a class="primary-button" href="https://discord.gg/gjDgG4X7yw" target="_blank" rel="noopener noreferrer">Event-Ankündigungen</a></div>
+    </div>
+    <div class="event-highlight">
+      <span class="portal-badge">NÄCHSTES HIGHLIGHT</span>
+      <div class="event-symbol">⚔</div>
+      <h2>Build Battle</h2>
+      <p>Termin folgt über Discord</p>
+    </div>
+  </section>
+
+  <section class="event-toolbar">
+    <div class="filter-tabs">
+      <button class="event-filter active" data-event-filter="all">Alle</button>
+      <button class="event-filter" data-event-filter="competition">Wettbewerbe</button>
+      <button class="event-filter" data-event-filter="community">Community</button>
+      <button class="event-filter" data-event-filter="pvp">PvP</button>
+    </div>
+  </section>
+
+  <section class="events-grid" id="eventsGrid">
+    <article class="event-card" data-category="competition">
+      <div class="event-cover build"><span>BUILD</span></div>
+      <div class="event-body"><div class="event-meta"><span>WETTBEWERB</span><strong>Demnächst</strong></div><h3>Build Battle</h3><p>Baue innerhalb eines Zeitlimits zum vorgegebenen Thema und überzeuge die Jury.</p><div class="reward-row"><span>Belohnung</span><strong>Coins · Shards · Titel</strong></div><button class="event-details" data-event-title="Build Battle">Details ansehen</button></div>
+    </article>
+    <article class="event-card" data-category="pvp">
+      <div class="event-cover clans"><span>CLAN</span></div>
+      <div class="event-body"><div class="event-meta"><span>PVP</span><strong>In Planung</strong></div><h3>Clan Wars</h3><p>Tritt mit deinem Clan in verschiedenen Teamgrößen und Modi gegen andere an.</p><div class="reward-row"><span>Modi</span><strong>1v1 · 3v3 · 5v5</strong></div><button class="event-details" data-event-title="Clan Wars">Details ansehen</button></div>
+    </article>
+    <article class="event-card" data-category="community">
+      <div class="event-cover hunt"><span>HUNT</span></div>
+      <div class="event-body"><div class="event-meta"><span>COMMUNITY</span><strong>Geplant</strong></div><h3>Schnitzeljagd</h3><p>Folge Hinweisen durch verschiedene Welten und finde das große Finale.</p><div class="reward-row"><span>Belohnung</span><strong>Keys · Cosmetics</strong></div><button class="event-details" data-event-title="Schnitzeljagd">Details ansehen</button></div>
+    </article>
+    <article class="event-card" data-category="community">
+      <div class="event-cover hide"><span>HIDE</span></div>
+      <div class="event-body"><div class="event-meta"><span>COMMUNITY</span><strong>Geplant</strong></div><h3>Hide & Seek</h3><p>Verstecke dich clever oder finde alle Spieler, bevor die Zeit abläuft.</p><div class="reward-row"><span>Spieler</span><strong>Community Event</strong></div><button class="event-details" data-event-title="Hide & Seek">Details ansehen</button></div>
+    </article>
+    <article class="event-card" data-category="competition">
+      <div class="event-cover parkour"><span>RUN</span></div>
+      <div class="event-body"><div class="event-meta"><span>WETTBEWERB</span><strong>Idee</strong></div><h3>Parkour Rush</h3><p>Erreiche das Ziel so schnell wie möglich und sichere dir einen Platz im Ranking.</p><div class="reward-row"><span>Ranking</span><strong>Top 3 gewinnt</strong></div><button class="event-details" data-event-title="Parkour Rush">Details ansehen</button></div>
+    </article>
+    <article class="event-card" data-category="pvp">
+      <div class="event-cover arena"><span>ARENA</span></div>
+      <div class="event-body"><div class="event-meta"><span>PVP</span><strong>Idee</strong></div><h3>Arena Night</h3><p>Ein Abend voller kurzer Duelle, wechselnder Kits und spontaner Turniere.</p><div class="reward-row"><span>Format</span><strong>K.-o.-Runden</strong></div><button class="event-details" data-event-title="Arena Night">Details ansehen</button></div>
+    </article>
+  </section>
+
+  <section class="event-info-strip">
+    <div><span>1</span><p>Event auf Discord angekündigt</p></div>
+    <div><span>2</span><p>Rechtzeitig auf dem Server sein</p></div>
+    <div><span>3</span><p>Mitmachen und Belohnungen sichern</p></div>
+  </section>
+</main>
+
+<div class="modal" id="eventModal" aria-hidden="true">
+  <div class="modal-backdrop" data-close-event></div>
+  <div class="modal-card">
+    <button class="modal-close" data-close-event>×</button>
+    <div class="reward-large-icon">⚔</div>
+    <span class="portal-badge">EVENT</span>
+    <h2 id="eventModalTitle">Event</h2>
+    <p>Die genauen Termine, Regeln und finalen Belohnungen werden über Discord veröffentlicht. Diese Seite dient als zentrale Übersicht.</p>
+    <a class="primary-button modal-link" href="https://discord.gg/gjDgG4X7yw" target="_blank" rel="noopener noreferrer">Auf Discord ansehen</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-brand"><img src="assets/logo.png" alt=""><div><strong>VertexCraft</strong><p>Next Generation SMP</p></div></div>
+  <div class="footer-links"><a href="index.html">Startseite</a><a href="battlepass.html">Battle Pass</a><a href="events.html">Events</a><a href="regeln.html">Regeln</a><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a></div>
+  <p class="copyright">© <span id="year"></span> VertexCraft. Nicht mit Mojang Studios oder Microsoft verbunden.</p>
+</footer>
+<div class="toast" id="toast">Kopiert!</div>
+<script src="script.js"></script>
+</body></html>
