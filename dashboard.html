@@ -16,12 +16,12 @@
       <span class="portal-badge">GESCHÜTZTER BEREICH</span>
       <h1>Dashboard Login</h1>
       <p>Melde dich mit deinem VertexCraft-Teamkonto an.</p>
-      <form id="dashboardLoginForm">
+      <form id="dashboardLoginForm" action="javascript:void(0);" novalidate>
         <label><span>Benutzername</span><input id="loginUsername" autocomplete="username" required></label>
         <label><span>Passwort</span><input id="loginPassword" type="password" autocomplete="current-password" required></label>
         <button class="primary-button" type="submit">Anmelden</button>
       </form>
-      <div class="login-error" id="loginError"></div>
+      <div class="login-error" id="loginError"></div><div class="login-diagnostic" id="loginDiagnostic">Login-Script wird geladen …</div>
     </div>
   </section>
   <div class="page-glow glow-a"></div>
@@ -263,6 +263,6 @@
 
   <div class="toast" id="toast">Kopiert!</div>
   <script src="script.js"></script>
-  <script src="dashboard.js"></script>
+  <script src="dashboard-v3.js?v=3.0.1"></script>
 </body>
 </html>

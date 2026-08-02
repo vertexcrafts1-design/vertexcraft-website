@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VertexCraft Login-Test</title>
+<style>
+body{font-family:Arial,sans-serif;background:#090a11;color:#fff;display:grid;place-items:center;min-height:100vh;margin:0}
+main{width:min(430px,calc(100% - 32px));padding:28px;border:1px solid #292a38;border-radius:18px;background:#13141e}
+input,button{box-sizing:border-box;width:100%;padding:13px;margin-top:10px;border-radius:10px;border:1px solid #333545;background:#0e0f17;color:#fff}
+button{background:#7652d6;cursor:pointer;font-weight:700}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0b0c12;padding:12px;border-radius:10px;color:#cfc6ef}
+</style>
+</head>
+<body><main>
+<h1>Login-Test</h1>
+<p>Damit prüfen wir nur Worker und Secrets.</p>
+<form id="testForm" action="javascript:void(0)">
+<input id="u" placeholder="Benutzername" autocomplete="username">
+<input id="p" placeholder="Passwort" type="password" autocomplete="current-password">
+<button>Anmelden testen</button>
+</form>
+<pre id="result">Bereit.</pre>
+<script>
+const API="https://vertexcraft-api.vertexcrafts1.workers.dev";
+document.getElementById("testForm").addEventListener("submit",async(e)=>{
+ e.preventDefault();
+ const result=document.getElementById("result");
+ result.textContent="Anfrage läuft …";
+ try{
+  const r=await fetch(API+"/auth/login",{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({username:document.getElementById("u").value.trim(),password:document.getElementById("p").value})
+  });
+  const text=await r.text();
+  result.textContent="HTTP "+r.status+"\n"+text;
+ }catch(err){
+  result.textContent="NETZWERKFEHLER\n"+err;
+ }
+});
+</script>
+</main></body></html>
