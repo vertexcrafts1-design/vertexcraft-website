@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="description" content="Öffentliche VertexCraft Ranglisten für Coins, Spielzeit, Kills und weitere Spielerstatistiken.">
+  <meta name="theme-color" content="#090a12">
+  <title>VertexCraft Spieler-Ranglisten</title>
+  <link rel="icon" href="assets/logo.png">
+  <link rel="stylesheet" href="stats.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap header-inner">
+    <a class="brand" href="index.html"><img src="assets/logo.png" alt="VertexCraft"><div><strong>VertexCraft</strong><span>SPIELER-RANGLISTEN</span></div></a>
+    <nav><a href="index.html">Startseite</a><a href="https://play-vertex.shop">Shop</a><a href="battlepass.html">BattlePass</a><a href="events.html">Events</a><a href="regeln.html">Regeln</a></nav>
+  </div>
+</header>
+
+<section class="hero">
+  <img src="assets/vertex-world.svg" alt="VertexCraft Welt" class="hero-bg">
+  <div class="hero-shade"></div>
+  <div class="wrap hero-inner">
+    <div>
+      <span class="pill">✦ ÖFFENTLICHES DASHBOARD</span>
+      <h1>Wie weit bist du auf <span>VertexCraft?</span></h1>
+      <p>Vergleiche Coins, Spielzeit, Kills und weitere öffentliche Spielerwerte. Keine Teamdaten, keine Strafen – nur dein Fortschritt auf dem Server.</p>
+      <div class="search"><span>⌕</span><input id="playerSearch" placeholder="Spieler suchen …" autocomplete="off"><button id="searchButton">Suchen</button></div>
+    </div>
+    <div class="hero-card">
+      <span>SERVER</span><strong>play-vertex.com</strong><small>Season 2 · Java & Bedrock</small><div class="status"><i></i> Live-Spielerdaten</div>
+    </div>
+  </div>
+</section>
+
+<main class="wrap main">
+  <section class="tabs" aria-label="Rangliste auswählen">
+    <button class="active" data-sort="balance">💰 Coins</button>
+    <button data-sort="playtime">⏱ Spielzeit</button>
+    <button data-sort="kills">⚔ Kills</button>
+    <button data-sort="deaths">☠ Tode</button>
+    <button data-sort="lastplayed">◷ Aktivität</button>
+  </section>
+
+  <section class="summary-grid">
+    <article><span>Geladene Spieler</span><strong id="playerCount">–</strong><small>bekannte VertexCraft Accounts</small></article>
+    <article><span>Aktuelle Rangliste</span><strong id="currentBoard">Coins</strong><small>sortiert nach höchstem Wert</small></article>
+    <article><span>API Status</span><strong id="apiState">Lädt …</strong><small id="apiHint">Verbindung wird geprüft</small></article>
+  </section>
+
+  <section class="board-shell">
+    <div class="board-head"><div><span>TOPLISTE</span><h2 id="boardTitle">Reichste Spieler</h2></div><button id="reload">↻ Aktualisieren</button></div>
+    <div id="podium" class="podium"></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Spieler</th><th>Rang</th><th id="valueHeader">Coins</th><th>Status</th></tr></thead>
+        <tbody id="leaderRows"><tr><td colspan="5" class="loading">Rangliste wird geladen …</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="profile-stage" id="profileStage" hidden>
+    <div class="profile-head"><div><span>SPIELERPROFIL</span><h2 id="profileName">Spieler</h2></div><button id="closeProfile">Schließen</button></div>
+    <div class="profile-grid">
+      <article><span>Coins</span><strong id="profileCoins">–</strong></article>
+      <article><span>Spielzeit</span><strong id="profilePlaytime">–</strong></article>
+      <article><span>Kills</span><strong id="profileKills">–</strong></article>
+      <article><span>Tode</span><strong id="profileDeaths">–</strong></article>
+      <article><span>Rang</span><strong id="profileRank">–</strong></article>
+      <article><span>Zuletzt online</span><strong id="profileSeen">–</strong></article>
+    </div>
+  </section>
+</main>
+
+<footer class="footer"><div class="wrap"><span>© <span id="year"></span> VertexCraft · Öffentliches Spieler-Dashboard</span><div><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a><a href="https://play-vertex.shop">Shop</a></div></div></footer>
+<script src="stats.js"></script>
+</body>
+</html>
