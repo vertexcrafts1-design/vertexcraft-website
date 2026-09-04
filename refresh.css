@@ -31,3 +31,15 @@ body:not(.home-refresh):not(.dashboard-body) main:not(.stats-main){width:min(118
 .refresh-intro,.refresh-systems{margin-top:22px;border:1px solid var(--line);border-radius:24px;background:rgba(12,12,17,.77);backdrop-filter:blur(16px)}
 .battlepass-showcase{background:linear-gradient(90deg,rgba(8,8,12,.92),rgba(8,8,12,.28)),url('assets/battlepass-v2.png') center/cover!important}
 @media(max-width:760px){.home-refresh{background-attachment:scroll}.refresh-hero{background-position:64% center!important}.refresh-shot{height:390px;min-height:390px}.refresh-gallery{padding:10px}.refresh-intro,.refresh-systems{border-radius:18px}}
+
+/* hard image layout fix: never let content collapse the media area */
+.refresh-hero{position:relative!important;display:block!important;min-height:710px!important;background:none!important;overflow:hidden!important}
+.refresh-hero::before{content:"";position:absolute;inset:0;z-index:0;display:block;background-image:url('assets/vertex-hero-v2.png');background-position:center;background-size:cover;background-repeat:no-repeat}
+.refresh-hero-shade{position:absolute!important;inset:0!important;z-index:1!important}
+.refresh-hero-content{position:relative!important;z-index:2!important;min-height:710px!important;background:transparent!important}
+.refresh-server-card{z-index:3!important}
+.refresh-gallery{align-items:stretch!important}
+.refresh-shot{position:relative!important;display:block!important;height:auto!important;min-height:0!important;aspect-ratio:3/2!important;overflow:hidden!important}
+.refresh-shot>img{position:absolute!important;inset:0!important;display:block!important;width:100%!important;height:100%!important;min-width:100%!important;min-height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover!important;object-position:center!important}
+.refresh-shot figcaption{z-index:3!important}
+@media(max-width:760px){.refresh-hero,.refresh-hero-content{min-height:720px!important}.refresh-hero::before{background-position:64% center}.refresh-shot{aspect-ratio:4/3!important}}
