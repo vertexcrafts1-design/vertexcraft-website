@@ -1,8 +1,8 @@
 /* VertexCraft cinematic Minecraft image layer — clean composition */
 :root{
-  --vc-scene-castle:url("assets/vertex-castle.jpg");
-  --vc-scene-portal:url("assets/vertex-portal.jpg");
-  --vc-scene-sunset:url("assets/vertex-valley.jpg");
+  --vc-scene-castle:url("assets/vertex-castle-hq.jpg");
+  --vc-scene-portal:url("assets/vertex-portal-hq.jpg");
+  --vc-scene-sunset:url("assets/vertex-valley-hq.jpg");
 }
 
 /* ---------------------------------------------------------
