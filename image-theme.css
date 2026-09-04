@@ -1,135 +1,156 @@
-/* VertexCraft cinematic Minecraft image layer — clean composition */
+/* VertexCraft image layer — native-size rendering, no ugly upscaling */
 :root{
   --vc-scene-castle:url("assets/vertex-castle-hq.jpg");
   --vc-scene-portal:url("assets/vertex-portal-hq.jpg");
   --vc-scene-sunset:url("assets/vertex-valley-hq.jpg");
 }
 
-/* ---------------------------------------------------------
-   HOMEPAGE
-   Keep the Minecraft renders as cinematic sections instead
-   of stretching one small image over the entire website.
---------------------------------------------------------- */
 body.home-v4:before{
   background:
     radial-gradient(circle at 18% 8%,rgba(141,92,255,.10),transparent 31%),
-    radial-gradient(circle at 82% 12%,rgba(246,173,109,.055),transparent 27%),
+    radial-gradient(circle at 82% 12%,rgba(246,173,109,.05),transparent 27%),
     linear-gradient(180deg,#09070d 0%,#0b0810 44%,#09070d 100%)!important;
 }
 
+/* HOME HERO: keep the render at native scale instead of cover-stretching it */
 body.home-v4 .hero-v4{
   isolation:isolate;
-  min-height:600px!important;
-  height:min(720px,calc((100vw - 34px) * .5625))!important;
-  max-height:720px;
+  overflow:hidden;
+  min-height:680px!important;
+  height:min(941px,56.28vw)!important;
+  max-height:941px!important;
   background:#08070b!important;
 }
 body.home-v4 .hero-v4:before{
   content:"";
   position:absolute;
-  inset:0;
   z-index:0;
-  background:var(--vc-scene-castle) center 52% / cover no-repeat;
-  transform:scale(1.006);
+  width:min(100vw,1672px);
+  aspect-ratio:1672 / 941;
+  right:0;
+  top:50%;
+  transform:translateY(-50%);
+  background:var(--vc-scene-castle) center / 100% 100% no-repeat;
 }
 body.home-v4 .hero-world{display:none!important}
 body.home-v4 .hero-fog{
   z-index:1;
   background:
-    linear-gradient(90deg,rgba(6,5,8,.94) 0%,rgba(6,5,8,.76) 30%,rgba(6,5,8,.35) 53%,rgba(6,5,8,.07) 78%),
-    linear-gradient(0deg,rgba(7,6,10,.88) 0%,rgba(7,6,10,.18) 40%,rgba(7,6,10,.10) 100%)!important;
+    linear-gradient(90deg,rgba(6,5,8,.95) 0%,rgba(6,5,8,.78) 28%,rgba(6,5,8,.42) 49%,rgba(6,5,8,.08) 75%),
+    linear-gradient(0deg,rgba(7,6,10,.86) 0%,rgba(7,6,10,.10) 42%,rgba(7,6,10,.08) 100%)!important;
 }
 body.home-v4 .hero-inner{z-index:2}
 
-/* cards use the images only where they have enough pixels */
+/* These are smaller surfaces, so the source image is only downscaled, never blown up */
 body.home-v4 .story-card.build .story-bg{
   background-image:var(--vc-scene-sunset)!important;
   background-position:58% center!important;
   background-size:cover!important;
-  filter:saturate(.95) brightness(.72)!important;
+  filter:saturate(.96) brightness(.76)!important;
 }
 body.home-v4 .story-card.explore .story-bg{
   background-image:var(--vc-scene-castle)!important;
   background-position:66% center!important;
   background-size:cover!important;
-  filter:saturate(.92) brightness(.70)!important;
+  filter:saturate(.94) brightness(.74)!important;
 }
 
 body.home-v4 .season-card{
-  min-height:0!important;
-  height:min(620px,calc((100vw - 34px) * .49));
-  background:var(--vc-scene-portal) center 54% / cover no-repeat!important;
+  overflow:hidden;
+  aspect-ratio:1672 / 941;
+  height:auto!important;
+  min-height:500px!important;
+  max-height:720px!important;
+  background:var(--vc-scene-portal) center / cover no-repeat!important;
 }
 body.home-v4 .season-card>img{display:none!important}
 body.home-v4 .season-overlay{
   background:
-    linear-gradient(90deg,rgba(7,5,11,.94) 0%,rgba(7,5,11,.73) 42%,rgba(7,5,11,.20) 72%,rgba(7,5,11,.08) 100%),
-    linear-gradient(0deg,rgba(7,5,11,.76),transparent 54%)!important;
+    linear-gradient(90deg,rgba(7,5,11,.94) 0%,rgba(7,5,11,.72) 40%,rgba(7,5,11,.18) 73%,rgba(7,5,11,.05) 100%),
+    linear-gradient(0deg,rgba(7,5,11,.70),transparent 56%)!important;
 }
 
-/* ---------------------------------------------------------
-   SHOP
-   Do not blow the portal image up across a 1920px monitor.
-   It lives as a large right-side scene at roughly native size.
---------------------------------------------------------- */
+/* SHOP: full-size portal render, not the previous tiny 66vw contain version */
 body:not(.home-v4):before{
   background:
-    radial-gradient(circle at 18% 8%,rgba(155,109,255,.09),transparent 28%),
+    radial-gradient(circle at 18% 8%,rgba(155,109,255,.08),transparent 28%),
     linear-gradient(180deg,#09070d 0%,#0b0810 48%,#09070d 100%)!important;
 }
 body:not(.home-v4) .hero{
   isolation:isolate;
-  min-height:540px!important;
+  overflow:hidden;
+  min-height:650px!important;
+  height:min(860px,56.28vw)!important;
+  max-height:860px!important;
   background:#09070d!important;
 }
 body:not(.home-v4) .hero:before{
   content:"";
   position:absolute;
   z-index:0;
-  top:0;
-  right:max(0px,calc((100vw - 1420px) / 2));
-  bottom:0;
-  width:min(66vw,1060px);
-  background:var(--vc-scene-portal) center center / contain no-repeat;
-  opacity:.98;
+  width:min(100vw,1672px);
+  aspect-ratio:1672 / 941;
+  right:0;
+  top:50%;
+  transform:translateY(-50%);
+  background:var(--vc-scene-portal) center / 100% 100% no-repeat;
+  opacity:1;
 }
 body:not(.home-v4) .hero-shade{
   z-index:1;
   background:
-    linear-gradient(90deg,#09070d 0%,rgba(9,7,13,.98) 23%,rgba(9,7,13,.78) 43%,rgba(9,7,13,.28) 67%,rgba(9,7,13,.08) 100%),
-    linear-gradient(0deg,rgba(9,7,13,.82),transparent 52%)!important;
+    linear-gradient(90deg,#09070d 0%,rgba(9,7,13,.96) 24%,rgba(9,7,13,.72) 43%,rgba(9,7,13,.22) 68%,rgba(9,7,13,.04) 100%),
+    linear-gradient(0deg,rgba(9,7,13,.74),transparent 54%)!important;
 }
 body:not(.home-v4) .hero-grid{z-index:2}
 
 body:not(.home-v4) .battlepass-showcase{
   background:
-    linear-gradient(90deg,rgba(9,7,13,.94) 0%,rgba(9,7,13,.70) 46%,rgba(9,7,13,.25) 100%),
-    var(--vc-scene-portal) center 55% / cover no-repeat!important;
+    linear-gradient(90deg,rgba(9,7,13,.94) 0%,rgba(9,7,13,.67) 45%,rgba(9,7,13,.20) 100%),
+    var(--vc-scene-portal) center / cover no-repeat!important;
 }
 
-/* cards stay crisp instead of letting a busy background shine through */
 body:not(.home-v4) .product,
 body:not(.home-v4) .sidebox{
   background:linear-gradient(160deg,rgba(24,19,31,.985),rgba(13,10,17,.99))!important;
 }
 
+@media(min-width:1673px){
+  body.home-v4 .hero-v4:after,
+  body:not(.home-v4) .hero:after{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:.5;
+    pointer-events:none;
+    background:linear-gradient(90deg,#08070b 0%,transparent 11%,transparent 91%,#08070b 100%);
+  }
+}
+
 @media(max-width:980px){
-  body.home-v4 .hero-v4{height:auto!important;min-height:700px!important}
-  body.home-v4 .season-card{height:auto;min-height:540px!important}
+  body.home-v4 .hero-v4{height:760px!important;min-height:760px!important}
+  body.home-v4 .hero-v4:before{
+    width:1350px;
+    max-width:none;
+    right:-330px;
+  }
+  body.home-v4 .season-card{aspect-ratio:auto;min-height:540px!important}
+  body:not(.home-v4) .hero{height:720px!important;min-height:720px!important}
   body:not(.home-v4) .hero:before{
-    width:100%;
-    right:0;
-    opacity:.55;
-    background-size:cover;
+    width:1280px;
+    max-width:none;
+    right:-360px;
+    opacity:.62;
   }
   body:not(.home-v4) .hero-shade{
-    background:linear-gradient(180deg,rgba(9,7,13,.42),rgba(9,7,13,.94) 78%)!important;
+    background:linear-gradient(180deg,rgba(9,7,13,.34),rgba(9,7,13,.94) 76%)!important;
   }
 }
 
 @media(max-width:620px){
-  body.home-v4 .hero-v4{min-height:720px!important}
-  body.home-v4 .hero-v4:before{background-position:68% center}
-  body.home-v4 .season-card{min-height:520px!important}
-  body:not(.home-v4) .hero{min-height:600px!important}
+  body.home-v4 .hero-v4{height:760px!important;min-height:760px!important}
+  body.home-v4 .hero-v4:before{width:1200px;right:-430px}
+  body.home-v4 .season-card{min-height:500px!important}
+  body:not(.home-v4) .hero{height:690px!important;min-height:690px!important}
+  body:not(.home-v4) .hero:before{width:1180px;right:-470px}
 }
