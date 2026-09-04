@@ -1,4 +1,4 @@
- url("refresh.css?v=20260904");
+@import url("refresh.css?v=20260904");
 :root{
   --bg:#080910;--surface:rgba(17,18,29,.82);--surface2:#12131e;--border:rgba(255,255,255,.09);
   --text:#f7f7fb;--muted:#aaaaba;--purple:#8b5cf6;--purple2:#bca5ff;--accent:#6d45d8;
