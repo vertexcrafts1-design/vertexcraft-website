@@ -112,3 +112,22 @@ body:not(.home-refresh):not(.dashboard-body) main:not(.stats-main){width:min(118
 }
 .refresh-gallery>.refresh-shot>figcaption{position:static!important;width:100%!important;margin:0!important;padding:24px!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;backdrop-filter:none!important}
 @media(max-width:760px){.refresh-gallery{min-height:620px!important;padding:18px!important;align-content:end!important}.refresh-gallery>.refresh-shot{min-height:150px!important}}
+
+/* reveal the section artwork behind lightweight content blocks */
+.refresh-gallery::after{background:linear-gradient(180deg,rgba(8,8,12,.03),rgba(8,8,12,.28))!important}
+.refresh-gallery>.refresh-shot{
+  border-color:rgba(255,255,255,.24)!important;
+  background:rgba(9,9,14,.36)!important;
+  box-shadow:0 14px 38px rgba(0,0,0,.2)!important;
+  backdrop-filter:blur(5px)!important;
+}
+.refresh-gallery>.refresh-shot>figcaption{
+  width:auto!important;
+  margin:18px!important;
+  padding:16px 18px!important;
+  border:1px solid rgba(255,255,255,.2)!important;
+  border-radius:12px!important;
+  background:rgba(7,7,11,.62)!important;
+  backdrop-filter:blur(8px)!important;
+}
+@media(max-width:760px){.refresh-gallery>.refresh-shot{background:rgba(9,9,14,.24)!important}.refresh-gallery>.refresh-shot>figcaption{margin:12px!important}}
