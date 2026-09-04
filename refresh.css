@@ -74,3 +74,41 @@ body:not(.home-refresh):not(.dashboard-body) main:not(.stats-main){width:min(118
   backdrop-filter:blur(10px)!important;
 }
 @media(max-width:760px){.refresh-gallery>.refresh-shot{min-height:390px!important}.refresh-gallery>.refresh-shot>figcaption{margin:14px!important}}
+
+/* final layout: artwork belongs behind the blocks, never inside them */
+.refresh-gallery{
+  position:relative!important;
+  isolation:isolate!important;
+  min-height:560px!important;
+  padding:34px!important;
+  align-items:end!important;
+  overflow:hidden!important;
+  background:transparent!important;
+}
+.refresh-gallery::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-2;
+  background:url('assets/vertex-build-v2.png') center/cover no-repeat;
+}
+.refresh-gallery::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  background:linear-gradient(180deg,rgba(8,8,12,.08),rgba(8,8,12,.75));
+}
+.refresh-gallery>.refresh-shot{
+  display:flex!important;
+  min-height:190px!important;
+  padding:0!important;
+  align-items:flex-end!important;
+  border-color:rgba(255,255,255,.18)!important;
+  background:rgba(10,10,15,.78)!important;
+  background-image:none!important;
+  box-shadow:0 20px 55px rgba(0,0,0,.28)!important;
+  backdrop-filter:blur(14px)!important;
+}
+.refresh-gallery>.refresh-shot>figcaption{position:static!important;width:100%!important;margin:0!important;padding:24px!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;backdrop-filter:none!important}
+@media(max-width:760px){.refresh-gallery{min-height:620px!important;padding:18px!important;align-content:end!important}.refresh-gallery>.refresh-shot{min-height:150px!important}}
