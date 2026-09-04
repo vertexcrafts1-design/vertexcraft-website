@@ -1,0 +1,38 @@
+name: Upscale website Minecraft scenes
+
+on:
+  push:
+    paths:
+      - '.github/UPSCALE_IMAGES'
+
+permissions:
+  contents: write
+
+jobs:
+  upscale:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install ImageMagick
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y imagemagick
+      - name: Build clean 1920x1080 assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          convert assets/vertex-castle.jpg -filter Lanczos -resize '1920x1080^' -gravity center -extent 1920x1080 -adaptive-sharpen '0x0.8' -strip -quality 90 assets/vertex-castle-hq.jpg
+          convert assets/vertex-portal.jpg -filter Lanczos -resize '1920x1080^' -gravity center -extent 1920x1080 -adaptive-sharpen '0x0.8' -strip -quality 90 assets/vertex-portal-hq.jpg
+          convert assets/vertex-valley.jpg -filter Lanczos -resize '1920x1080^' -gravity center -extent 1920x1080 -adaptive-sharpen '0x0.8' -strip -quality 90 assets/vertex-valley-hq.jpg
+          identify assets/vertex-*-hq.jpg
+          rm -f .github/UPSCALE_IMAGES
+      - name: Commit generated assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/vertex-castle-hq.jpg assets/vertex-portal-hq.jpg assets/vertex-valley-hq.jpg .github/UPSCALE_IMAGES
+          git commit -m "Generate clean 1080p Minecraft background assets [skip ci]" || exit 0
+          git push
