@@ -1,0 +1,35 @@
+name: Build HQ Minecraft images
+
+on:
+  push:
+    paths:
+      - 'image-parts/READY'
+
+permissions:
+  contents: write
+
+jobs:
+  build-images:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Decode HQ image assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat image-parts/castle.* | base64 -d > assets/vertex-castle.jpg
+          cat image-parts/portal.* | base64 -d > assets/vertex-portal.jpg
+          cat image-parts/valley.* | base64 -d > assets/vertex-valley.jpg
+          file assets/vertex-castle.jpg assets/vertex-portal.jpg assets/vertex-valley.jpg
+          rm -rf image-parts
+      - name: Commit HQ assets
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/vertex-castle.jpg assets/vertex-portal.jpg assets/vertex-valley.jpg image-parts
+          git commit -m "Replace Minecraft scenes with HQ originals [skip ci]" || exit 0
+          git push
