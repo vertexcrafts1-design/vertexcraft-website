@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="referrer" content="strict-origin-when-cross-origin"><meta name="robots" content="noindex,nofollow,noarchive"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; object-src 'none'; script-src 'self' 'sha256-SOB7ta4NslZFa/jbkl4CeVYZx2ec7KpHYia0lafc4PU='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://vertexcraft-api.vertexcrafts1.workers.dev; font-src 'self'; frame-src 'none'; form-action 'self'; upgrade-insecure-requests">
   <meta name="theme-color" content="#0a0a12">
   <meta name="description" content="VertexCraft Dashboard">
   <link rel="icon" href="assets/logo.png">
@@ -16,7 +16,7 @@
       <span class="portal-badge">GESCHÜTZTER BEREICH</span>
       <h1>Dashboard Login</h1>
       <p>Melde dich mit deinem VertexCraft-Teamkonto an.</p>
-      <form id="dashboardLoginForm" action="javascript:void(0);" novalidate>
+      <form id="dashboardLoginForm"  novalidate>
         <label><span>Benutzername</span><input id="loginUsername" autocomplete="username" required></label>
         <label><span>Passwort</span><input id="loginPassword" type="password" autocomplete="current-password" required></label>
         <button class="primary-button" type="submit">Anmelden</button>
@@ -446,6 +446,11 @@ function money(value){
   return new Intl.NumberFormat('de-DE',{maximumFractionDigits:2}).format(number)+' Coins';
 }
 
+function safeCount(value){
+  const number=Number(value);
+  return Number.isFinite(number)&&number>=0?Math.floor(number):0;
+}
+
 function relativeSeen(timestamp, online){
   if(online)return 'Jetzt online';
   if(!timestamp)return 'Noch nie gesehen';
@@ -469,7 +474,7 @@ function renderPlayerSuggestions(items){
   box.innerHTML=items.map((p,index)=>`<button class="player-suggestion-card" data-player-index="${index}">
     <div class="player-suggestion-avatar">${esc((p.name||'?')[0].toUpperCase())}<span class="player-online-dot ${p.online?'online':'offline'}"></span></div>
     <div class="player-suggestion-main"><strong>${esc(p.name||'Unbekannt')}</strong><span>${esc(p.rank||'Member')} · ${money(p.balance)}</span></div>
-    <div class="player-suggestion-side"><b>${p.activePunishments||0} aktiv</b><small>${relativeSeen(p.lastPlayed,p.online)}</small></div>
+    <div class="player-suggestion-side"><b>${safeCount(p.activePunishments)} aktiv</b><small>${relativeSeen(p.lastPlayed,p.online)}</small></div>
   </button>`).join('');
 }
 
@@ -505,8 +510,8 @@ async function openPlayerProfile(lookup){
       <div class="player-profile-stat-grid">
         <article><span>Kontostand</span><strong>${money(p.balance)}</strong><small>Vault / VertexEconomy</small></article>
         <article><span>Letzter Besuch</span><strong>${relativeSeen(p.lastPlayed,p.online)}</strong><small>${p.lastPlayed?date(p.lastPlayed):'Keine Daten'}</small></article>
-        <article><span>Strafen gesamt</span><strong>${counts.total||0}</strong><small>${counts.active||0} aktuell aktiv</small></article>
-        <article><span>Bans / Warns</span><strong>${counts.bans||0} / ${counts.warns||0}</strong><small>Gespeicherte Historie</small></article>
+        <article><span>Strafen gesamt</span><strong>${safeCount(counts.total)}</strong><small>${safeCount(counts.active)} aktuell aktiv</small></article>
+        <article><span>Bans / Warns</span><strong>${safeCount(counts.bans)} / ${safeCount(counts.warns)}</strong><small>Gespeicherte Historie</small></article>
       </div>
       <div class="player-profile-sections">
         <section><div class="player-section-head"><div><span>ACCOUNT</span><h4>Spielerinformationen</h4></div></div>

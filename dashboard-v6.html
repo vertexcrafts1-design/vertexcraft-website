@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="referrer" content="no-referrer"><meta name="robots" content="noindex,nofollow,noarchive"><meta http-equiv="refresh" content="0;url=dashboard.html"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; object-src 'none'; form-action 'none'; frame-src 'none'">
   <meta name="theme-color" content="#0a0a12">
   <meta name="description" content="VertexCraft Dashboard">
   <link rel="icon" href="assets/logo.png">
@@ -16,7 +16,7 @@
       <span class="portal-badge">GESCHÜTZTER BEREICH</span>
       <h1>Dashboard Login</h1>
       <p>Melde dich mit deinem VertexCraft-Teamkonto an.</p>
-      <form id="dashboardLoginForm" action="javascript:void(0);" novalidate>
+      <form id="dashboardLoginForm"  novalidate>
         <label><span>Benutzername</span><input id="loginUsername" autocomplete="username" required></label>
         <label><span>Passwort</span><input id="loginPassword" type="password" autocomplete="current-password" required></label>
         <button class="primary-button" type="submit">Anmelden</button>
@@ -251,7 +251,7 @@
       <p>Die Adresse wird nur in deinem Browser gespeichert.</p>
       <label class="dashboard-setting-label">
         <span>API-Basisadresse</span>
-        <input id="apiBaseInput" value="http://176.9.113.40:25798">
+        <input id="apiBaseInput" value="https://vertexcraft-api.vertexcrafts1.workers.dev">
       </label>
       <div class="api-settings-actions">
         <button class="primary-button" id="saveApiSettings">Speichern & testen</button>
