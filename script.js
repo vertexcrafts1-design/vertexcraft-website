@@ -3,6 +3,9 @@ const toast=document.getElementById("toast");
 const menuButton=document.getElementById("menuButton");
 const mainNav=document.getElementById("mainNav");
 const year=document.getElementById("year");
+const imageMap={'assets/vertex-hero-v2.png':'assets/vertex-hero-fixed.jpg','assets/vertex-build-v2.png':'assets/vertex-build-fixed.jpg','assets/vertex-explore-v2.png':'assets/vertex-explore-fixed.jpg','assets/battlepass-v2.png':'assets/battlepass-fixed.jpg'};
+document.querySelectorAll('img[src]').forEach(img=>{const fixed=imageMap[img.getAttribute('src')];if(fixed)img.src=fixed});
+const fixCss=document.createElement('link');fixCss.rel='stylesheet';fixCss.href='image-fix.css?v=20260905-complete';document.head.append(fixCss);
 copyButtons.forEach(button=>button.addEventListener("click",async()=>{
   const ip=button.dataset.ip;
   try{await navigator.clipboard.writeText(ip);toast.textContent="Server-IP kopiert!";}

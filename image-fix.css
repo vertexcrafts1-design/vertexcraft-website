@@ -1,0 +1,2 @@
+body.home-refresh{background-image:linear-gradient(rgba(6,9,7,.83),rgba(6,9,7,.96)),url('assets/vertex-scroll-fixed.jpg')!important}
+body:not(.home-refresh):not(.dashboard-body){background-image:linear-gradient(rgba(6,9,7,.88),rgba(6,9,7,.97)),url('assets/vertex-scroll-fixed.jpg')!important}
