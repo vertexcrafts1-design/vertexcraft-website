@@ -44,9 +44,15 @@ public sealed class MigrationValidationTests
     }
 
     [Fact]
-    public async Task LatestSnapshot_Is_Migrated_When_Snapshot_Is_Known()
+    public async Task LatestSnapshot_Is_Migrated_When_Snapshots_Are_Allowed()
     {
-        var profile = new InstanceProfile { Version = "latest-snapshot", Loader = "Quilt", LoaderVersion = "0.29.0" };
+        var profile = new InstanceProfile
+        {
+            Version = "latest-snapshot",
+            Loader = "Quilt",
+            LoaderVersion = "0.29.0",
+            AllowSnapshots = true
+        };
         var sut = new InstanceMigrationService();
 
         var result = await sut.MigrateAsync(
@@ -59,6 +65,23 @@ public sealed class MigrationValidationTests
         Assert.Equal("26w37a", profile.Version);
         Assert.True(profile.IsValid);
         Assert.True(result.Changed);
+    }
+
+    [Fact]
+    public async Task LatestSnapshot_Remains_Invalid_When_Snapshots_Are_Not_Allowed()
+    {
+        var profile = new InstanceProfile { Version = "latest-snapshot", Loader = "Vanilla" };
+        var sut = new InstanceMigrationService();
+
+        await sut.MigrateAsync(
+            profile,
+            "1.21.11",
+            "26w37a",
+            ["1.21.11", "26w37a"],
+            (_, _) => Task.FromResult<IReadOnlyList<string>>(["Standard"]));
+
+        Assert.Equal("latest-snapshot", profile.Version);
+        Assert.False(profile.IsValid);
     }
 
     [Theory]
