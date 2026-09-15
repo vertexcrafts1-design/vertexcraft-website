@@ -14,7 +14,7 @@ permissions:
 jobs:
   build-windows:
     runs-on: windows-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,6 +35,12 @@ jobs:
 
       - name: Build client
         run: dotnet build lumina-v1/src/Lumina.Client/Lumina.Client.csproj -c Release -r win-x64 --no-restore
+
+      - name: Restore launch smoke test
+        run: dotnet restore lumina-v1/tools/Lumina.LaunchSmoke/Lumina.LaunchSmoke.csproj
+
+      - name: Verify Minecraft + Mojang Java pipeline
+        run: dotnet run --project lumina-v1/tools/Lumina.LaunchSmoke/Lumina.LaunchSmoke.csproj -c Release --no-restore
 
       - name: Publish single EXE
         run: dotnet publish lumina-v1/src/Lumina.Client/Lumina.Client.csproj -c Release -r win-x64 --self-contained true --no-restore -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishReadyToRun=false -p:DebugType=None -p:DebugSymbols=false -o lumina-v1/publish
