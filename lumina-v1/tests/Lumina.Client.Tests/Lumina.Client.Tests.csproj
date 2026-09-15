@@ -15,5 +15,8 @@
   <ItemGroup>
     <ProjectReference Include="../../src/Lumina.Client/Lumina.Client.csproj" />
     <ProjectReference Include="../../src/Lumina.Core/Lumina.Core.csproj" />
+    <None Include="../../src/Lumina.Client/App.xaml"
+          Link="ThemeUnderTest.xaml"
+          CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
