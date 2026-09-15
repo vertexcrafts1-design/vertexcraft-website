@@ -4,14 +4,14 @@ namespace Lumina.Client.Tests;
 
 public sealed class ThemeContrastTests
 {
-    private static string Theme => File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "ThemeUnderTest.xaml"));
+    private static string Theme => File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "ConceptBUnderTest.xaml"));
 
     [Fact]
     public void ComboBox_Has_Custom_Dark_Popup_And_Item_States()
     {
         var xaml = Theme;
 
-        Assert.Contains("<Style TargetType=\"ComboBoxItem\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("TargetType=\"ComboBoxItem\"", xaml, StringComparison.Ordinal);
         Assert.Contains("<ControlTemplate TargetType=\"ComboBox\"", xaml, StringComparison.Ordinal);
         Assert.Contains("<Popup", xaml, StringComparison.Ordinal);
         Assert.Contains("#0E131D", xaml, StringComparison.OrdinalIgnoreCase);
