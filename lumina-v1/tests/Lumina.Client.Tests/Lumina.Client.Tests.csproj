@@ -24,5 +24,8 @@
     <None Include="../../src/Lumina.Client/MainWindow.xaml"
           Link="MainWindowUnderTest.xaml"
           CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../src/Lumina.Client/Ui/DiscoverStorefrontView.xaml"
+          Link="DiscoverStorefrontUnderTest.xaml"
+          CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
