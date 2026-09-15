@@ -1,10 +1,10 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using CmlLib.Core.ProcessBuilder;
 using Lumina.Client.Services;
 using Lumina.Core;
 using Microsoft.Win32;
@@ -21,16 +21,20 @@ public partial class MainWindow : Window
     private readonly StatsService _statsService;
     private readonly MicrosoftAccountService _accountService;
     private readonly MinecraftService _minecraftService;
+    private readonly MinecraftCatalogService _catalogService;
+    private readonly ModrinthService _modrinthService;
 
     private readonly ObservableCollection<InstanceProfile> _instances = [];
     private readonly ObservableCollection<ContentItem> _content = [];
-    private readonly ObservableCollection<string> _recent = [];
+    private readonly ObservableCollection<GalleryProject> _gallery = [];
     private readonly ObservableCollection<string> _downloadLog = [];
 
     private AppSettings _settings;
     private ContentKind _libraryKind = ContentKind.Mod;
     private bool _initializing = true;
     private bool _launching;
+    private bool _catalogLoading;
+    private bool _galleryLoading;
 
     private InstanceProfile? SelectedInstance => InstancesList.SelectedItem as InstanceProfile;
 
@@ -46,19 +50,22 @@ public partial class MainWindow : Window
         _statsService = new StatsService(_paths);
         _accountService = new MicrosoftAccountService();
         _minecraftService = new MinecraftService(_paths);
+        _catalogService = new MinecraftCatalogService(_paths);
+        _modrinthService = new ModrinthService();
         _settings = _settingsService.Load();
 
         InstancesList.ItemsSource = _instances;
         ContentList.ItemsSource = _content;
-        RecentList.ItemsSource = _recent;
+        GalleryList.ItemsSource = _gallery;
         DownloadLog.ItemsSource = _downloadLog;
+        NewInstanceLoaderCombo.ItemsSource = MinecraftCatalogService.Loaders;
 
         _minecraftService.StatusChanged += status => Dispatcher.Invoke(() => SetDownloadStatus(status));
-        _minecraftService.ProgressChanged += progress => Dispatcher.Invoke(() => DownloadProgress.Value = progress);
+        _minecraftService.ProgressChanged += progress => Dispatcher.Invoke(() => SetProgress(progress));
+        _minecraftService.LogLine += line => Dispatcher.Invoke(() => AddLog(line));
 
         LoadSettingsIntoUi();
         RefreshInstances();
-        RefreshStats();
         ShowPage("Home");
         _initializing = false;
 
@@ -67,6 +74,8 @@ public partial class MainWindow : Window
             SetDownloadStatus("Prüfe Microsoft-Anmeldung …");
             await _accountService.TrySilentAsync();
             UpdateAccountUi();
+            SetDownloadStatus("Lade Minecraft-Katalog …");
+            await LoadMinecraftVersionsAsync();
             SetDownloadStatus("Bereit");
         };
     }
@@ -82,38 +91,70 @@ public partial class MainWindow : Window
     }
 
     private void Minimize_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
-    private void Maximize_Click(object sender, RoutedEventArgs e) => WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+    private void Maximize_Click(object sender, RoutedEventArgs e) =>
+        WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
     private void Close_Click(object sender, RoutedEventArgs e) => Close();
+    private void TopAccount_Click(object sender, RoutedEventArgs e) => ShowPage("Account");
 
     private void Nav_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is Button button && button.Tag is string page) ShowPage(page);
+        if (sender is Button { Tag: string page }) ShowPage(page);
     }
 
     private void ShowPage(string page)
     {
-        var pages = new UIElement[] { HomePage, InstancesPage, LibraryPage, LabPage, DownloadsPage, SettingsPage, AccountPage };
+        var pages = new UIElement[]
+        {
+            HomePage, DiscoverPage, InstancesPage, LibraryPage, DownloadsPage, SettingsPage, AccountPage
+        };
         foreach (var element in pages) element.Visibility = Visibility.Collapsed;
 
         switch (page)
         {
-            case "Instances": InstancesPage.Visibility = Visibility.Visible; PageTitle.Text = "Instanzen"; break;
-            case "Library": LibraryPage.Visibility = Visibility.Visible; PageTitle.Text = "Bibliothek"; RefreshContent(); break;
-            case "Lab": LabPage.Visibility = Visibility.Visible; PageTitle.Text = "LUMINA Lab"; break;
-            case "Downloads": DownloadsPage.Visibility = Visibility.Visible; PageTitle.Text = "Downloads"; break;
-            case "Settings": SettingsPage.Visibility = Visibility.Visible; PageTitle.Text = "Einstellungen"; break;
-            case "Account": AccountPage.Visibility = Visibility.Visible; PageTitle.Text = "Account"; UpdateAccountUi(); break;
-            default: HomePage.Visibility = Visibility.Visible; PageTitle.Text = "Home"; RefreshStats(); break;
+            case "Discover":
+                DiscoverPage.Visibility = Visibility.Visible;
+                PageTitle.Text = "Discover";
+                UpdateDiscoverContext();
+                _ = SearchGalleryAsync();
+                break;
+            case "Instances":
+                InstancesPage.Visibility = Visibility.Visible;
+                PageTitle.Text = "Instanzen";
+                break;
+            case "Library":
+                LibraryPage.Visibility = Visibility.Visible;
+                PageTitle.Text = "Bibliothek";
+                RefreshContent();
+                break;
+            case "Downloads":
+                DownloadsPage.Visibility = Visibility.Visible;
+                PageTitle.Text = "Downloads";
+                break;
+            case "Settings":
+                SettingsPage.Visibility = Visibility.Visible;
+                PageTitle.Text = "Einstellungen";
+                break;
+            case "Account":
+                AccountPage.Visibility = Visibility.Visible;
+                PageTitle.Text = "Account";
+                UpdateAccountUi();
+                break;
+            default:
+                HomePage.Visibility = Visibility.Visible;
+                PageTitle.Text = "Home";
+                RefreshStats();
+                break;
         }
 
         foreach (var button in SidebarNav.Children.OfType<Button>())
         {
-            var active = string.Equals(button.Tag as string, page, StringComparison.OrdinalIgnoreCase) ||
-                         (page == "Home" && string.Equals(button.Tag as string, "Home", StringComparison.OrdinalIgnoreCase));
-            button.Background = active ? Brush("#1A2030") : Brushes.Transparent;
-            button.Foreground = active ? Brushes.White : Brush("#A9B0C2");
+            var active = string.Equals(button.Tag as string, page, StringComparison.OrdinalIgnoreCase);
+            button.Background = active ? Brush("#1B2130") : Brushes.Transparent;
+            button.Foreground = active ? Brushes.White : Brush("#707A91");
         }
     }
+
+    private void GoDiscover_Click(object sender, RoutedEventArgs e) => ShowPage("Discover");
 
     private void RefreshInstances(string? selectId = null)
     {
@@ -124,6 +165,8 @@ public partial class MainWindow : Window
         if (_instances.Count == 0)
         {
             var created = _instanceService.Create("LUMINA Vanilla", "1.21.1", "Vanilla");
+            created.LoaderVersion = "Standard";
+            _instanceService.Update(created);
             _instances.Add(created);
             wanted = created.Id;
         }
@@ -142,6 +185,7 @@ public partial class MainWindow : Window
         if (!_initializing) _settingsService.Save(_settings);
         UpdateSelectedInstanceUi();
         RefreshContent();
+        UpdateDiscoverContext();
     }
 
     private void UpdateSelectedInstanceUi()
@@ -150,34 +194,143 @@ public partial class MainWindow : Window
         if (profile is null) return;
 
         HeroInstanceName.Text = profile.Name;
-        HeroInstanceMeta.Text = profile.Subtitle;
-        HeroPreset.Text = profile.Preset;
-        HeroSafeLaunch.Text = _settings.SafeLaunch ? "  AKTIV" : "  AUS";
-        HeroSafeLaunch.Foreground = _settings.SafeLaunch ? Brush("#9AE6B4") : Brush("#F5A0AA");
+        HeroInstanceMeta.Text = profile.Subtitle + LoaderVersionSuffix(profile);
+        HeroVersionChip.Text = profile.Version;
+        HeroLoaderChip.Text = profile.Loader;
+        HeroSafeLaunch.Text = _settings.SafeLaunch ? "AKTIV" : "AUS";
+        HeroSafeLaunch.Foreground = _settings.SafeLaunch ? Brush("#54E1A5") : Brush("#FF7B8C");
+        HeroRam.Text = $"{_settings.RamMb / 1024d:0.#} GB";
+        HeroLastPlayed.Text = profile.LastPlayedUtc is null
+            ? "Noch nie"
+            : profile.LastPlayedUtc.Value.ToLocalTime().ToString("dd.MM. HH:mm");
+
         InstanceDetailName.Text = profile.Name;
-        InstanceDetailMeta.Text = profile.Subtitle;
-        InstanceDetailPreset.Text = profile.Preset;
+        InstanceDetailMeta.Text = profile.Subtitle + LoaderVersionSuffix(profile);
+        InstanceVersionText.Text = profile.Version;
+        InstanceLoaderText.Text = string.IsNullOrWhiteSpace(profile.LoaderVersion) || profile.LoaderVersion == "Standard"
+            ? profile.Loader
+            : $"{profile.Loader} {profile.LoaderVersion}";
         InstanceDetailLaunches.Text = profile.Launches.ToString();
         LibraryInstanceName.Text = $"Content für {profile.Name}";
 
-        var contentCount = _contentService.Get(profile.Id, ContentKind.Mod).Count
-                         + _contentService.Get(profile.Id, ContentKind.ResourcePack).Count
-                         + _contentService.Get(profile.Id, ContentKind.ShaderPack).Count;
+        var contentCount = ContentCount(profile.Id);
+        HeroContentMini.Text = contentCount.ToString();
         HomeContentCount.Text = contentCount.ToString();
-        HeroContentMini.Text = $"  {contentCount} Dateien";
         HomeLaunchCount.Text = profile.Launches.ToString();
     }
 
-    private void NewInstance_Click(object sender, RoutedEventArgs e) => NewInstancePanel.Visibility = Visibility.Visible;
+    private static string LoaderVersionSuffix(InstanceProfile profile) =>
+        string.IsNullOrWhiteSpace(profile.LoaderVersion) || profile.LoaderVersion == "Standard"
+            ? ""
+            : $" · {profile.LoaderVersion}";
+
+    private int ContentCount(string id) =>
+        _contentService.Get(id, ContentKind.Mod).Count +
+        _contentService.Get(id, ContentKind.ResourcePack).Count +
+        _contentService.Get(id, ContentKind.ShaderPack).Count;
+
+    private async void NewInstance_Click(object sender, RoutedEventArgs e)
+    {
+        NewInstancePanel.Visibility = Visibility.Visible;
+        if (NewInstanceVersionCombo.Items.Count == 0) await LoadMinecraftVersionsAsync();
+        if (NewInstanceLoaderCombo.SelectedItem is null) NewInstanceLoaderCombo.SelectedItem = "Fabric";
+        await LoadLoaderVersionsAsync();
+    }
+
     private void CancelCreate_Click(object sender, RoutedEventArgs e) => NewInstancePanel.Visibility = Visibility.Collapsed;
+
+    private async Task LoadMinecraftVersionsAsync()
+    {
+        if (_catalogLoading) return;
+        _catalogLoading = true;
+        try
+        {
+            var currentName = (NewInstanceVersionCombo.SelectedItem as MinecraftVersionChoice)?.Name;
+            var versions = await _catalogService.GetMinecraftVersionsAsync(ShowSnapshotsCheck.IsChecked == true);
+            NewInstanceVersionCombo.ItemsSource = versions;
+            NewInstanceVersionCombo.SelectedItem = versions.FirstOrDefault(v => v.Name == currentName)
+                                                 ?? versions.FirstOrDefault(v => v.Name == "1.21.1")
+                                                 ?? versions.FirstOrDefault();
+            if (NewInstanceLoaderCombo.SelectedItem is null)
+                NewInstanceLoaderCombo.SelectedItem = "Fabric";
+            await LoadLoaderVersionsAsync();
+        }
+        catch (Exception ex)
+        {
+            AddLog("Minecraft-Katalog konnte nicht geladen werden: " + ex.Message);
+            LoaderAvailabilityText.Text = "Minecraft-Versionen konnten nicht geladen werden. Prüfe deine Internetverbindung.";
+        }
+        finally
+        {
+            _catalogLoading = false;
+        }
+    }
+
+    private async Task LoadLoaderVersionsAsync()
+    {
+        if (_catalogLoading && NewInstanceVersionCombo.SelectedItem is null) return;
+        if (NewInstanceVersionCombo.SelectedItem is not MinecraftVersionChoice version) return;
+        if (NewInstanceLoaderCombo.SelectedItem is not string loader) return;
+
+        LoaderAvailabilityText.Text = $"Prüfe {loader} für Minecraft {version.Name} …";
+        NewInstanceLoaderVersionCombo.ItemsSource = null;
+        try
+        {
+            var versions = await _catalogService.GetLoaderVersionsAsync(version.Name, loader);
+            NewInstanceLoaderVersionCombo.ItemsSource = versions;
+            NewInstanceLoaderVersionCombo.SelectedItem = versions.FirstOrDefault();
+            LoaderAvailabilityText.Text = versions.Count == 0
+                ? $"{loader} ist für Minecraft {version.Name} nicht verfügbar."
+                : loader == "Vanilla"
+                    ? "Vanilla benötigt keinen zusätzlichen Loader."
+                    : $"{versions.Count} {loader}-Versionen verfügbar · empfohlen: {versions[0]}";
+        }
+        catch (Exception ex)
+        {
+            LoaderAvailabilityText.Text = $"Loader-Abfrage fehlgeschlagen: {ex.Message}";
+        }
+    }
+
+    private async void NewInstanceVersion_Changed(object sender, SelectionChangedEventArgs e)
+    {
+        if (_initializing) return;
+        await LoadLoaderVersionsAsync();
+    }
+
+    private async void NewInstanceLoader_Changed(object sender, SelectionChangedEventArgs e)
+    {
+        if (_initializing) return;
+        await LoadLoaderVersionsAsync();
+    }
+
+    private async void ShowSnapshots_Changed(object sender, RoutedEventArgs e)
+    {
+        if (_initializing) return;
+        await LoadMinecraftVersionsAsync();
+    }
 
     private void CreateInstance_Click(object sender, RoutedEventArgs e)
     {
-        var loader = (NewInstanceLoader.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Fabric";
-        var profile = _instanceService.Create(NewInstanceName.Text, NewInstanceVersion.Text, loader);
+        if (NewInstanceVersionCombo.SelectedItem is not MinecraftVersionChoice version ||
+            NewInstanceLoaderCombo.SelectedItem is not string loader)
+        {
+            MessageBox.Show(this, "Wähle zuerst Minecraft-Version und Loader.", "LUMINA", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        var loaderVersion = NewInstanceLoaderVersionCombo.SelectedItem?.ToString() ?? "";
+        if (loader != "Vanilla" && string.IsNullOrWhiteSpace(loaderVersion))
+        {
+            MessageBox.Show(this, $"{loader} ist für Minecraft {version.Name} nicht verfügbar.", "LUMINA", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        var profile = _instanceService.Create(NewInstanceName.Text, version.Name, loader);
+        profile.LoaderVersion = loader == "Vanilla" ? "Standard" : loaderVersion;
+        _instanceService.Update(profile);
         NewInstancePanel.Visibility = Visibility.Collapsed;
         RefreshInstances(profile.Id);
-        AddLog($"Instanz erstellt: {profile.Name} ({profile.Subtitle})");
+        AddLog($"Instanz erstellt: {profile.Name} · {profile.Version} · {profile.Loader} {profile.LoaderVersion}");
     }
 
     private void DuplicateInstance_Click(object sender, RoutedEventArgs e)
@@ -203,9 +356,13 @@ public partial class MainWindow : Window
             MessageBox.Show(this, "Mindestens eine Instanz muss bestehen bleiben.", "LUMINA", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
+
         var deleting = SelectedInstance;
-        var answer = MessageBox.Show(this, $"'{deleting.Name}' inklusive eigener Mods, Packs und Spiel-Dateien wirklich löschen?", "Instanz löschen", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+        var answer = MessageBox.Show(this,
+            $"'{deleting.Name}' inklusive Mods, Packs, Welten und Configs wirklich löschen?",
+            "Instanz löschen", MessageBoxButton.YesNo, MessageBoxImage.Warning);
         if (answer != MessageBoxResult.Yes) return;
+
         _instanceService.Delete(deleting.Id);
         RefreshInstances();
         AddLog($"Instanz gelöscht: {deleting.Name}");
@@ -217,17 +374,113 @@ public partial class MainWindow : Window
         OpenFolder(_paths.GameDirectory(SelectedInstance.Id));
     }
 
-    private void LibraryKind_Click(object sender, RoutedEventArgs e)
+    private void UpdateDiscoverContext()
     {
-        var tag = (sender as Button)?.Tag?.ToString();
-        _libraryKind = tag switch
+        if (SelectedInstance is null) return;
+        DiscoverContext.Text = $"{SelectedInstance.Name}  ·  Minecraft {SelectedInstance.Version}  ·  {SelectedInstance.Loader}";
+    }
+
+    private async void DiscoverSearch_Click(object sender, RoutedEventArgs e) => await SearchGalleryAsync();
+
+    private async void DiscoverSearch_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter) await SearchGalleryAsync();
+    }
+
+    private async void DiscoverFilter_Changed(object sender, SelectionChangedEventArgs e)
+    {
+        if (_initializing || DiscoverKind is null || DiscoverSort is null) return;
+        await SearchGalleryAsync();
+    }
+
+    private string SelectedGalleryKind() => (DiscoverKind.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Mods";
+    private string SelectedGallerySort() => (DiscoverSort.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "downloads";
+
+    private async Task SearchGalleryAsync()
+    {
+        if (_galleryLoading || SelectedInstance is null || DiscoverKind is null) return;
+        _galleryLoading = true;
+        DiscoverEmpty.Visibility = Visibility.Collapsed;
+        try
         {
-            "ResourcePacks" => ContentKind.ResourcePack,
-            "ShaderPacks" => ContentKind.ShaderPack,
+            var kind = SelectedGalleryKind();
+            if (kind == "Mods" && SelectedInstance.Loader.Equals("Vanilla", StringComparison.OrdinalIgnoreCase))
+            {
+                _gallery.Clear();
+                DiscoverEmptyText.Text = "Vanilla lädt keine normalen Modloader-Mods. Erstelle eine Fabric-, Forge-, NeoForge- oder Quilt-Instanz.";
+                DiscoverEmpty.Visibility = Visibility.Visible;
+                return;
+            }
+
+            SetDownloadStatus("Durchsuche Mod Gallery …");
+            var projects = await _modrinthService.SearchAsync(
+                DiscoverSearch.Text.Trim(), kind, SelectedInstance, SelectedGallerySort());
+            _gallery.Clear();
+            foreach (var project in projects) _gallery.Add(project);
+            DiscoverEmptyText.Text = "Keine kompatiblen Projekte gefunden.";
+            DiscoverEmpty.Visibility = _gallery.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+            SetDownloadStatus("Bereit");
+        }
+        catch (Exception ex)
+        {
+            _gallery.Clear();
+            DiscoverEmptyText.Text = "Gallery konnte nicht geladen werden.";
+            DiscoverEmpty.Visibility = Visibility.Visible;
+            AddLog("Mod Gallery: " + ex.Message);
+            SetDownloadStatus("Gallery-Fehler");
+        }
+        finally
+        {
+            _galleryLoading = false;
+        }
+    }
+
+    private async void GalleryInstall_Click(object sender, RoutedEventArgs e)
+    {
+        if (SelectedInstance is null || sender is not Button { Tag: GalleryProject project } button) return;
+        button.IsEnabled = false;
+        var original = button.Content;
+        button.Content = "Installiere …";
+        try
+        {
+            var progress = new Progress<string>(message =>
+            {
+                SetDownloadStatus(message);
+                AddLog(message);
+            });
+            var result = await _modrinthService.InstallAsync(project, SelectedGalleryKind(), SelectedInstance, _paths, progress);
+            AddLog($"Gallery installiert: {project.Title} · {result.FilesInstalled} Datei(en)");
+            RefreshContent();
+            UpdateSelectedInstanceUi();
+            SetDownloadStatus($"{project.Title} installiert");
+            button.Content = "Installiert ✓";
+        }
+        catch (Exception ex)
+        {
+            AddLog($"Gallery-Installation fehlgeschlagen: {ex}");
+            MessageBox.Show(this, ex.Message, "LUMINA Mod Gallery", MessageBoxButton.OK, MessageBoxImage.Error);
+            button.Content = original;
+        }
+        finally
+        {
+            button.IsEnabled = true;
+        }
+    }
+
+    private void LibraryKind_Changed(object sender, SelectionChangedEventArgs e)
+    {
+        if (LibraryKindCombo?.SelectedItem is not ComboBoxItem item) return;
+        _libraryKind = item.Content?.ToString() switch
+        {
+            "Resource Packs" => ContentKind.ResourcePack,
+            "Shaders" => ContentKind.ShaderPack,
             _ => ContentKind.Mod
         };
-        _settings.LibraryKind = tag ?? "Mods";
-        _settingsService.Save(_settings);
+        if (!_initializing)
+        {
+            _settings.LibraryKind = item.Content?.ToString() ?? "Mods";
+            _settingsService.Save(_settings);
+        }
         RefreshContent();
     }
 
@@ -236,7 +489,12 @@ public partial class MainWindow : Window
         if (SelectedInstance is null || ContentList is null) return;
         _content.Clear();
         foreach (var item in _contentService.Get(SelectedInstance.Id, _libraryKind)) _content.Add(item);
-        LibraryDropText.Text = _libraryKind == ContentKind.Mod ? "JAR-Mods hier ablegen" : _libraryKind == ContentKind.ResourcePack ? "ZIP-Resourcepacks hier ablegen" : "ZIP-Shaderpacks hier ablegen";
+        LibraryDropText.Text = _libraryKind switch
+        {
+            ContentKind.Mod => "JAR-Mods hier hineinziehen",
+            ContentKind.ResourcePack => "ZIP-Resourcepacks hier hineinziehen",
+            _ => "ZIP-Shaderpacks hier hineinziehen"
+        };
         UpdateSelectedInstanceUi();
     }
 
@@ -248,8 +506,7 @@ public partial class MainWindow : Window
             Multiselect = true,
             Filter = _libraryKind == ContentKind.Mod ? "Minecraft Mods (*.jar)|*.jar" : "Minecraft Packs (*.zip)|*.zip"
         };
-        if (dialog.ShowDialog(this) != true) return;
-        ImportContent(dialog.FileNames);
+        if (dialog.ShowDialog(this) == true) ImportContent(dialog.FileNames);
     }
 
     private void Library_DragOver(object sender, DragEventArgs e)
@@ -289,8 +546,7 @@ public partial class MainWindow : Window
     private void DeleteContent_Click(object sender, RoutedEventArgs e)
     {
         if (ContentList.SelectedItem is not ContentItem item) return;
-        var result = MessageBox.Show(this, $"{item.Name} aus dieser Instanz entfernen?", "Content entfernen", MessageBoxButton.YesNo, MessageBoxImage.Question);
-        if (result != MessageBoxResult.Yes) return;
+        if (MessageBox.Show(this, $"{item.Name} entfernen?", "LUMINA", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
         _contentService.Delete(item.Path);
         RefreshContent();
     }
@@ -301,21 +557,97 @@ public partial class MainWindow : Window
         OpenFolder(_contentService.Folder(SelectedInstance.Id, _libraryKind));
     }
 
-    private void Preset_Click(object sender, RoutedEventArgs e)
+    private async void Play_Click(object sender, RoutedEventArgs e)
     {
-        if (SelectedInstance is null || sender is not Button button || button.Tag is not string presetName) return;
+        if (_launching || SelectedInstance is null) return;
         var profile = SelectedInstance;
-        profile.Preset = presetName;
-        _instanceService.Update(profile);
-        var preset = PresetService.Get(presetName);
-        if (!_settings.SmartMemory)
+
+        if (!_accountService.IsSignedIn && !await LoginInteractiveAsync()) return;
+        if (_accountService.Session is null) return;
+
+        _launching = true;
+        HomePlayButton.IsEnabled = false;
+        SetProgress(0);
+        ShowPage("Downloads");
+        AddLog("────────────────────────────────────────");
+        AddLog($"LUMINA Start · {profile.Name}");
+        var record = new LaunchRecord
         {
-            _settings.RamMb = preset.RamMb;
-            RamSlider.Value = preset.RamMb;
+            StartedUtc = DateTime.UtcNow,
+            InstanceId = profile.Id,
+            InstanceName = profile.Name
+        };
+
+        try
+        {
+            if (_settings.SmartMemory)
+            {
+                var available = Math.Max(0, GC.GetGCMemoryInfo().TotalAvailableMemoryBytes);
+                _settings.RamMb = PresetService.SmartRamMb((ulong)available);
+                _settingsService.Save(_settings);
+                Dispatcher.Invoke(() =>
+                {
+                    RamSlider.Value = Math.Clamp(_settings.RamMb, 2048, 16384);
+                    HeroRam.Text = $"{_settings.RamMb / 1024d:0.#} GB";
+                });
+            }
+
+            if (_settings.SafeLaunch)
+            {
+                SetDownloadStatus("Erstelle Safe-Launch-Sicherung …");
+                try
+                {
+                    var snapshot = _safeLaunchService.CreateSnapshot(profile);
+                    AddLog("Safe Launch: " + snapshot);
+                }
+                catch (Exception ex)
+                {
+                    AddLog("Safe Launch konnte kein Backup erstellen: " + ex.Message);
+                }
+            }
+
+            var wrapper = await _minecraftService.LaunchAsync(profile, _settings, _accountService.Session);
+            profile.Launches++;
+            profile.LastPlayedUtc = DateTime.UtcNow;
+            _instanceService.Update(profile);
+            RefreshInstances(profile.Id);
+
+            wrapper.Exited += (_, _) =>
+            {
+                record.EndedUtc = DateTime.UtcNow;
+                try { record.ExitCode = wrapper.Process.ExitCode; } catch { record.ExitCode = -1; }
+                _statsService.Add(record);
+                Dispatcher.Invoke(() =>
+                {
+                    RefreshStats();
+                    SetDownloadStatus(record.ExitCode == 0 ? "Minecraft beendet" : $"Minecraft beendet · Exit {record.ExitCode}");
+                });
+            };
+
+            if (_settings.CloseLauncherOnGameStart) Hide();
         }
-        _settingsService.Save(_settings);
-        UpdateSelectedInstanceUi();
-        AddLog($"Performance-Profil: {presetName}");
+        catch (Exception ex)
+        {
+            AddLog("STARTFEHLER: " + ex);
+            SetDownloadStatus("Minecraft konnte nicht gestartet werden");
+            MessageBox.Show(this,
+                $"Minecraft konnte nicht gestartet werden.\n\n{ex.Message}\n\nDen vollständigen Fehler findest du unter Downloads → Launch Log.",
+                "LUMINA Startfehler", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        finally
+        {
+            _launching = false;
+            HomePlayButton.IsEnabled = true;
+        }
+    }
+
+    private void RamSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+        if (RamValue is null) return;
+        RamValue.Text = $"{(int)e.NewValue} MB  ({e.NewValue / 1024d:0.#} GB)";
+        if (_initializing) return;
+        _settings.RamMb = (int)e.NewValue;
+        HeroRam.Text = $"{e.NewValue / 1024d:0.#} GB";
     }
 
     private void LabToggle_Click(object sender, RoutedEventArgs e)
@@ -326,21 +658,6 @@ public partial class MainWindow : Window
         _settings.FocusMode = FocusModeCheck.IsChecked == true;
         _settingsService.Save(_settings);
         UpdateSelectedInstanceUi();
-    }
-
-    private void SaveQuickServer_Click(object sender, RoutedEventArgs e)
-    {
-        _settings.QuickServer = QuickServerText.Text.Trim();
-        _settingsService.Save(_settings);
-        AddLog(string.IsNullOrWhiteSpace(_settings.QuickServer) ? "Quick Connect deaktiviert" : $"Quick Connect: {_settings.QuickServer}");
-    }
-
-    private void RamSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-    {
-        if (RamValue is null) return;
-        RamValue.Text = $"{(int)e.NewValue} MB  ({e.NewValue / 1024d:0.#} GB)";
-        if (_initializing) return;
-        _settings.RamMb = (int)e.NewValue;
     }
 
     private void BrowseJava_Click(object sender, RoutedEventArgs e)
@@ -355,8 +672,13 @@ public partial class MainWindow : Window
         if (int.TryParse(WidthText.Text, out var width)) _settings.Width = Math.Max(640, width);
         if (int.TryParse(HeightText.Text, out var height)) _settings.Height = Math.Max(480, height);
         _settings.JavaPath = JavaPathText.Text.Trim();
+        _settings.QuickServer = QuickServerText.Text.Trim();
         _settings.CloseLauncherOnGameStart = CloseOnStartCheck.IsChecked == true;
+        _settings.SafeLaunch = SafeLaunchCheck.IsChecked == true;
+        _settings.SmartMemory = SmartMemoryCheck.IsChecked == true;
+        _settings.FocusMode = FocusModeCheck.IsChecked == true;
         _settingsService.Save(_settings);
+        UpdateSelectedInstanceUi();
         AddLog("Einstellungen gespeichert");
         MessageBox.Show(this, "Einstellungen gespeichert.", "LUMINA", MessageBoxButton.OK, MessageBoxImage.Information);
     }
@@ -368,17 +690,20 @@ public partial class MainWindow : Window
         WidthText.Text = _settings.Width.ToString();
         HeightText.Text = _settings.Height.ToString();
         JavaPathText.Text = _settings.JavaPath;
+        QuickServerText.Text = _settings.QuickServer;
         CloseOnStartCheck.IsChecked = _settings.CloseLauncherOnGameStart;
         SafeLaunchCheck.IsChecked = _settings.SafeLaunch;
         SmartMemoryCheck.IsChecked = _settings.SmartMemory;
         FocusModeCheck.IsChecked = _settings.FocusMode;
-        QuickServerText.Text = _settings.QuickServer;
-        _libraryKind = _settings.LibraryKind switch
+
+        var libraryText = _settings.LibraryKind switch
         {
-            "ResourcePacks" => ContentKind.ResourcePack,
-            "ShaderPacks" => ContentKind.ShaderPack,
-            _ => ContentKind.Mod
+            "Resource Packs" => "Resource Packs",
+            "Shaders" => "Shaders",
+            _ => "Mods"
         };
+        foreach (var item in LibraryKindCombo.Items.OfType<ComboBoxItem>())
+            if (item.Content?.ToString() == libraryText) item.IsSelected = true;
     }
 
     private async void Login_Click(object sender, RoutedEventArgs e) => await LoginInteractiveAsync();
@@ -396,6 +721,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
+            AddLog("Microsoft Login: " + ex);
             MessageBox.Show(this, $"Microsoft-Anmeldung fehlgeschlagen:\n\n{ex.Message}", "LUMINA Account", MessageBoxButton.OK, MessageBoxImage.Error);
             UpdateAccountUi();
             return false;
@@ -406,188 +732,58 @@ public partial class MainWindow : Window
         }
     }
 
-    private async void Logout_Click(object sender, RoutedEventArgs e)
+    private async void SignOut_Click(object sender, RoutedEventArgs e)
     {
         try { await _accountService.SignOutAsync(); }
-        catch (Exception ex) { MessageBox.Show(this, ex.Message, "LUMINA", MessageBoxButton.OK, MessageBoxImage.Warning); }
+        catch (Exception ex) { AddLog("Abmelden: " + ex.Message); }
         UpdateAccountUi();
     }
 
     private void UpdateAccountUi()
     {
-        if (_accountService.IsSignedIn)
-        {
-            AccountState.Text = "ANGEMELDET";
-            AccountState.Foreground = Brush("#9AE6B4");
-            AccountPlayerName.Text = _accountService.PlayerName;
-            AccountUuid.Text = _accountService.PlayerId;
-            AccountMiniName.Text = _accountService.PlayerName;
-            LoginButton.Visibility = Visibility.Collapsed;
-            LogoutButton.Visibility = Visibility.Visible;
-        }
-        else
-        {
-            AccountState.Text = "NICHT ANGEMELDET";
-            AccountState.Foreground = Brush("#8876CE");
-            AccountPlayerName.Text = "Microsoft Account";
-            AccountUuid.Text = "Melde dich an, um Minecraft Java zu starten.";
-            AccountMiniName.Text = "Nicht angemeldet";
-            LoginButton.Visibility = Visibility.Visible;
-            LogoutButton.Visibility = Visibility.Collapsed;
-        }
-    }
-
-    private async void Play_Click(object sender, RoutedEventArgs e)
-    {
-        if (_launching || SelectedInstance is null) return;
-        var profile = SelectedInstance;
-
-        if (!_accountService.IsSignedIn && !await LoginInteractiveAsync())
-        {
-            ShowPage("Account");
-            return;
-        }
-
-        _launching = true;
-        HomePlayButton.IsEnabled = false;
-        DownloadProgress.Value = 0;
-        ShowPage("Downloads");
-        var started = DateTime.UtcNow;
-
-        try
-        {
-            if (_settings.SmartMemory)
-            {
-                var totalMemory = GetTotalPhysicalMemory();
-                if (totalMemory > 0)
-                {
-                    _settings.RamMb = PresetService.SmartRamMb(totalMemory);
-                    RamSlider.Value = _settings.RamMb;
-                }
-            }
-
-            if (_settings.SafeLaunch)
-            {
-                SetDownloadStatus("Safe Launch: sichere Config …");
-                var backup = _safeLaunchService.CreateSnapshot(profile);
-                AddLog($"Safe Launch Backup: {Path.GetFileName(backup)}");
-            }
-
-            var process = await _minecraftService.LaunchAsync(profile, _settings, _accountService.Session!);
-            profile.Launches++;
-            profile.LastPlayedUtc = started;
-            _instanceService.Update(profile);
-            UpdateSelectedInstanceUi();
-
-            var record = new LaunchRecord { StartedUtc = started, InstanceId = profile.Id, InstanceName = profile.Name };
-            process.Exited += (_, _) =>
-            {
-                record.EndedUtc = DateTime.UtcNow;
-                try { record.ExitCode = process.ExitCode; } catch { }
-                _statsService.Add(record);
-                Dispatcher.BeginInvoke(() =>
-                {
-                    AddLog($"Minecraft beendet (Code {record.ExitCode})");
-                    SetDownloadStatus("Bereit");
-                    RefreshStats();
-                    if (_settings.FocusMode)
-                    {
-                        WindowState = WindowState.Normal;
-                        Activate();
-                    }
-                });
-            };
-
-            AddLog($"Gestartet: {profile.Name} mit {_settings.RamMb / 1024d:0.#} GB RAM");
-            HomeStatus.Text = "Minecraft läuft";
-            if (_settings.FocusMode) WindowState = WindowState.Minimized;
-            if (_settings.CloseLauncherOnGameStart) Application.Current.Shutdown();
-        }
-        catch (Exception ex)
-        {
-            SetDownloadStatus("Start fehlgeschlagen");
-            AddLog("FEHLER: " + ex.Message);
-            MessageBox.Show(this, $"Minecraft konnte nicht gestartet werden.\n\n{ex.Message}", "LUMINA", MessageBoxButton.OK, MessageBoxImage.Error);
-        }
-        finally
-        {
-            _launching = false;
-            HomePlayButton.IsEnabled = true;
-        }
+        var signedIn = _accountService.IsSignedIn;
+        AccountName.Text = signedIn ? _accountService.PlayerName : "Nicht angemeldet";
+        AccountMiniName.Text = signedIn ? _accountService.PlayerName : "Nicht angemeldet";
+        AccountState.Text = signedIn ? "MINECRAFT JAVA · ANGEMELDET" : "MICROSOFT ACCOUNT";
+        AccountState.Foreground = signedIn ? Brush("#54E1A5") : Brush("#687389");
+        AccountId.Text = signedIn ? _accountService.PlayerId : "";
+        LoginButton.Content = signedIn ? "Konto wechseln" : "Mit Microsoft anmelden";
+        SignOutButton.Visibility = signedIn ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void RefreshStats()
     {
-        if (HomePlaytime is null) return;
-        HomePlaytime.Text = FormatMinutes(_statsService.TotalMinutes);
-        _recent.Clear();
-        foreach (var item in _statsService.GetAll().Take(6))
-        {
-            var duration = item.EndedUtc is null ? "läuft" : FormatMinutes(item.Minutes);
-            _recent.Add($"{item.InstanceName}   •   {item.StartedUtc.ToLocalTime():dd.MM. HH:mm}   •   {duration}");
-        }
-        if (_recent.Count == 0) _recent.Add("Noch keine abgeschlossene Session – Zeit für den ersten Start.");
-        UpdateSelectedInstanceUi();
+        var all = _statsService.GetAll();
+        var totalMinutes = all.Sum(x => x.Minutes);
+        HomePlaytime.Text = totalMinutes < 60 ? $"{totalMinutes:0} min" : $"{totalMinutes / 60d:0.0} h";
+        if (SelectedInstance is not null) HomeLaunchCount.Text = SelectedInstance.Launches.ToString();
     }
 
     private void SetDownloadStatus(string status)
     {
         DownloadStatus.Text = status;
         HomeStatus.Text = status;
-        AddLog(status);
     }
 
-    private void AddLog(string message)
+    private void SetProgress(double progress)
     {
-        var line = $"[{DateTime.Now:HH:mm:ss}] {message}";
-        if (_downloadLog.Count == 0 || _downloadLog[^1] != line) _downloadLog.Add(line);
-        while (_downloadLog.Count > 150) _downloadLog.RemoveAt(0);
+        DownloadProgress.Value = Math.Clamp(progress, 0, 100);
+        DownloadPercent.Text = $"{DownloadProgress.Value:0}%";
+    }
+
+    private void AddLog(string line)
+    {
+        if (string.IsNullOrWhiteSpace(line)) return;
+        _downloadLog.Add($"[{DateTime.Now:HH:mm:ss}] {line}");
+        while (_downloadLog.Count > 500) _downloadLog.RemoveAt(0);
         if (DownloadLog.Items.Count > 0) DownloadLog.ScrollIntoView(DownloadLog.Items[^1]);
-    }
-
-    private static string FormatMinutes(double minutes)
-    {
-        if (minutes < 1) return "< 1 min";
-        if (minutes < 60) return $"{minutes:0} min";
-        return $"{minutes / 60d:0.0} h";
     }
 
     private static void OpenFolder(string path)
     {
         Directory.CreateDirectory(path);
-        Process.Start(new ProcessStartInfo("explorer.exe", $"\"{path}\"") { UseShellExecute = true });
+        Process.Start(new ProcessStartInfo("explorer.exe", path) { UseShellExecute = true });
     }
 
-    private static SolidColorBrush Brush(string hex) => new((Color)ColorConverter.ConvertFromString(hex));
-
-    private static ulong GetTotalPhysicalMemory()
-    {
-        var status = new MemoryStatusEx();
-        return GlobalMemoryStatusEx(ref status) ? status.TotalPhysical : 0;
-    }
-
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-    private struct MemoryStatusEx
-    {
-        public uint Length;
-        public uint MemoryLoad;
-        public ulong TotalPhysical;
-        public ulong AvailablePhysical;
-        public ulong TotalPageFile;
-        public ulong AvailablePageFile;
-        public ulong TotalVirtual;
-        public ulong AvailableVirtual;
-        public ulong AvailableExtendedVirtual;
-
-        public MemoryStatusEx()
-        {
-            Length = (uint)Marshal.SizeOf<MemoryStatusEx>();
-            MemoryLoad = 0;
-            TotalPhysical = AvailablePhysical = TotalPageFile = AvailablePageFile = TotalVirtual = AvailableVirtual = AvailableExtendedVirtual = 0;
-        }
-    }
-
-    [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool GlobalMemoryStatusEx(ref MemoryStatusEx buffer);
+    private static Brush Brush(string hex) => (Brush)new BrushConverter().ConvertFromString(hex)!;
 }
