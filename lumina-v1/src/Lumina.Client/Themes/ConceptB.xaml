@@ -1,0 +1,422 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Concept B palette -->
+    <Color x:Key="LuminaAccent">#8B5CF6</Color>
+    <SolidColorBrush x:Key="LuminaWindowBackground" Color="#060812"/>
+    <SolidColorBrush x:Key="LuminaSidebarBackground" Color="#090C17"/>
+    <SolidColorBrush x:Key="LuminaSurface" Color="#0D1220"/>
+    <SolidColorBrush x:Key="LuminaSurfaceRaised" Color="#12192A"/>
+    <SolidColorBrush x:Key="LuminaSurfaceHover" Color="#182238"/>
+    <SolidColorBrush x:Key="LuminaBorder" Color="#252D45"/>
+    <SolidColorBrush x:Key="LuminaBorderStrong" Color="#35415F"/>
+    <SolidColorBrush x:Key="LuminaAccentBrush" Color="#8B5CF6"/>
+    <SolidColorBrush x:Key="LuminaAccentBright" Color="#B89AFF"/>
+    <SolidColorBrush x:Key="LuminaText" Color="#F4F6FB"/>
+    <SolidColorBrush x:Key="LuminaTextSecondary" Color="#C2C9D8"/>
+    <SolidColorBrush x:Key="LuminaTextMuted" Color="#98A2B8"/>
+    <SolidColorBrush x:Key="LuminaTextDim" Color="#667089"/>
+    <SolidColorBrush x:Key="LuminaSuccess" Color="#58DEA7"/>
+    <SolidColorBrush x:Key="LuminaWarning" Color="#F4BE6A"/>
+    <SolidColorBrush x:Key="LuminaDanger" Color="#FF7188"/>
+    <SolidColorBrush x:Key="LuminaInfo" Color="#69D8FF"/>
+
+    <LinearGradientBrush x:Key="LuminaAccentGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#B36CFF" Offset="0"/>
+        <GradientStop Color="#895CF7" Offset="0.48"/>
+        <GradientStop Color="#626BFF" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="LuminaHeroFallback" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#2B1654" Offset="0"/>
+        <GradientStop Color="#11162A" Offset="0.55"/>
+        <GradientStop Color="#080B14" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="LuminaHeroShade" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#E6060812" Offset="0"/>
+        <GradientStop Color="#B8121022" Offset="0.45"/>
+        <GradientStop Color="#22060812" Offset="1"/>
+    </LinearGradientBrush>
+
+    <!-- Legacy resource aliases kept while pages migrate to Concept B -->
+    <SolidColorBrush x:Key="Bg" Color="#060812"/>
+    <SolidColorBrush x:Key="Sidebar" Color="#090C17"/>
+    <SolidColorBrush x:Key="Surface" Color="#0D1220"/>
+    <SolidColorBrush x:Key="Surface2" Color="#12192A"/>
+    <SolidColorBrush x:Key="Surface3" Color="#182238"/>
+    <SolidColorBrush x:Key="Border" Color="#252D45"/>
+    <SolidColorBrush x:Key="BorderSoft" Color="#1B2438"/>
+    <SolidColorBrush x:Key="Accent" Color="#8B5CF6"/>
+    <SolidColorBrush x:Key="AccentBright" Color="#B89AFF"/>
+    <SolidColorBrush x:Key="Cyan" Color="#69D8FF"/>
+    <SolidColorBrush x:Key="Green" Color="#58DEA7"/>
+    <SolidColorBrush x:Key="PrimaryText" Color="#F4F6FB"/>
+    <SolidColorBrush x:Key="SecondaryText" Color="#A9B3C8"/>
+    <SolidColorBrush x:Key="MutedText" Color="#78849D"/>
+    <SolidColorBrush x:Key="Danger" Color="#FF7188"/>
+    <LinearGradientBrush x:Key="AccentGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#B36CFF" Offset="0"/>
+        <GradientStop Color="#895CF7" Offset="0.48"/>
+        <GradientStop Color="#626BFF" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="HeroGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#2B1654" Offset="0"/>
+        <GradientStop Color="#11162A" Offset="0.55"/>
+        <GradientStop Color="#080B14" Offset="1"/>
+    </LinearGradientBrush>
+
+    <!-- Typography -->
+    <Style TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="Segoe UI Variable Text, Segoe UI"/>
+        <Setter Property="Foreground" Value="{StaticResource LuminaText}"/>
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType"/>
+    </Style>
+
+    <!-- Cards -->
+    <Style x:Key="LuminaCard" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource LuminaSurface}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource LuminaBorder}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="18"/>
+    </Style>
+
+    <Style x:Key="LuminaToastCard" TargetType="Border" BasedOn="{StaticResource LuminaCard}">
+        <Setter Property="Background" Value="#F2111726"/>
+        <Setter Property="BorderBrush" Value="#394765"/>
+        <Setter Property="CornerRadius" Value="16"/>
+        <Setter Property="Padding" Value="16"/>
+    </Style>
+
+    <Style x:Key="LuminaModalCard" TargetType="Border" BasedOn="{StaticResource LuminaCard}">
+        <Setter Property="Background" Value="#FF0D1220"/>
+        <Setter Property="BorderBrush" Value="#485676"/>
+        <Setter Property="CornerRadius" Value="22"/>
+        <Setter Property="Padding" Value="24"/>
+    </Style>
+
+    <Style x:Key="CardBorder" TargetType="Border" BasedOn="{StaticResource LuminaCard}"/>
+    <Style x:Key="PremiumCard" TargetType="Border" BasedOn="{StaticResource LuminaCard}">
+        <Setter Property="Background" Value="{StaticResource LuminaSurfaceRaised}"/>
+        <Setter Property="CornerRadius" Value="20"/>
+    </Style>
+
+    <Style x:Key="SectionLabel" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="10"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="{StaticResource LuminaTextMuted}"/>
+    </Style>
+
+    <!-- Buttons -->
+    <Style x:Key="LuminaPrimaryButton" TargetType="Button">
+        <Setter Property="Foreground" Value="#FFFFFF"/>
+        <Setter Property="Background" Value="{StaticResource LuminaAccentGradient}"/>
+        <Setter Property="BorderBrush" Value="#55FFFFFF"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="20,11"/>
+        <Setter Property="MinHeight" Value="42"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Root"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="12"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Root" Property="Opacity" Value="0.92"/>
+                            <Setter TargetName="Root" Property="BorderBrush" Value="#88FFFFFF"/>
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Root" Property="BorderBrush" Value="#E6D9FF"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True"><Setter TargetName="Root" Property="Opacity" Value="0.76"/></Trigger>
+                        <Trigger Property="IsEnabled" Value="False"><Setter TargetName="Root" Property="Opacity" Value="0.38"/></Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="LuminaSecondaryButton" TargetType="Button" BasedOn="{StaticResource LuminaPrimaryButton}">
+        <Setter Property="Background" Value="{StaticResource LuminaSurfaceRaised}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource LuminaBorderStrong}"/>
+        <Setter Property="Foreground" Value="{StaticResource LuminaText}"/>
+    </Style>
+
+    <Style x:Key="LuminaDangerButton" TargetType="Button" BasedOn="{StaticResource LuminaPrimaryButton}">
+        <Setter Property="Background" Value="#4017242F"/>
+        <Setter Property="BorderBrush" Value="#70455261"/>
+        <Setter Property="Foreground" Value="#FFA3B1"/>
+    </Style>
+
+    <Style x:Key="LuminaNavButton" TargetType="Button">
+        <Setter Property="Foreground" Value="#8995AC"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="14,0"/>
+        <Setter Property="Height" Value="48"/>
+        <Setter Property="Margin" Value="0,2"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Root"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="13"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Root" Property="Background" Value="#151D30"/>
+                            <Setter TargetName="Root" Property="BorderBrush" Value="#27324B"/>
+                            <Setter Property="Foreground" Value="#F4F6FB"/>
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Root" Property="BorderBrush" Value="#6E58AE"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="LuminaTabButton" TargetType="Button" BasedOn="{StaticResource LuminaSecondaryButton}">
+        <Setter Property="Padding" Value="15,8"/>
+        <Setter Property="MinHeight" Value="36"/>
+        <Setter Property="FontSize" Value="11"/>
+    </Style>
+
+    <!-- Compatibility aliases -->
+    <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource LuminaPrimaryButton}"/>
+    <Style x:Key="GradientButton" TargetType="Button" BasedOn="{StaticResource LuminaPrimaryButton}"/>
+    <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource LuminaSecondaryButton}"/>
+    <Style x:Key="GhostButton" TargetType="Button" BasedOn="{StaticResource LuminaSecondaryButton}">
+        <Setter Property="Background" Value="#0C111D"/>
+        <Setter Property="Foreground" Value="#BDC5D7"/>
+    </Style>
+    <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource LuminaDangerButton}"/>
+    <Style x:Key="NavButton" TargetType="Button" BasedOn="{StaticResource LuminaNavButton}"/>
+    <Style x:Key="PillButton" TargetType="Button" BasedOn="{StaticResource LuminaTabButton}"/>
+    <Style x:Key="RamPresetButton" TargetType="Button" BasedOn="{StaticResource LuminaSecondaryButton}">
+        <Setter Property="Padding" Value="14,9"/>
+        <Setter Property="Margin" Value="3"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="MinWidth" Value="72"/>
+    </Style>
+
+    <!-- Text input -->
+    <Style x:Key="LuminaTextBox" TargetType="TextBox">
+        <Setter Property="Background" Value="#0A0F1A"/>
+        <Setter Property="Foreground" Value="#F4F6FB"/>
+        <Setter Property="CaretBrush" Value="#DCCBFF"/>
+        <Setter Property="BorderBrush" Value="#2B3651"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="14,10"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="MinHeight" Value="42"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border x:Name="Root"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="11"
+                            Padding="{TemplateBinding Padding}">
+                        <ScrollViewer x:Name="PART_ContentHost"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Root" Property="BorderBrush" Value="#435170"/></Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Root" Property="BorderBrush" Value="#9B72F8"/></Trigger>
+                        <Trigger Property="IsEnabled" Value="False"><Setter TargetName="Root" Property="Opacity" Value="0.48"/></Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style TargetType="TextBox" BasedOn="{StaticResource LuminaTextBox}"/>
+
+    <!-- Explicit dark ComboBox item template: prevents Windows light-theme popup leakage. -->
+    <Style x:Key="LuminaComboBoxItem" TargetType="ComboBoxItem">
+        <Setter Property="Foreground" Value="#F4F6FB"/>
+        <Setter Property="Background" Value="#0E131D"/>
+        <Setter Property="Padding" Value="12,10"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBoxItem">
+                    <Border x:Name="ItemRoot"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="9"
+                            Padding="{TemplateBinding Padding}"
+                            Margin="4,2">
+                        <ContentPresenter VerticalAlignment="Center" TextElement.Foreground="{TemplateBinding Foreground}"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ItemRoot" Property="Background" Value="#1B2434"/>
+                            <Setter Property="Foreground" Value="#FFFFFF"/>
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="ItemRoot" Property="Background" Value="#2A2146"/>
+                            <Setter Property="Foreground" Value="#F0E8FF"/>
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="ItemRoot" Property="BorderBrush" Value="#8B5CF6"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False"><Setter TargetName="ItemRoot" Property="Opacity" Value="0.45"/></Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource LuminaComboBoxItem}"/>
+
+    <Style x:Key="LuminaComboBox" TargetType="ComboBox">
+        <Setter Property="Background" Value="#0A0F1A"/>
+        <Setter Property="Foreground" Value="#F4F6FB"/>
+        <Setter Property="BorderBrush" Value="#2B3651"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="14,10"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="MinHeight" Value="42"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="MaxDropDownHeight" Value="340"/>
+        <Setter Property="ItemContainerStyle" Value="{StaticResource LuminaComboBoxItem}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBox">
+                    <Grid>
+                        <Border x:Name="ComboRoot"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="11">
+                            <Grid>
+                                <ContentPresenter Margin="14,0,46,0"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Left"
+                                                  Content="{TemplateBinding SelectionBoxItem}"
+                                                  ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                  ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                                  TextElement.Foreground="#F4F6FB"/>
+                                <Path Width="10" Height="6" Margin="0,0,17,0"
+                                      HorizontalAlignment="Right" VerticalAlignment="Center"
+                                      Stretch="Fill" Fill="#C2C9D8" Data="M 0 0 L 5 5 L 10 0 Z"/>
+                                <ToggleButton Focusable="False"
+                                              Background="Transparent"
+                                              BorderThickness="0"
+                                              Cursor="Hand"
+                                              IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
+                                    <ToggleButton.Template>
+                                        <ControlTemplate TargetType="ToggleButton"><Border Background="Transparent"/></ControlTemplate>
+                                    </ToggleButton.Template>
+                                </ToggleButton>
+                            </Grid>
+                        </Border>
+                        <Popup x:Name="PART_Popup"
+                               IsOpen="{TemplateBinding IsDropDownOpen}"
+                               Placement="Bottom"
+                               AllowsTransparency="True"
+                               Focusable="False"
+                               PopupAnimation="Fade">
+                            <Border Background="#0E131D"
+                                    BorderBrush="#35415F"
+                                    BorderThickness="1"
+                                    CornerRadius="12"
+                                    Margin="0,6,0,0"
+                                    MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
+                                    MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                <ScrollViewer Margin="3" VerticalScrollBarVisibility="Auto" CanContentScroll="True">
+                                    <ItemsPresenter/>
+                                </ScrollViewer>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="ComboRoot" Property="BorderBrush" Value="#435170"/></Trigger>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True"><Setter TargetName="ComboRoot" Property="BorderBrush" Value="#9B72F8"/></Trigger>
+                        <Trigger Property="IsDropDownOpen" Value="True"><Setter TargetName="ComboRoot" Property="BorderBrush" Value="#B28BFF"/></Trigger>
+                        <Trigger Property="IsEnabled" Value="False"><Setter TargetName="ComboRoot" Property="Opacity" Value="0.48"/></Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style TargetType="ComboBox" BasedOn="{StaticResource LuminaComboBox}"/>
+
+    <!-- Toggle -->
+    <Style x:Key="LuminaToggle" TargetType="CheckBox">
+        <Setter Property="Foreground" Value="#F4F6FB"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <Border x:Name="ToggleRoot" Background="#0A0F1A" BorderBrush="#26334D" BorderThickness="1" CornerRadius="13" Padding="13,11">
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                            <ContentPresenter VerticalAlignment="Center" Margin="0,0,14,0"/>
+                            <Border x:Name="Track" Grid.Column="1" Width="44" Height="24" CornerRadius="12" Background="#283246" BorderBrush="#3A4761" BorderThickness="1" VerticalAlignment="Center">
+                                <Ellipse x:Name="Knob" Width="18" Height="18" Fill="#D8DDE8" HorizontalAlignment="Left" Margin="2"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="ToggleRoot" Property="BorderBrush" Value="#435170"/></Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="ToggleRoot" Property="BorderBrush" Value="#8B5CF6"/></Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Track" Property="Background" Value="#7954E8"/>
+                            <Setter TargetName="Track" Property="BorderBrush" Value="#A985FF"/>
+                            <Setter TargetName="Knob" Property="Fill" Value="#FFFFFF"/>
+                            <Setter TargetName="Knob" Property="HorizontalAlignment" Value="Right"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False"><Setter TargetName="ToggleRoot" Property="Opacity" Value="0.45"/></Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style TargetType="CheckBox">
+        <Setter Property="Foreground" Value="#E8EAF2"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+    <Style x:Key="ToggleCheckBox" TargetType="CheckBox" BasedOn="{StaticResource LuminaToggle}"/>
+
+    <Style TargetType="Slider">
+        <Setter Property="Foreground" Value="{StaticResource LuminaAccentBright}"/>
+        <Setter Property="Height" Value="24"/>
+    </Style>
+
+    <Style TargetType="ProgressBar">
+        <Setter Property="Height" Value="7"/>
+        <Setter Property="Foreground" Value="{StaticResource LuminaAccentBright}"/>
+        <Setter Property="Background" Value="#171E2B"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style x:Key="CleanListBox" TargetType="ListBox">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Foreground" Value="#F4F6FB"/>
+    </Style>
+</ResourceDictionary>
