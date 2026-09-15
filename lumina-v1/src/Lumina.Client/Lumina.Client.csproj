@@ -9,7 +9,6 @@
     <LangVersion>latest</LangVersion>
     <AssemblyName>LUMINA</AssemblyName>
     <RootNamespace>Lumina.Client</RootNamespace>
-    <ApplicationIcon>Assets\lumina.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lumina.Core\Lumina.Core.csproj" />
