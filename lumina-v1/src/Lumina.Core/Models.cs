@@ -12,6 +12,9 @@ public sealed class InstanceProfile
     public DateTime? LastPlayedUtc { get; set; }
     public int Launches { get; set; }
     public string Accent { get; set; } = "#8B5CF6";
+    public bool IsValid { get; set; } = true;
+    public string InvalidReason { get; set; } = "";
+    public bool AllowSnapshots { get; set; }
 
     public string Subtitle => $"Minecraft {Version}  •  {Loader}";
 }
