@@ -17,6 +17,7 @@ public partial class MainWindow
         ActiveInstanceCombo.ItemsSource = _instances;
         ActiveInstanceCombo.SelectedItem = InstancesList.SelectedItem;
         InstancesList.SelectionChanged += ConceptBInstances_SelectionChanged;
+        _discoverStorefront?.SetInstanceContext(SelectedInstance);
     }
 
     private void ActiveInstanceCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -43,6 +44,7 @@ public partial class MainWindow
         {
             _syncingInstanceSelection = true;
             ActiveInstanceCombo.SelectedItem = InstancesList.SelectedItem;
+            _discoverStorefront?.SetInstanceContext(SelectedInstance);
         }
         finally
         {
