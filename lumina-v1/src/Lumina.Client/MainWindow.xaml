@@ -4,391 +4,255 @@
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         Title="LUMINA" Width="1440" Height="900" MinWidth="1180" MinHeight="720"
         WindowStartupLocation="CenterScreen" WindowStyle="None" ResizeMode="CanResize"
-        Background="{StaticResource Bg}" Foreground="{StaticResource PrimaryText}">
+        Background="{StaticResource LuminaWindowBackground}" Foreground="{StaticResource LuminaText}"
+        Loaded="ConceptB_Loaded">
     <shell:WindowChrome.WindowChrome>
-        <shell:WindowChrome CaptionHeight="0" ResizeBorderThickness="7" CornerRadius="12" GlassFrameThickness="0"/>
+        <shell:WindowChrome CaptionHeight="0" ResizeBorderThickness="7" CornerRadius="14" GlassFrameThickness="0"/>
     </shell:WindowChrome.WindowChrome>
 
-    <Grid Background="{StaticResource Bg}">
+    <Grid Background="{StaticResource LuminaWindowBackground}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="86"/>
+            <ColumnDefinition Width="236"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- Compact client rail -->
-        <Border Grid.Column="0" Background="{StaticResource Sidebar}" BorderBrush="#151B27" BorderThickness="0,0,1,0">
-            <Grid Margin="0,12,0,14">
+        <!-- CONCEPT B SIDEBAR -->
+        <Border Grid.Column="0" Background="{StaticResource LuminaSidebarBackground}" BorderBrush="#171D2C" BorderThickness="0,0,1,0">
+            <Grid Margin="14,16,14,14">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="72"/>
+                    <RowDefinition Height="78"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <Border Width="48" Height="48" CornerRadius="15" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <Border.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#A96CFF" Offset="0"/>
-                            <GradientStop Color="#6957FF" Offset="1"/>
-                        </LinearGradientBrush>
-                    </Border.Background>
-                    <TextBlock Text="L" FontSize="24" FontWeight="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                </Border>
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="48"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <Border Width="44" Height="44" CornerRadius="14" VerticalAlignment="Center">
+                        <Border.Background><StaticResource ResourceKey="LuminaAccentGradient"/></Border.Background>
+                        <TextBlock Text="L" FontSize="22" FontWeight="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
+                        <TextBlock FontSize="17" FontWeight="Bold">LUMINA</TextBlock>
+                        <TextBlock FontSize="8.5" FontWeight="SemiBold" Foreground="{StaticResource LuminaTextDim}" Margin="0,3,0,0">MORE WORLDS AHEAD</TextBlock>
+                    </StackPanel>
+                </Grid>
 
-                <StackPanel x:Name="SidebarNav" Grid.Row="1" HorizontalAlignment="Center" Margin="0,10,0,0">
-                    <Button Style="{StaticResource NavButton}" Tag="Home" Click="Nav_Click" Content="⌂" ToolTip="Home"/>
-                    <Button Style="{StaticResource NavButton}" Tag="Discover" Click="Nav_Click" Content="✦" ToolTip="Mod Gallery"/>
-                    <Button Style="{StaticResource NavButton}" Tag="Instances" Click="Nav_Click" Content="▦" ToolTip="Instanzen"/>
-                    <Button Style="{StaticResource NavButton}" Tag="Library" Click="Nav_Click" Content="◇" ToolTip="Bibliothek"/>
-                    <Button Style="{StaticResource NavButton}" Tag="Downloads" Click="Nav_Click" Content="↓" ToolTip="Downloads / Launch Log"/>
-                    <Border Height="1" Background="#171E2B" Margin="10,12"/>
-                    <Button Style="{StaticResource NavButton}" Tag="Settings" Click="Nav_Click" Content="⚙" ToolTip="Einstellungen"/>
+                <StackPanel x:Name="SidebarNav" Grid.Row="1" Margin="0,12,0,0">
+                    <Button Style="{StaticResource LuminaNavButton}" Tag="Home" Click="Nav_Click">
+                        <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="32"/><ColumnDefinition/></Grid.ColumnDefinitions><TextBlock Text="⌂" FontSize="17" HorizontalAlignment="Center"/><TextBlock Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">Home</TextBlock></Grid>
+                    </Button>
+                    <Button Style="{StaticResource LuminaNavButton}" Tag="Discover" Click="Nav_Click">
+                        <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="32"/><ColumnDefinition/></Grid.ColumnDefinitions><TextBlock Text="✦" FontSize="16" HorizontalAlignment="Center"/><TextBlock Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">Discover</TextBlock></Grid>
+                    </Button>
+                    <Button Style="{StaticResource LuminaNavButton}" Tag="Instances" Click="Nav_Click">
+                        <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="32"/><ColumnDefinition/></Grid.ColumnDefinitions><TextBlock Text="▦" FontSize="16" HorizontalAlignment="Center"/><TextBlock Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">Instanzen</TextBlock></Grid>
+                    </Button>
+                    <Button Style="{StaticResource LuminaNavButton}" Tag="Library" Click="Nav_Click">
+                        <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="32"/><ColumnDefinition/></Grid.ColumnDefinitions><TextBlock Text="◇" FontSize="17" HorizontalAlignment="Center"/><TextBlock Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">Bibliothek</TextBlock></Grid>
+                    </Button>
+                    <Button Style="{StaticResource LuminaNavButton}" Tag="Downloads" Click="Nav_Click">
+                        <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="32"/><ColumnDefinition/></Grid.ColumnDefinitions><TextBlock Text="↓" FontSize="17" HorizontalAlignment="Center"/><TextBlock Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">Downloads</TextBlock></Grid>
+                    </Button>
+                    <Border Height="1" Background="#1C2436" Margin="10,15,10,12"/>
+                    <Button Style="{StaticResource LuminaNavButton}" Tag="Settings" Click="Nav_Click">
+                        <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="32"/><ColumnDefinition/></Grid.ColumnDefinitions><TextBlock Text="⚙" FontSize="15" HorizontalAlignment="Center"/><TextBlock Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">Einstellungen</TextBlock></Grid>
+                    </Button>
+                    <Button Style="{StaticResource LuminaNavButton}" Tag="Account" Click="Nav_Click">
+                        <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="32"/><ColumnDefinition/></Grid.ColumnDefinitions><TextBlock Text="◉" FontSize="15" HorizontalAlignment="Center"/><TextBlock Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">Account</TextBlock></Grid>
+                    </Button>
                 </StackPanel>
 
-                <Button Grid.Row="2" Style="{StaticResource NavButton}" Tag="Account" Click="Nav_Click" ToolTip="Microsoft Account">
-                    <Border Width="34" Height="34" CornerRadius="17" Background="#171D2A">
-                        <TextBlock Text="●" Foreground="#54E1A5" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
+                <Button Grid.Row="2" Background="#0D1321" BorderBrush="#222C42" BorderThickness="1" Padding="11" Margin="0,12,0,0" Cursor="Hand" Click="TopAccount_Click">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Root" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="14" Padding="{TemplateBinding Padding}"><ContentPresenter/></Border>
+                            <ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Root" Property="Background" Value="#141C2E"/></Trigger></ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="38"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <Border Width="34" Height="34" CornerRadius="11" Background="#24203A"><TextBlock Text="◆" Foreground="#B99CFF" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+                        <StackPanel Grid.Column="1" Margin="9,0,0,0" VerticalAlignment="Center">
+                            <TextBlock x:Name="AccountMiniName" Text="Nicht angemeldet" FontSize="10.5" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                            <TextBlock Text="Minecraft Account" FontSize="8.5" Foreground="{StaticResource LuminaTextDim}" Margin="0,2,0,0"/>
+                        </StackPanel>
+                        <TextBlock Grid.Column="2" Text="›" Foreground="#717D96" FontSize="17" VerticalAlignment="Center"/>
+                    </Grid>
                 </Button>
             </Grid>
         </Border>
 
-        <!-- Main shell -->
+        <!-- MAIN SHELL -->
         <Grid Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="64"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+            <Grid.RowDefinitions><RowDefinition Height="58"/><RowDefinition Height="*"/></Grid.RowDefinitions>
 
-            <Grid Grid.Row="0" x:Name="TitleBar" Background="#080A0F" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="26,0,0,0">
-                    <TextBlock x:Name="PageTitle" Text="Home" FontSize="14" FontWeight="SemiBold"/>
-                    <Border Width="1" Height="14" Background="#252C3B" Margin="14,0"/>
-                    <TextBlock Text="LUMINA CLIENT" FontSize="10" FontWeight="Bold" Foreground="#626D84" VerticalAlignment="Center"/>
+            <Grid x:Name="TitleBar" Grid.Row="0" Background="#070A12" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="24,0,0,0">
+                    <TextBlock x:Name="PageTitle" Text="Home" FontSize="12.5" FontWeight="SemiBold"/>
+                    <Border Width="1" Height="14" Background="#263049" Margin="13,0"/>
+                    <TextBlock Text="LUMINA CLIENT" FontSize="9" FontWeight="SemiBold" Foreground="#5F6B83" VerticalAlignment="Center"/>
                 </StackPanel>
-
-                <Button Grid.Column="1" Background="Transparent" BorderThickness="0" Padding="14,7" Margin="0,0,10,0" Cursor="Hand" Click="TopAccount_Click" shell:WindowChrome.IsHitTestVisibleInChrome="True">
-                    <StackPanel Orientation="Horizontal">
-                        <Border Width="30" Height="30" CornerRadius="15" Background="#171D2A">
-                            <TextBlock Text="◉" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#B9A8FF"/>
-                        </Border>
-                        <StackPanel Margin="9,0,0,0" VerticalAlignment="Center">
-                            <TextBlock x:Name="AccountMiniName" Text="Nicht angemeldet" FontSize="11" FontWeight="SemiBold"/>
-                            <TextBlock Text="Microsoft" FontSize="9" Foreground="#657086"/>
-                        </StackPanel>
-                    </StackPanel>
+                <Button Grid.Column="1" Background="Transparent" BorderThickness="0" Padding="12,6" Margin="0,0,8,0" Cursor="Hand" Click="TopAccount_Click" shell:WindowChrome.IsHitTestVisibleInChrome="True">
+                    <StackPanel Orientation="Horizontal"><Ellipse Width="7" Height="7" Fill="#58DEA7" Margin="0,0,7,0" VerticalAlignment="Center"/><TextBlock Text="Account" FontSize="10" Foreground="#8E99AF" VerticalAlignment="Center"/></StackPanel>
                 </Button>
-
                 <StackPanel Grid.Column="2" Orientation="Horizontal" shell:WindowChrome.IsHitTestVisibleInChrome="True">
-                    <Button Width="44" Height="64" Background="Transparent" BorderThickness="0" Foreground="#778198" Click="Minimize_Click" Content="—"/>
-                    <Button Width="44" Height="64" Background="Transparent" BorderThickness="0" Foreground="#778198" Click="Maximize_Click" Content="□"/>
-                    <Button Width="48" Height="64" Background="Transparent" BorderThickness="0" Foreground="#8993A8" Click="Close_Click" Content="×" FontSize="18"/>
+                    <Button Width="42" Height="58" Background="Transparent" BorderThickness="0" Foreground="#778198" Click="Minimize_Click" Content="—"/>
+                    <Button Width="42" Height="58" Background="Transparent" BorderThickness="0" Foreground="#778198" Click="Maximize_Click" Content="□"/>
+                    <Button Width="46" Height="58" Background="Transparent" BorderThickness="0" Foreground="#8993A8" Click="Close_Click" Content="×" FontSize="18"/>
                 </StackPanel>
             </Grid>
 
-            <Grid Grid.Row="1" Margin="28,20,28,28">
+            <Grid Grid.Row="1" Margin="24,18,24,24">
                 <!-- HOME -->
-                <ScrollViewer x:Name="HomePage" VerticalScrollBarVisibility="Auto">
+                <ScrollViewer x:Name="HomePage" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <StackPanel>
-                        <Grid Margin="0,0,0,22">
-                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                            <StackPanel>
-                                <TextBlock Text="Dein Minecraft. Nur besser." FontSize="31" FontWeight="Bold"/>
-                                <TextBlock Text="Instanzen, Mods, Packs und Performance in einem Client." FontSize="13" Foreground="{StaticResource SecondaryText}" Margin="0,6,0,0"/>
-                            </StackPanel>
-                            <Border Grid.Column="1" Background="#10151F" BorderBrush="#1D2635" BorderThickness="1" CornerRadius="12" Padding="13,8" VerticalAlignment="Center">
-                                <StackPanel Orientation="Horizontal">
-                                    <Ellipse Width="7" Height="7" Fill="#54E1A5" Margin="0,0,7,0"/>
-                                    <TextBlock Text="LUMINA 1.1" FontSize="10" FontWeight="Bold" Foreground="#AAB4C9"/>
-                                </StackPanel>
-                            </Border>
-                        </Grid>
-
-                        <Border CornerRadius="24" MinHeight="300" Padding="34" ClipToBounds="True" Background="{StaticResource HeroGradient}" BorderBrush="#372F59" BorderThickness="1">
+                        <Border MinHeight="286" Height="306" CornerRadius="24" ClipToBounds="True" Background="{StaticResource LuminaHeroFallback}" BorderBrush="#352D56" BorderThickness="1">
                             <Grid>
-                                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="350"/></Grid.ColumnDefinitions>
-                                <StackPanel VerticalAlignment="Center" Margin="4,0,32,0">
-                                    <StackPanel Orientation="Horizontal">
-                                        <Border Background="#28FFFFFF" CornerRadius="8" Padding="10,5">
-                                            <TextBlock Text="AKTIVE INSTANZ" FontSize="9" FontWeight="Bold" Foreground="#DCCFFF"/>
+                                <!-- Original vector/block artwork: decorative only, no external image dependency -->
+                                <Canvas HorizontalAlignment="Right" Width="650" ClipToBounds="True" Opacity="0.95">
+                                    <Rectangle Width="650" Height="306" Fill="#120D24"/>
+                                    <Polygon Points="60,260 160,165 260,238 346,132 468,230 650,125 650,306 60,306" Fill="#171E31"/>
+                                    <Polygon Points="195,306 295,214 390,306" Fill="#26223C"/>
+                                    <Rectangle Canvas.Left="480" Canvas.Top="105" Width="92" Height="134" Fill="#211A3B" RadiusX="8" RadiusY="8"/>
+                                    <Rectangle Canvas.Left="497" Canvas.Top="130" Width="58" Height="88" Fill="#5D3FA4" RadiusX="5" RadiusY="5"/>
+                                    <Rectangle Canvas.Left="510" Canvas.Top="141" Width="32" Height="66" Fill="#9A65FF" Opacity="0.65"/>
+                                    <Rectangle Canvas.Left="377" Canvas.Top="239" Width="96" Height="26" Fill="#293649"/>
+                                    <Rectangle Canvas.Left="402" Canvas.Top="213" Width="72" Height="27" Fill="#33475C"/>
+                                    <Rectangle Canvas.Left="421" Canvas.Top="188" Width="53" Height="26" Fill="#415D6F"/>
+                                    <Rectangle Canvas.Left="88" Canvas.Top="237" Width="44" Height="69" Fill="#0D1019"/>
+                                    <Rectangle Canvas.Left="95" Canvas.Top="198" Width="30" Height="41" Fill="#151A27"/>
+                                    <Rectangle Canvas.Left="102" Canvas.Top="185" Width="16" Height="17" Fill="#8B5CF6"/>
+                                    <Ellipse Canvas.Left="555" Canvas.Top="38" Width="114" Height="114" Fill="#6E4AC6" Opacity="0.16"/>
+                                    <Ellipse Canvas.Left="582" Canvas.Top="61" Width="66" Height="66" Fill="#B48AFF" Opacity="0.18"/>
+                                </Canvas>
+                                <Border Background="{StaticResource LuminaHeroShade}"/>
+                                <Grid Margin="38,32">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="420"/></Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center" MaxWidth="590">
+                                        <Border Background="#251F3D" BorderBrush="#4B3A77" BorderThickness="1" CornerRadius="9" Padding="10,5" HorizontalAlignment="Left">
+                                            <TextBlock Text="LUMINA · YOUR WORLD, YOUR WAY" FontSize="8.5" FontWeight="Bold" Foreground="#CBB8FF"/>
                                         </Border>
-                                        <Border Background="#18232E" CornerRadius="8" Padding="10,5" Margin="8,0,0,0">
-                                            <TextBlock x:Name="HeroLoaderChip" Text="Vanilla" FontSize="9" FontWeight="Bold" Foreground="#7DE9FF"/>
-                                        </Border>
-                                        <Border Background="#18232E" CornerRadius="8" Padding="10,5" Margin="8,0,0,0">
-                                            <TextBlock x:Name="HeroVersionChip" Text="1.21.1" FontSize="9" FontWeight="Bold" Foreground="#B8C3DA"/>
-                                        </Border>
+                                        <TextBlock FontSize="39" FontWeight="Black" Margin="0,18,0,0" LineHeight="42">EXPLORE</TextBlock>
+                                        <TextBlock FontSize="39" FontWeight="Black" Foreground="#B795FF" LineHeight="42">CREATE</TextBlock>
+                                        <TextBlock FontSize="39" FontWeight="Black" LineHeight="42">BELONG.</TextBlock>
+                                        <TextBlock Text="Minecraft, Mods, Shader, Packs und Instanzen – sauber organisiert in einem Launcher." FontSize="12" Foreground="#B1B9CB" TextWrapping="Wrap" MaxWidth="470" Margin="0,13,0,0"/>
                                     </StackPanel>
-                                    <TextBlock x:Name="HeroInstanceName" Text="LUMINA Vanilla" FontSize="39" FontWeight="Bold" Margin="0,16,0,4"/>
-                                    <TextBlock x:Name="HeroInstanceMeta" Text="Minecraft 1.21.1 · Vanilla" FontSize="14" Foreground="#B1B8CA"/>
-                                    <StackPanel Orientation="Horizontal" Margin="0,25,0,0">
-                                        <Button x:Name="HomePlayButton" Style="{StaticResource GradientButton}" Click="Play_Click" Padding="30,14" Content="▶   SPIELEN"/>
-                                        <Button Style="{StaticResource SecondaryButton}" Click="OpenInstanceFolder_Click" Margin="10,0,0,0" Padding="17,14" Content="Ordner"/>
-                                    </StackPanel>
-                                    <TextBlock x:Name="HomeStatus" Text="Bereit" FontSize="11" Foreground="#8D98AE" Margin="0,12,0,0"/>
-                                </StackPanel>
-
-                                <Border Grid.Column="1" Background="#59101420" BorderBrush="#35FFFFFF" BorderThickness="1" CornerRadius="18" Padding="22">
-                                    <StackPanel>
-                                        <TextBlock Text="CLIENT STATUS" FontSize="9" FontWeight="Bold" Foreground="#717D95"/>
-                                        <Grid Margin="0,14,0,0">
-                                            <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition/></Grid.ColumnDefinitions>
-                                            <StackPanel>
-                                                <TextBlock Text="MODS / PACKS" FontSize="9" Foreground="#657086"/>
-                                                <TextBlock x:Name="HeroContentMini" Text="0" FontSize="24" FontWeight="Bold" Margin="0,2,0,0"/>
-                                            </StackPanel>
-                                            <StackPanel Grid.Column="1">
-                                                <TextBlock Text="RAM" FontSize="9" Foreground="#657086"/>
-                                                <TextBlock x:Name="HeroRam" Text="6 GB" FontSize="24" FontWeight="Bold" Margin="0,2,0,0"/>
-                                            </StackPanel>
-                                        </Grid>
-                                        <Border Height="1" Background="#252D3D" Margin="0,18"/>
-                                        <Grid>
-                                            <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                                            <TextBlock Text="Safe Launch" Foreground="#9AA5BA" FontSize="11"/>
-                                            <TextBlock Grid.Column="1" x:Name="HeroSafeLaunch" Text="AKTIV" Foreground="#54E1A5" FontWeight="Bold" FontSize="10"/>
-                                        </Grid>
-                                        <Grid Margin="0,10,0,0">
-                                            <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                                            <TextBlock Text="Letzter Start" Foreground="#9AA5BA" FontSize="11"/>
-                                            <TextBlock Grid.Column="1" x:Name="HeroLastPlayed" Text="Noch nie" Foreground="#D4D8E4" FontSize="10"/>
-                                        </Grid>
-                                        <Button Style="{StaticResource GhostButton}" Click="GoDiscover_Click" Margin="0,18,0,0" Content="✦  Mods entdecken"/>
-                                    </StackPanel>
-                                </Border>
+                                </Grid>
                             </Grid>
                         </Border>
 
-                        <UniformGrid Columns="3" Margin="0,16,0,0">
-                            <Border Style="{StaticResource CardBorder}" Padding="19" Margin="0,0,7,0">
-                                <StackPanel><TextBlock Text="GESAMTE STARTS" FontSize="9" Foreground="#687389" FontWeight="Bold"/><TextBlock x:Name="HomeLaunchCount" Text="0" FontSize="27" FontWeight="Bold" Margin="0,6,0,0"/></StackPanel>
-                            </Border>
-                            <Border Style="{StaticResource CardBorder}" Padding="19" Margin="3,0">
-                                <StackPanel><TextBlock Text="SPIELZEIT" FontSize="9" Foreground="#687389" FontWeight="Bold"/><TextBlock x:Name="HomePlaytime" Text="0 h" FontSize="27" FontWeight="Bold" Margin="0,6,0,0"/></StackPanel>
-                            </Border>
-                            <Border Style="{StaticResource CardBorder}" Padding="19" Margin="7,0,0,0">
-                                <StackPanel><TextBlock Text="INSTALLIERTER CONTENT" FontSize="9" Foreground="#687389" FontWeight="Bold"/><TextBlock x:Name="HomeContentCount" Text="0" FontSize="27" FontWeight="Bold" Margin="0,6,0,0"/></StackPanel>
-                            </Border>
+                        <!-- Active instance -->
+                        <Border Style="{StaticResource LuminaCard}" Padding="18" Margin="0,14,0,0">
+                            <Grid>
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="58"/><ColumnDefinition Width="*"/><ColumnDefinition Width="245"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                <Border Width="48" Height="48" CornerRadius="13" Background="#18243A" VerticalAlignment="Center">
+                                    <Grid><Rectangle Width="30" Height="18" Fill="#6EA55A" VerticalAlignment="Top" Margin="0,7,0,0"/><Rectangle Width="30" Height="17" Fill="#76543A" VerticalAlignment="Bottom" Margin="0,0,0,6"/></Grid>
+                                </Border>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="4,0,14,0">
+                                    <StackPanel Orientation="Horizontal"><TextBlock Text="AKTIVE INSTANZ" FontSize="8" FontWeight="Bold" Foreground="#6F7B94"/><Border Background="#17352C" CornerRadius="7" Padding="7,3" Margin="8,0,0,0"><TextBlock Text="ACTIVE" FontSize="7.5" FontWeight="Bold" Foreground="#69E5B0"/></Border></StackPanel>
+                                    <TextBlock x:Name="HeroInstanceName" Text="LUMINA Vanilla" FontSize="16" FontWeight="SemiBold" Margin="0,4,0,0"/>
+                                    <TextBlock x:Name="HeroInstanceMeta" Text="Minecraft 1.21.1 · Vanilla" FontSize="9.5" Foreground="#8994AA" Margin="0,3,0,0"/>
+                                </StackPanel>
+                                <ComboBox x:Name="ActiveInstanceCombo" Grid.Column="2" Style="{StaticResource LuminaComboBox}" DisplayMemberPath="Name" VerticalAlignment="Center" SelectionChanged="ActiveInstanceCombo_SelectionChanged"/>
+                                <Button Grid.Column="3" Style="{StaticResource LuminaSecondaryButton}" Click="OpenInstanceFolder_Click" Margin="10,0,0,0" Padding="16,12" Content="Ordner" VerticalAlignment="Center"/>
+                                <Button x:Name="HomePlayButton" Grid.Column="4" Style="{StaticResource LuminaPrimaryButton}" Click="Play_Click" Margin="10,0,0,0" Padding="30,13" MinWidth="150" Content="▶  SPIELEN" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+
+                        <Grid Margin="0,23,0,10">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                            <StackPanel><TextBlock Text="Entdecken" FontSize="20" FontWeight="SemiBold"/><TextBlock Text="Finde Content, der wirklich zu deiner aktiven Instanz passt." FontSize="10.5" Foreground="{StaticResource LuminaTextMuted}" Margin="0,4,0,0"/></StackPanel>
+                            <Button Grid.Column="1" Style="{StaticResource LuminaSecondaryButton}" Click="GoDiscover_Click" Content="Alle Inhalte  →" Padding="15,9"/>
+                        </Grid>
+                        <UniformGrid Columns="3">
+                            <Button Style="{StaticResource LuminaSecondaryButton}" Click="GoDiscover_Click" Margin="0,0,7,0" HorizontalContentAlignment="Stretch" Padding="0">
+                                <Border Background="#11192A" CornerRadius="12" Padding="18"><StackPanel><TextBlock Text="✦" FontSize="21" Foreground="#B99CFF"/><TextBlock Text="Mods" FontSize="14" FontWeight="SemiBold" Margin="0,12,0,0"/><TextBlock Text="Kompatibel mit Version &amp; Loader" FontSize="9.5" Foreground="#78849A" Margin="0,4,0,0"/></StackPanel></Border>
+                            </Button>
+                            <Button Style="{StaticResource LuminaSecondaryButton}" Click="GoDiscover_Click" Margin="3,0" HorizontalContentAlignment="Stretch" Padding="0">
+                                <Border Background="#11192A" CornerRadius="12" Padding="18"><StackPanel><TextBlock Text="◈" FontSize="21" Foreground="#7DDCFF"/><TextBlock Text="Shaders" FontSize="14" FontWeight="SemiBold" Margin="0,12,0,0"/><TextBlock Text="Neue Looks für deine Welt" FontSize="9.5" Foreground="#78849A" Margin="0,4,0,0"/></StackPanel></Border>
+                            </Button>
+                            <Button Style="{StaticResource LuminaSecondaryButton}" Click="GoDiscover_Click" Margin="7,0,0,0" HorizontalContentAlignment="Stretch" Padding="0">
+                                <Border Background="#11192A" CornerRadius="12" Padding="18"><StackPanel><TextBlock Text="▦" FontSize="21" Foreground="#69E5B0"/><TextBlock Text="Resource Packs" FontSize="14" FontWeight="SemiBold" Margin="0,12,0,0"/><TextBlock Text="Ein Klick zur Installation" FontSize="9.5" Foreground="#78849A" Margin="0,4,0,0"/></StackPanel></Border>
+                            </Button>
                         </UniformGrid>
 
-                        <TextBlock Text="LUMINA Features" FontSize="18" FontWeight="SemiBold" Margin="0,25,0,11"/>
-                        <UniformGrid Columns="3">
-                            <Border Style="{StaticResource CardBorder}" Padding="20" Margin="0,0,7,0">
-                                <StackPanel><TextBlock Text="⚡" FontSize="22" Foreground="#B9A8FF"/><TextBlock Text="Smart Performance" FontSize="14" FontWeight="SemiBold" Margin="0,9,0,3"/><TextBlock Text="Profile und Smart RAM passen den Client an deinen PC an." TextWrapping="Wrap" FontSize="11" Foreground="#7F899F"/></StackPanel>
-                            </Border>
-                            <Border Style="{StaticResource CardBorder}" Padding="20" Margin="3,0">
-                                <StackPanel><TextBlock Text="✦" FontSize="22" Foreground="#65DFFF"/><TextBlock Text="Compatibility Lock" FontSize="14" FontWeight="SemiBold" Margin="0,9,0,3"/><TextBlock Text="Die Gallery zeigt Mods passend zu Version und Loader deiner Instanz." TextWrapping="Wrap" FontSize="11" Foreground="#7F899F"/></StackPanel>
-                            </Border>
-                            <Border Style="{StaticResource CardBorder}" Padding="20" Margin="7,0,0,0">
-                                <StackPanel><TextBlock Text="◈" FontSize="22" Foreground="#63E6AE"/><TextBlock Text="Safe Launch" FontSize="14" FontWeight="SemiBold" Margin="0,9,0,3"/><TextBlock Text="Vor dem Start werden wichtige Configs automatisch gesichert." TextWrapping="Wrap" FontSize="11" Foreground="#7F899F"/></StackPanel>
-                            </Border>
-                        </UniformGrid>
+                        <!-- Compatibility hooks kept without the previous statistics wall -->
+                        <StackPanel Visibility="Collapsed">
+                            <TextBlock x:Name="HeroVersionChip" Text="1.21.1"/><TextBlock x:Name="HeroLoaderChip" Text="Vanilla"/><TextBlock x:Name="HeroSafeLaunch" Text="AKTIV"/><TextBlock x:Name="HeroRam" Text="6 GB"/><TextBlock x:Name="HeroLastPlayed" Text="Noch nie"/><TextBlock x:Name="HeroContentMini" Text="0"/><TextBlock x:Name="HomeLaunchCount" Text="0"/><TextBlock x:Name="HomePlaytime" Text="0 h"/><TextBlock x:Name="HomeContentCount" Text="0"/>
+                        </StackPanel>
+                        <TextBlock x:Name="HomeStatus" Text="Bereit" FontSize="9.5" Foreground="#68758C" Margin="2,13,0,0"/>
                     </StackPanel>
                 </ScrollViewer>
 
-                <!-- DISCOVER / MOD GALLERY -->
+                <!-- DISCOVER -->
                 <Grid x:Name="DiscoverPage" Visibility="Collapsed">
                     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
-                    <Grid Margin="0,0,0,18">
+                    <Grid Margin="0,0,0,16">
                         <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                        <StackPanel>
-                            <TextBlock Text="Discover" FontSize="31" FontWeight="Bold"/>
-                            <TextBlock x:Name="DiscoverContext" Text="Kompatibler Content für deine aktive Instanz." FontSize="12" Foreground="{StaticResource SecondaryText}" Margin="0,5,0,0"/>
-                        </StackPanel>
-                        <Border Grid.Column="1" Style="{StaticResource CardBorder}" Padding="13,8" VerticalAlignment="Center">
-                            <StackPanel Orientation="Horizontal"><TextBlock Text="●" Foreground="#54E1A5" FontSize="10" Margin="0,0,7,0"/><TextBlock Text="Powered by Modrinth" FontSize="10" Foreground="#9CA6BB"/></StackPanel>
-                        </Border>
+                        <StackPanel><TextBlock Text="Discover" FontSize="28" FontWeight="Bold"/><TextBlock x:Name="DiscoverContext" Text="Kompatibler Content für deine aktive Instanz." FontSize="10.5" Foreground="{StaticResource LuminaTextMuted}" Margin="0,4,0,0"/></StackPanel>
+                        <Border Grid.Column="1" Style="{StaticResource LuminaCard}" Padding="12,7" VerticalAlignment="Center"><StackPanel Orientation="Horizontal"><Ellipse Width="7" Height="7" Fill="#58DEA7" Margin="0,0,7,0"/><TextBlock Text="Modrinth online" FontSize="9.5" Foreground="#A0AABD"/></StackPanel></Border>
                     </Grid>
-
-                    <Border Grid.Row="1" Style="{StaticResource CardBorder}" Padding="12" Margin="0,0,0,16">
-                        <Grid>
-                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="150"/><ColumnDefinition Width="145"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                            <TextBox x:Name="DiscoverSearch" MinHeight="40" VerticalContentAlignment="Center" KeyDown="DiscoverSearch_KeyDown"/>
-                            <ComboBox x:Name="DiscoverKind" Grid.Column="1" Margin="10,0,0,0" SelectionChanged="DiscoverFilter_Changed">
-                                <ComboBoxItem Content="Mods" IsSelected="True"/><ComboBoxItem Content="Resource Packs"/><ComboBoxItem Content="Shaders"/>
-                            </ComboBox>
-                            <ComboBox x:Name="DiscoverSort" Grid.Column="2" Margin="10,0,0,0" SelectionChanged="DiscoverFilter_Changed">
-                                <ComboBoxItem Content="Beliebt" Tag="downloads" IsSelected="True"/><ComboBoxItem Content="Relevant" Tag="relevance"/><ComboBoxItem Content="Neu" Tag="newest"/><ComboBoxItem Content="Aktualisiert" Tag="updated"/>
-                            </ComboBox>
-                            <Button Grid.Column="3" Style="{StaticResource GradientButton}" Margin="10,0,0,0" Click="DiscoverSearch_Click" Content="Suchen"/>
+                    <Border Grid.Row="1" Style="{StaticResource LuminaCard}" Padding="10" Margin="0,0,0,14">
+                        <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="165"/><ColumnDefinition Width="150"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                            <TextBox x:Name="DiscoverSearch" Margin="0,0,8,0" KeyDown="DiscoverSearch_KeyDown"/>
+                            <ComboBox x:Name="DiscoverKind" Grid.Column="1" Margin="0,0,8,0" SelectionChanged="DiscoverFilter_Changed"><ComboBoxItem Content="Mods" IsSelected="True"/><ComboBoxItem Content="Resource Packs"/><ComboBoxItem Content="Shaders"/></ComboBox>
+                            <ComboBox x:Name="DiscoverSort" Grid.Column="2" Margin="0,0,8,0" SelectionChanged="DiscoverFilter_Changed"><ComboBoxItem Content="Beliebt" Tag="downloads" IsSelected="True"/><ComboBoxItem Content="Relevant" Tag="relevance"/><ComboBoxItem Content="Neu" Tag="newest"/></ComboBox>
+                            <Button Grid.Column="3" Style="{StaticResource LuminaPrimaryButton}" Click="DiscoverSearch_Click" Content="Suchen"/>
                         </Grid>
                     </Border>
-
                     <Grid Grid.Row="2">
-                        <ScrollViewer VerticalScrollBarVisibility="Auto">
-                            <ItemsControl x:Name="GalleryList">
-                                <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border Width="300" MinHeight="235" Style="{StaticResource CardBorder}" Margin="0,0,12,12" Padding="16">
-                                            <Grid>
-                                                <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions><ColumnDefinition Width="54"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-                                                    <Border Width="48" Height="48" CornerRadius="12" Background="#171D2A" ClipToBounds="True">
-                                                        <Image Source="{Binding IconUrl}" Stretch="UniformToFill"/>
-                                                    </Border>
-                                                    <StackPanel Grid.Column="1" Margin="10,1,0,0">
-                                                        <TextBlock Text="{Binding Title}" FontSize="14" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
-                                                        <TextBlock Text="{Binding Author, StringFormat=von {0}}" FontSize="10" Foreground="#727D94" Margin="0,3,0,0"/>
-                                                    </StackPanel>
-                                                </Grid>
-                                                <StackPanel Grid.Row="1" Margin="0,13,0,12">
-                                                    <TextBlock Text="{Binding Description}" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" MaxHeight="52" FontSize="11" Foreground="#9AA4B8"/>
-                                                    <TextBlock Text="{Binding CategoryText}" FontSize="9" Foreground="#69758C" Margin="0,10,0,0" TextTrimming="CharacterEllipsis"/>
-                                                </StackPanel>
-                                                <Grid Grid.Row="2">
-                                                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                                                    <TextBlock Text="{Binding DownloadsText}" FontSize="10" Foreground="#7E899F" VerticalAlignment="Center"/>
-                                                    <Button Grid.Column="1" Style="{StaticResource PrimaryButton}" Padding="13,7" FontSize="10" Tag="{Binding}" Click="GalleryInstall_Click" Content="Installieren"/>
-                                                </Grid>
-                                            </Grid>
-                                        </Border>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </ScrollViewer>
-                        <StackPanel x:Name="DiscoverEmpty" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <TextBlock Text="✦" FontSize="38" Foreground="#554A78" HorizontalAlignment="Center"/>
-                            <TextBlock x:Name="DiscoverEmptyText" Text="Keine kompatiblen Projekte gefunden." FontSize="13" Foreground="#7E899F" Margin="0,10,0,0"/>
-                        </StackPanel>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto"><ItemsControl x:Name="GalleryList"><ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel><ItemsControl.ItemTemplate><DataTemplate><Border Style="{StaticResource LuminaCard}" Width="252" Margin="0,0,12,12" Padding="0"><StackPanel><Border Height="116" Background="#151E31" CornerRadius="17,17,0,0"><Grid><Image Source="{Binding IconUrl}" Stretch="Uniform" Margin="24"/><Border Background="#22152D47"/></Grid></Border><StackPanel Margin="15"><TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/><TextBlock Text="{Binding Description}" FontSize="9.5" Foreground="#7D899F" TextWrapping="Wrap" MaxHeight="42" Margin="0,5,0,0"/><TextBlock Text="{Binding DownloadsText}" FontSize="8.5" Foreground="#65728B" Margin="0,9,0,0"/><Button Style="{StaticResource LuminaPrimaryButton}" Tag="{Binding}" Click="GalleryInstall_Click" Content="Installieren" Margin="0,12,0,0" Padding="12,8"/></StackPanel></StackPanel></Border></DataTemplate></ItemsControl.ItemTemplate></ItemsControl></ScrollViewer>
+                        <StackPanel x:Name="DiscoverEmpty" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center"><TextBlock Text="✦" FontSize="34" Foreground="#5A4A82" HorizontalAlignment="Center"/><TextBlock x:Name="DiscoverEmptyText" Text="Keine kompatiblen Projekte gefunden." Foreground="#7C879C" Margin="0,9,0,0"/></StackPanel>
                     </Grid>
                 </Grid>
 
                 <!-- INSTANCES -->
                 <Grid x:Name="InstancesPage" Visibility="Collapsed">
                     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
-                    <Grid Margin="0,0,0,18">
-                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                        <StackPanel><TextBlock Text="Instanzen" FontSize="31" FontWeight="Bold"/><TextBlock Text="Jede Instanz besitzt eigene Mods, Packs, Configs, Version und Loader." FontSize="12" Foreground="{StaticResource SecondaryText}" Margin="0,5,0,0"/></StackPanel>
-                        <Button Grid.Column="1" Style="{StaticResource GradientButton}" Click="NewInstance_Click" Content="＋  Neue Instanz"/>
+                    <Grid Margin="0,0,0,16"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><StackPanel><TextBlock Text="Instanzen" FontSize="28" FontWeight="Bold"/><TextBlock Text="Deine Minecraft-Setups – sauber getrennt und sofort startklar." Foreground="{StaticResource LuminaTextMuted}" FontSize="10.5" Margin="0,4,0,0"/></StackPanel><Button Grid.Column="1" Style="{StaticResource LuminaPrimaryButton}" Click="NewInstance_Click" Content="＋  Neue Instanz"/></Grid>
+                    <Grid Grid.Row="1"><Grid.ColumnDefinitions><ColumnDefinition Width="330"/><ColumnDefinition Width="14"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                        <Border Style="{StaticResource LuminaCard}" Padding="10"><ListBox x:Name="InstancesList" Style="{StaticResource CleanListBox}" SelectionChanged="InstancesList_SelectionChanged"><ListBox.ItemTemplate><DataTemplate><Border Background="#0E1524" BorderBrush="#1E2A40" BorderThickness="1" CornerRadius="13" Padding="13" Margin="0,0,0,8"><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="42"/><ColumnDefinition/></Grid.ColumnDefinitions><Border Width="34" Height="34" CornerRadius="10" Background="#211B38"><TextBlock Text="◆" Foreground="#B99CFF" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><StackPanel Grid.Column="1" Margin="10,0,0,0"><TextBlock Text="{Binding Name}" FontWeight="SemiBold"/><TextBlock FontSize="9" Foreground="#748198" Margin="0,3,0,0"><Run Text="{Binding Version}"/><Run Text=" · "/><Run Text="{Binding Loader}"/></TextBlock></StackPanel></Grid></Border></DataTemplate></ListBox.ItemTemplate></ListBox></Border>
+                        <Border Grid.Column="2" Style="{StaticResource LuminaCard}" Padding="24"><StackPanel><TextBlock Text="AUSGEWÄHLTE INSTANZ" FontSize="8.5" FontWeight="Bold" Foreground="#6E7890"/><TextBlock x:Name="InstanceDetailName" Text="LUMINA Vanilla" FontSize="24" FontWeight="SemiBold" Margin="0,8,0,0"/><TextBlock x:Name="InstanceDetailMeta" Text="Minecraft 1.21.1 · Vanilla" Foreground="#8A95AA" FontSize="10.5" Margin="0,5,0,0"/><UniformGrid Columns="2" Margin="0,22,0,0"><Border Background="#0A101B" BorderBrush="#202C42" BorderThickness="1" CornerRadius="12" Padding="14" Margin="0,0,6,0"><StackPanel><TextBlock Text="MINECRAFT" FontSize="8" Foreground="#68758C"/><TextBlock x:Name="InstanceVersionText" Text="1.21.1" FontSize="14" FontWeight="SemiBold" Margin="0,5,0,0"/></StackPanel></Border><Border Background="#0A101B" BorderBrush="#202C42" BorderThickness="1" CornerRadius="12" Padding="14" Margin="6,0,0,0"><StackPanel><TextBlock Text="LOADER" FontSize="8" Foreground="#68758C"/><TextBlock x:Name="InstanceLoaderText" Text="Vanilla" FontSize="14" FontWeight="SemiBold" Margin="0,5,0,0"/></StackPanel></Border></UniformGrid><TextBlock x:Name="InstanceDetailLaunches" Text="0" Visibility="Collapsed"/><WrapPanel Margin="0,22,0,0"><Button Style="{StaticResource LuminaPrimaryButton}" Click="Play_Click" Content="▶  Spielen" Margin="0,0,8,8"/><Button Style="{StaticResource LuminaSecondaryButton}" Click="OpenInstanceFolder_Click" Content="Ordner" Margin="0,0,8,8"/><Button Style="{StaticResource LuminaSecondaryButton}" Click="DuplicateInstance_Click" Content="Duplizieren" Margin="0,0,8,8"/><Button Style="{StaticResource LuminaDangerButton}" Click="DeleteInstance_Click" Content="Löschen" Margin="0,0,8,8"/></WrapPanel></StackPanel></Border>
                     </Grid>
-
-                    <Grid Grid.Row="1">
-                        <Grid.ColumnDefinitions><ColumnDefinition Width="360"/><ColumnDefinition Width="16"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-                        <Border Style="{StaticResource CardBorder}" Padding="8">
-                            <ListBox x:Name="InstancesList" Style="{StaticResource CleanListBox}" SelectionChanged="InstancesList_SelectionChanged">
-                                <ListBox.ItemContainerStyle>
-                                    <Style TargetType="ListBoxItem"><Setter Property="HorizontalContentAlignment" Value="Stretch"/><Setter Property="Padding" Value="0"/><Setter Property="Margin" Value="0,3"/><Setter Property="Background" Value="Transparent"/><Style.Triggers><Trigger Property="IsSelected" Value="True"><Setter Property="Background" Value="#171E2D"/></Trigger></Style.Triggers></Style>
-                                </ListBox.ItemContainerStyle>
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid Margin="10,11">
-                                            <Grid.ColumnDefinitions><ColumnDefinition Width="46"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-                                            <Border Width="40" Height="40" CornerRadius="11" Background="#241C40"><TextBlock Text="L" Foreground="#C8B8FF" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
-                                            <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center"><TextBlock Text="{Binding Name}" FontSize="12" FontWeight="SemiBold"/><TextBlock Text="{Binding Subtitle}" FontSize="9" Foreground="#737E94" Margin="0,3,0,0"/></StackPanel>
-                                        </Grid>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                        </Border>
-
-                        <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
-                            <StackPanel>
-                                <Border x:Name="NewInstancePanel" Style="{StaticResource CardBorder}" Padding="22" Visibility="Collapsed" Margin="0,0,0,14" BorderBrush="#443671">
-                                    <StackPanel>
-                                        <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock Text="Neue Instanz erstellen" FontSize="17" FontWeight="SemiBold"/><Button Grid.Column="1" Style="{StaticResource GhostButton}" Padding="10,6" Click="CancelCreate_Click" Content="×"/></Grid>
-                                        <TextBlock Text="Minecraft-Version und Modloader werden live geladen." FontSize="10" Foreground="#778299" Margin="0,4,0,15"/>
-                                        <Grid>
-                                            <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="12"/><ColumnDefinition/><ColumnDefinition Width="12"/><ColumnDefinition/></Grid.ColumnDefinitions>
-                                            <StackPanel><TextBlock Text="NAME" FontSize="9" FontWeight="Bold" Foreground="#687389" Margin="1,0,0,6"/><TextBox x:Name="NewInstanceName" Text="Meine Instanz"/></StackPanel>
-                                            <StackPanel Grid.Column="2"><TextBlock Text="MINECRAFT" FontSize="9" FontWeight="Bold" Foreground="#687389" Margin="1,0,0,6"/><ComboBox x:Name="NewInstanceVersionCombo" DisplayMemberPath="DisplayName" SelectionChanged="NewInstanceVersion_Changed"/></StackPanel>
-                                            <StackPanel Grid.Column="4"><TextBlock Text="LOADER" FontSize="9" FontWeight="Bold" Foreground="#687389" Margin="1,0,0,6"/><ComboBox x:Name="NewInstanceLoaderCombo" SelectionChanged="NewInstanceLoader_Changed"/></StackPanel>
-                                        </Grid>
-                                        <Grid Margin="0,12,0,0"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="220"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                                            <CheckBox x:Name="ShowSnapshotsCheck" Content="Snapshots anzeigen" Checked="ShowSnapshots_Changed" Unchecked="ShowSnapshots_Changed" VerticalAlignment="Center"/>
-                                            <StackPanel Grid.Column="1"><TextBlock Text="LOADER VERSION" FontSize="9" FontWeight="Bold" Foreground="#687389" Margin="1,0,0,6"/><ComboBox x:Name="NewInstanceLoaderVersionCombo"/></StackPanel>
-                                            <Button Grid.Column="2" Style="{StaticResource GradientButton}" Margin="12,18,0,0" Click="CreateInstance_Click" Content="Instanz erstellen"/>
-                                        </Grid>
-                                        <TextBlock x:Name="LoaderAvailabilityText" Text="" FontSize="10" Foreground="#7E899F" Margin="0,10,0,0"/>
-                                    </StackPanel>
-                                </Border>
-
-                                <Border Style="{StaticResource CardBorder}" Padding="24">
-                                    <StackPanel>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Border Width="62" Height="62" CornerRadius="16" Background="#241C40"><TextBlock Text="L" FontSize="28" FontWeight="Black" Foreground="#C8B8FF" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
-                                            <StackPanel Margin="15,2,0,0"><TextBlock x:Name="InstanceDetailName" Text="Instanz" FontSize="23" FontWeight="Bold"/><TextBlock x:Name="InstanceDetailMeta" Text="Minecraft" FontSize="11" Foreground="#7F8AA0" Margin="0,5,0,0"/></StackPanel>
-                                        </StackPanel>
-                                        <UniformGrid Columns="3" Margin="0,22,0,0">
-                                            <Border Background="#0A0E16" CornerRadius="12" Padding="15" Margin="0,0,6,0"><StackPanel><TextBlock Text="MINECRAFT" FontSize="8" FontWeight="Bold" Foreground="#647086"/><TextBlock x:Name="InstanceVersionText" Text="1.21.1" FontSize="15" FontWeight="SemiBold" Margin="0,5,0,0"/></StackPanel></Border>
-                                            <Border Background="#0A0E16" CornerRadius="12" Padding="15" Margin="3,0"><StackPanel><TextBlock Text="LOADER" FontSize="8" FontWeight="Bold" Foreground="#647086"/><TextBlock x:Name="InstanceLoaderText" Text="Vanilla" FontSize="15" FontWeight="SemiBold" Margin="0,5,0,0"/></StackPanel></Border>
-                                            <Border Background="#0A0E16" CornerRadius="12" Padding="15" Margin="6,0,0,0"><StackPanel><TextBlock Text="STARTS" FontSize="8" FontWeight="Bold" Foreground="#647086"/><TextBlock x:Name="InstanceDetailLaunches" Text="0" FontSize="15" FontWeight="SemiBold" Margin="0,5,0,0"/></StackPanel></Border>
-                                        </UniformGrid>
-                                        <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
-                                            <Button Style="{StaticResource GradientButton}" Click="Play_Click" Content="▶  Spielen"/>
-                                            <Button Style="{StaticResource SecondaryButton}" Margin="8,0,0,0" Click="GoDiscover_Click" Content="✦  Mods"/>
-                                            <Button Style="{StaticResource SecondaryButton}" Margin="8,0,0,0" Click="OpenInstanceFolder_Click" Content="Ordner"/>
-                                            <Button Style="{StaticResource SecondaryButton}" Margin="8,0,0,0" Click="DuplicateInstance_Click" Content="Duplizieren"/>
-                                            <Button Style="{StaticResource DangerButton}" Margin="8,0,0,0" Click="DeleteInstance_Click" Content="Löschen"/>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
-                        </ScrollViewer>
-                    </Grid>
+                    <!-- legacy creation hooks retained hidden; visible flow uses validated wizard -->
+                    <Border x:Name="NewInstancePanel" Visibility="Collapsed"><StackPanel><TextBox x:Name="NewInstanceName" Text="Meine Instanz"/><ComboBox x:Name="NewInstanceVersionCombo" DisplayMemberPath="DisplayName" SelectionChanged="NewInstanceVersion_Changed"/><ComboBox x:Name="NewInstanceLoaderCombo" SelectionChanged="NewInstanceLoader_Changed"/><ComboBox x:Name="NewInstanceLoaderVersionCombo"/><CheckBox x:Name="ShowSnapshotsCheck" Checked="ShowSnapshots_Changed" Unchecked="ShowSnapshots_Changed"/><TextBlock x:Name="LoaderAvailabilityText"/><Button Click="CreateInstance_Click"/><Button Click="CancelCreate_Click"/></StackPanel></Border>
                 </Grid>
 
                 <!-- LIBRARY -->
                 <Grid x:Name="LibraryPage" Visibility="Collapsed" AllowDrop="True" DragOver="Library_DragOver" Drop="Library_Drop">
                     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
-                    <Grid Margin="0,0,0,18"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><StackPanel><TextBlock Text="Bibliothek" FontSize="31" FontWeight="Bold"/><TextBlock x:Name="LibraryInstanceName" Text="Content der aktiven Instanz" FontSize="12" Foreground="{StaticResource SecondaryText}" Margin="0,5,0,0"/></StackPanel><Button Grid.Column="1" Style="{StaticResource PrimaryButton}" Click="AddContent_Click" Content="＋ Datei hinzufügen"/></Grid>
-                    <Border Grid.Row="1" Style="{StaticResource CardBorder}" Padding="12" Margin="0,0,0,14">
-                        <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="180"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><ComboBox x:Name="LibraryKindCombo" SelectionChanged="LibraryKind_Changed"><ComboBoxItem Content="Mods" IsSelected="True"/><ComboBoxItem Content="Resource Packs"/><ComboBoxItem Content="Shaders"/></ComboBox><TextBlock Grid.Column="1" x:Name="LibraryDropText" Text="JAR-Mods hier hineinziehen" Foreground="#727D94" VerticalAlignment="Center" Margin="14,0"/><Button Grid.Column="2" Style="{StaticResource GhostButton}" Click="OpenContentFolder_Click" Content="Ordner öffnen"/></Grid>
-                    </Border>
-                    <Border Grid.Row="2" Style="{StaticResource CardBorder}" Padding="10">
-                        <ListBox x:Name="ContentList" Style="{StaticResource CleanListBox}">
-                            <ListBox.ItemTemplate><DataTemplate><Grid Margin="12,9"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="100"/><ColumnDefinition Width="100"/></Grid.ColumnDefinitions><StackPanel><TextBlock Text="{Binding Name}" FontSize="12" FontWeight="SemiBold"/><TextBlock Text="{Binding SizeText}" FontSize="9" Foreground="#687389" Margin="0,3,0,0"/></StackPanel><TextBlock Grid.Column="1" Text="{Binding Status}" Foreground="#77DBAD" VerticalAlignment="Center"/><TextBlock Grid.Column="2" Text="{Binding Kind}" Foreground="#7D879B" VerticalAlignment="Center"/></Grid></DataTemplate></ListBox.ItemTemplate>
-                        </ListBox>
-                    </Border>
-                    <StackPanel Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Orientation="Horizontal" Margin="0,0,14,14">
-                        <Button Style="{StaticResource SecondaryButton}" Click="ToggleContent_Click" Content="Aktiv / Aus"/>
-                        <Button Style="{StaticResource DangerButton}" Margin="8,0,0,0" Click="DeleteContent_Click" Content="Entfernen"/>
-                    </StackPanel>
+                    <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><StackPanel><TextBlock Text="Bibliothek" FontSize="28" FontWeight="Bold"/><TextBlock x:Name="LibraryInstanceName" Text="Content für deine Instanz" FontSize="10.5" Foreground="{StaticResource LuminaTextMuted}" Margin="0,4,0,0"/></StackPanel><StackPanel Grid.Column="1" Orientation="Horizontal"><ComboBox x:Name="LibraryKindCombo" Width="170" SelectionChanged="LibraryKind_Changed"><ComboBoxItem Content="Mods" IsSelected="True"/><ComboBoxItem Content="Resource Packs"/><ComboBoxItem Content="Shaders"/></ComboBox><Button Style="{StaticResource LuminaPrimaryButton}" Click="AddContent_Click" Content="＋ Importieren" Margin="9,0,0,0"/></StackPanel></Grid>
+                    <Border Grid.Row="1" Style="{StaticResource LuminaCard}" BorderBrush="#3A315C" BorderThickness="1" Padding="18" Margin="0,16,0,14"><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="44"/><ColumnDefinition/></Grid.ColumnDefinitions><TextBlock Text="⇩" FontSize="23" Foreground="#B99CFF" VerticalAlignment="Center"/><StackPanel Grid.Column="1"><TextBlock x:Name="LibraryDropText" Text="JAR-Mods hier hineinziehen" FontWeight="SemiBold"/><TextBlock Text="Oder oben auf Importieren klicken." FontSize="9.5" Foreground="#748198" Margin="0,3,0,0"/></StackPanel></Grid></Border>
+                    <Border Grid.Row="2" Style="{StaticResource LuminaCard}" Padding="10"><Grid><Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions><ListBox x:Name="ContentList" Style="{StaticResource CleanListBox}"><ListBox.ItemTemplate><DataTemplate><Border Background="#0D1422" BorderBrush="#1D293E" BorderThickness="1" CornerRadius="11" Padding="12" Margin="0,0,0,7"><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><StackPanel><TextBlock Text="{Binding Name}" FontWeight="SemiBold"/><TextBlock Text="{Binding Path}" FontSize="8.5" Foreground="#647087" TextTrimming="CharacterEllipsis" MaxWidth="700"/></StackPanel><TextBlock Grid.Column="1" Text="lokal" Foreground="#7C88A0" FontSize="9" VerticalAlignment="Center"/></Grid></Border></DataTemplate></ListBox.ItemTemplate></ListBox><StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0"><Button Style="{StaticResource LuminaSecondaryButton}" Click="OpenContentFolder_Click" Content="Ordner"/><Button Style="{StaticResource LuminaSecondaryButton}" Click="ToggleContent_Click" Content="Aktiv / Aus" Margin="8,0,0,0"/><Button Style="{StaticResource LuminaDangerButton}" Click="DeleteContent_Click" Content="Entfernen" Margin="8,0,0,0"/></StackPanel></Grid></Border>
                 </Grid>
 
-                <!-- DOWNLOADS / LOG -->
+                <!-- DOWNLOADS -->
                 <Grid x:Name="DownloadsPage" Visibility="Collapsed">
                     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
-                    <StackPanel Margin="0,0,0,18"><TextBlock Text="Downloads &amp; Launch Log" FontSize="31" FontWeight="Bold"/><TextBlock Text="Hier siehst du Downloads, Loader-Installer und Minecraft-Ausgaben." FontSize="12" Foreground="{StaticResource SecondaryText}" Margin="0,5,0,0"/></StackPanel>
-                    <Border Grid.Row="1" Style="{StaticResource CardBorder}" Padding="18" Margin="0,0,0,14"><StackPanel><Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock x:Name="DownloadStatus" Text="Bereit" FontSize="12" FontWeight="SemiBold"/><TextBlock Grid.Column="1" x:Name="DownloadPercent" Text="0%" FontSize="10" Foreground="#778299"/></Grid><ProgressBar x:Name="DownloadProgress" Margin="0,12,0,0" Minimum="0" Maximum="100" Value="0"/></StackPanel></Border>
-                    <Border Grid.Row="2" Style="{StaticResource CardBorder}" Padding="10"><ListBox x:Name="DownloadLog" Style="{StaticResource CleanListBox}" FontFamily="Cascadia Mono, Consolas" FontSize="10" Foreground="#9EA8BC"/></Border>
+                    <StackPanel><TextBlock Text="Downloads &amp; Aktivität" FontSize="28" FontWeight="Bold"/><TextBlock Text="Installationen, Startvorbereitung und technische Logs an einem Ort." FontSize="10.5" Foreground="{StaticResource LuminaTextMuted}" Margin="0,4,0,0"/></StackPanel>
+                    <Border Grid.Row="1" Style="{StaticResource LuminaCard}" Padding="18" Margin="0,16,0,14"><StackPanel><Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock x:Name="DownloadStatus" Text="Bereit" FontSize="13" FontWeight="SemiBold"/><TextBlock x:Name="DownloadPercent" Grid.Column="1" Text="0%" FontSize="10" Foreground="#8E9AAF"/></Grid><ProgressBar x:Name="DownloadProgress" Margin="0,12,0,0" Minimum="0" Maximum="100"/></StackPanel></Border>
+                    <Border Grid.Row="2" Style="{StaticResource LuminaCard}" Padding="14"><Grid><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions><TextBlock Text="LAUNCH LOG" FontSize="8.5" FontWeight="Bold" Foreground="#68758C" Margin="2,0,0,10"/><ListBox x:Name="DownloadLog" Grid.Row="1" Style="{StaticResource CleanListBox}" FontFamily="Consolas" FontSize="10" Foreground="#AAB4C7"/></Grid></Border>
                 </Grid>
 
                 <!-- SETTINGS -->
-                <ScrollViewer x:Name="SettingsPage" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
-                    <StackPanel>
-                        <TextBlock Text="Einstellungen" FontSize="31" FontWeight="Bold"/>
-                        <TextBlock Text="Client, Performance und Startverhalten." FontSize="12" Foreground="{StaticResource SecondaryText}" Margin="0,5,0,18"/>
-                        <Border Style="{StaticResource CardBorder}" Padding="22" Margin="0,0,0,14">
-                            <StackPanel><TextBlock Text="Performance" FontSize="16" FontWeight="SemiBold"/><TextBlock Text="Zugewiesener RAM" FontSize="10" Foreground="#6E798F" Margin="0,15,0,6"/><Slider x:Name="RamSlider" Minimum="2048" Maximum="16384" TickFrequency="512" IsSnapToTickEnabled="True" ValueChanged="RamSlider_ValueChanged"/><TextBlock x:Name="RamValue" Text="6144 MB" FontSize="11" Foreground="#A7B0C2" Margin="0,5,0,0"/><UniformGrid Columns="3" Margin="0,17,0,0"><CheckBox x:Name="SmartMemoryCheck" Content="Smart Memory" Click="LabToggle_Click"/><CheckBox x:Name="SafeLaunchCheck" Content="Safe Launch" Click="LabToggle_Click"/><CheckBox x:Name="FocusModeCheck" Content="Focus Mode" Click="LabToggle_Click"/></UniformGrid></StackPanel>
-                        </Border>
-                        <Border Style="{StaticResource CardBorder}" Padding="22" Margin="0,0,0,14">
-                            <StackPanel><TextBlock Text="Minecraft" FontSize="16" FontWeight="SemiBold"/><Grid Margin="0,15,0,0"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="12"/><ColumnDefinition/></Grid.ColumnDefinitions><StackPanel><TextBlock Text="BREITE" FontSize="9" Foreground="#687389" Margin="0,0,0,6"/><TextBox x:Name="WidthText" Text="1280"/></StackPanel><StackPanel Grid.Column="2"><TextBlock Text="HÖHE" FontSize="9" Foreground="#687389" Margin="0,0,0,6"/><TextBox x:Name="HeightText" Text="720"/></StackPanel></Grid><TextBlock Text="JAVA-PFAD (leer = automatisch)" FontSize="9" Foreground="#687389" Margin="0,14,0,6"/><Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBox x:Name="JavaPathText"/><Button Grid.Column="1" Style="{StaticResource SecondaryButton}" Margin="8,0,0,0" Click="BrowseJava_Click" Content="Suchen"/></Grid><TextBlock Text="QUICK CONNECT SERVER" FontSize="9" Foreground="#687389" Margin="0,14,0,6"/><TextBox x:Name="QuickServerText"/><CheckBox x:Name="CloseOnStartCheck" Content="Launcher nach Spielstart schließen" Margin="0,15,0,0"/></StackPanel>
-                        </Border>
-                        <Button Style="{StaticResource GradientButton}" HorizontalAlignment="Left" Click="SaveSettings_Click" Content="Einstellungen speichern"/>
+                <ScrollViewer x:Name="SettingsPage" Visibility="Collapsed" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel MaxWidth="1050" HorizontalAlignment="Stretch">
+                        <TextBlock Text="Einstellungen" FontSize="28" FontWeight="Bold"/><TextBlock Text="Einfach, lesbar und ohne versteckte Windows-Standardcontrols." FontSize="10.5" Foreground="{StaticResource LuminaTextMuted}" Margin="0,4,0,16"/>
+                        <Border Style="{StaticResource LuminaCard}" Padding="22" Margin="0,0,0,12"><StackPanel><TextBlock Text="Performance" FontSize="17" FontWeight="SemiBold"/><Grid Margin="0,18,0,8"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock Text="Arbeitsspeicher" FontWeight="SemiBold"/><TextBlock x:Name="RamValue" Grid.Column="1" Text="6144 MB (6 GB)" Foreground="#CDBDFF"/></Grid><Slider x:Name="RamSlider" Minimum="2048" Maximum="16384" TickFrequency="512" IsSnapToTickEnabled="True" ValueChanged="RamSlider_ValueChanged"/><UniformGrid Columns="3" Margin="-4,14,-4,0"><CheckBox x:Name="SmartMemoryCheck" Style="{StaticResource LuminaToggle}" Margin="4" Click="LabToggle_Click"><StackPanel><TextBlock Text="Smart Memory" FontWeight="SemiBold"/><TextBlock Text="RAM automatisch passend wählen" FontSize="8.5" Foreground="#748198"/></StackPanel></CheckBox><CheckBox x:Name="SafeLaunchCheck" Style="{StaticResource LuminaToggle}" Margin="4" Click="LabToggle_Click"><StackPanel><TextBlock Text="Safe Launch" FontWeight="SemiBold"/><TextBlock Text="Configs vor dem Start sichern" FontSize="8.5" Foreground="#748198"/></StackPanel></CheckBox><CheckBox x:Name="FocusModeCheck" Style="{StaticResource LuminaToggle}" Margin="4" Click="LabToggle_Click"><StackPanel><TextBlock Text="Focus Mode" FontWeight="SemiBold"/><TextBlock Text="Ablenkung beim Spielen reduzieren" FontSize="8.5" Foreground="#748198"/></StackPanel></CheckBox></UniformGrid></StackPanel></Border>
+                        <Border Style="{StaticResource LuminaCard}" Padding="22" Margin="0,0,0,12"><StackPanel><TextBlock Text="Minecraft" FontSize="17" FontWeight="SemiBold"/><Grid Margin="0,16,0,0"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="12"/><ColumnDefinition/></Grid.ColumnDefinitions><StackPanel><TextBlock Text="BREITE" FontSize="8" Foreground="#6B7790"/><TextBox x:Name="WidthText" Margin="0,6,0,0"/></StackPanel><StackPanel Grid.Column="2"><TextBlock Text="HÖHE" FontSize="8" Foreground="#6B7790"/><TextBox x:Name="HeightText" Margin="0,6,0,0"/></StackPanel></Grid><TextBlock Text="JAVA RUNTIME" FontSize="8" Foreground="#6B7790" Margin="0,18,0,6"/><Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBox x:Name="JavaPathText"/><Button Grid.Column="1" Style="{StaticResource LuminaSecondaryButton}" Click="BrowseJava_Click" Content="Java wählen" Margin="8,0,0,0"/></Grid><TextBlock Text="QUICK CONNECT" FontSize="8" Foreground="#6B7790" Margin="0,18,0,6"/><TextBox x:Name="QuickServerText"/><CheckBox x:Name="CloseOnStartCheck" Style="{StaticResource LuminaToggle}" Margin="0,14,0,0"><StackPanel><TextBlock Text="Launcher nach Spielstart schließen"/><TextBlock Text="LUMINA schließt sich nach erfolgreichem Start." FontSize="8.5" Foreground="#748198"/></StackPanel></CheckBox></StackPanel></Border>
+                        <Button Style="{StaticResource LuminaPrimaryButton}" Click="SaveSettings_Click" Content="Einstellungen speichern" HorizontalAlignment="Right" Padding="22,12" Margin="0,0,0,20"/>
                     </StackPanel>
                 </ScrollViewer>
 
                 <!-- ACCOUNT -->
-                <Grid x:Name="AccountPage" Visibility="Collapsed">
-                    <StackPanel Width="590" HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <Border Style="{StaticResource CardBorder}" Padding="32">
-                            <StackPanel HorizontalAlignment="Center">
-                                <Border Width="76" Height="76" CornerRadius="38" Background="#241C40"><TextBlock Text="◉" FontSize="31" Foreground="#C8B8FF" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
-                                <TextBlock x:Name="AccountName" Text="Nicht angemeldet" FontSize="25" FontWeight="Bold" Margin="0,17,0,3" HorizontalAlignment="Center"/>
-                                <TextBlock x:Name="AccountState" Text="MICROSOFT ACCOUNT" FontSize="9" FontWeight="Bold" Foreground="#687389" HorizontalAlignment="Center"/>
-                                <TextBlock x:Name="AccountId" Text="" FontSize="9" Foreground="#566176" Margin="0,8,0,0" HorizontalAlignment="Center"/>
-                                <TextBlock Text="LUMINA nutzt die normale Microsoft-/Xbox-Anmeldung für Minecraft Java." TextWrapping="Wrap" TextAlignment="Center" Foreground="#8792A8" FontSize="11" Margin="35,18"/>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"><Button x:Name="LoginButton" Style="{StaticResource GradientButton}" Click="Login_Click" Content="Mit Microsoft anmelden"/><Button x:Name="SignOutButton" Style="{StaticResource SecondaryButton}" Margin="8,0,0,0" Click="SignOut_Click" Content="Abmelden"/></StackPanel>
-                            </StackPanel>
-                        </Border>
+                <ScrollViewer x:Name="AccountPage" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
+                    <StackPanel MaxWidth="760" HorizontalAlignment="Left">
+                        <TextBlock Text="Account" FontSize="28" FontWeight="Bold"/><TextBlock Text="Microsoft-Anmeldung und Minecraft-Profil – Status und Fehler bleiben in LUMINA." FontSize="10.5" Foreground="{StaticResource LuminaTextMuted}" Margin="0,4,0,16"/>
+                        <Border Style="{StaticResource LuminaCard}" Padding="24"><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="76"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><Border Width="62" Height="62" CornerRadius="18" Background="#211B38"><TextBlock Text="◆" FontSize="24" Foreground="#B99CFF" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock x:Name="AccountState" Text="MICROSOFT ACCOUNT" FontSize="8.5" FontWeight="Bold" Foreground="#6B7790"/><TextBlock x:Name="AccountName" Text="Nicht angemeldet" FontSize="21" FontWeight="SemiBold" Margin="0,5,0,0"/><TextBlock x:Name="AccountId" Text="" FontSize="9" Foreground="#6F7B92" Margin="0,4,0,0"/></StackPanel></Grid></Border>
+                        <Border Style="{StaticResource LuminaCard}" Padding="22" Margin="0,12,0,0"><StackPanel><TextBlock Text="Sichere Anmeldung" FontSize="15" FontWeight="SemiBold"/><TextBlock Text="LUMINA fragt niemals nach deinem Microsoft-Passwort. Die eigentliche Anmeldung läuft ausschließlich über den sicheren Microsoft-Flow." FontSize="10" Foreground="#8490A6" TextWrapping="Wrap" Margin="0,6,0,0"/><StackPanel Orientation="Horizontal" Margin="0,18,0,0"><Button x:Name="LoginButton" Style="{StaticResource LuminaPrimaryButton}" Click="Login_Click" Content="Mit Microsoft anmelden"/><Button x:Name="SignOutButton" Style="{StaticResource LuminaSecondaryButton}" Click="SignOut_Click" Content="Abmelden" Visibility="Collapsed" Margin="9,0,0,0"/></StackPanel></StackPanel></Border>
                     </StackPanel>
-                </Grid>
+                </ScrollViewer>
             </Grid>
         </Grid>
     </Grid>
