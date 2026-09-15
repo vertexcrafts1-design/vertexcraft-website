@@ -18,5 +18,8 @@
     <None Include="../../src/Lumina.Client/App.xaml"
           Link="ThemeUnderTest.xaml"
           CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../src/Lumina.Client/Themes/ConceptB.xaml"
+          Link="ConceptBUnderTest.xaml"
+          CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
