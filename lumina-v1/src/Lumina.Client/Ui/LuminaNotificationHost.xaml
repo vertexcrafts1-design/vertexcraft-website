@@ -34,15 +34,15 @@
                             <Button Grid.Column="2" Width="30" Height="30" Padding="0" VerticalAlignment="Top"
                                     Style="{StaticResource LuminaSecondaryButton}" Content="×" Tag="{Binding}" Click="Dismiss_Click"/>
                         </Grid>
-                        <Border.Style>
-                            <Style TargetType="Border" BasedOn="{StaticResource LuminaToastCard}"/>
-                        </Border.Style>
-                        <DataTemplate.Triggers>
-                            <DataTrigger Binding="{Binding Kind}" Value="Success"><Setter TargetName="KindBar" Property="Background" Value="{StaticResource LuminaSuccess}"/></DataTrigger>
-                            <DataTrigger Binding="{Binding Kind}" Value="Info"><Setter TargetName="KindBar" Property="Background" Value="{StaticResource LuminaInfo}"/></DataTrigger>
-                            <DataTrigger Binding="{Binding Kind}" Value="Warning"><Setter TargetName="KindBar" Property="Background" Value="{StaticResource LuminaWarning}"/></DataTrigger>
-                            <DataTrigger Binding="{Binding Kind}" Value="Error"><Setter TargetName="KindBar" Property="Background" Value="{StaticResource LuminaDanger}"/></DataTrigger>
-                        </DataTemplate.Triggers>
+                        <Border.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.16"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Border.Triggers>
                     </Border>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
