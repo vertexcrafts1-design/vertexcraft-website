@@ -5,7 +5,7 @@ namespace Lumina.Client.Services;
 
 public sealed class VerificationService
 {
-    public static readonly Uri DefaultBaseAddress = new("https://vertexcraft-api.vertexcrafts1.workers.dev/");
+    public static readonly Uri DefaultBaseAddress = new("https://lumina-collection-api.vertexcrafts1.workers.dev/");
     private readonly HttpClient _http;
 
     public VerificationService(HttpClient? httpClient = null)
