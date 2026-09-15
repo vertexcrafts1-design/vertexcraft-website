@@ -1,26 +1,17 @@
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Threading;
 using Lumina.Client.Services;
+using Lumina.Client.Ui;
 using Lumina.Core;
 
 namespace Lumina.Client;
 
 public partial class MainWindow
 {
-    private enum DiscoverMode { Modrinth, Collection, Installed }
-
-    private DiscoverMode _discoverMode = DiscoverMode.Modrinth;
     private bool _enhancedDiscoverReady;
-    private Border? _discoverFilterBar;
-    private Grid? _discoverGalleryHost;
+    private DiscoverStorefrontView? _discoverStorefront;
     private InstalledUpdatesView? _installedUpdatesView;
-    private Button? _tabModrinth;
-    private Button? _tabCollection;
-    private Button? _tabInstalled;
-    private TextBlock? _curatorHint;
     private LuminaCollectionService? _luminaCollectionService;
     private VerificationService? _verificationService;
     private ManagedContentUpdateService? _managedUpdateService;
@@ -31,157 +22,123 @@ public partial class MainWindow
         base.OnContentRendered(e);
         if (_enhancedDiscoverReady) return;
         InitializeEnhancedDiscover();
-        Dispatcher.BeginInvoke(async () => await RefreshDiscoverModeAsync(), DispatcherPriority.Background);
+        Dispatcher.BeginInvoke(async () => await RefreshStorefrontAsync(), DispatcherPriority.Background);
     }
 
     private void InitializeEnhancedDiscover()
     {
         if (_enhancedDiscoverReady) return;
         _enhancedDiscoverReady = true;
+
         _luminaCollectionService = new LuminaCollectionService();
         _verificationService = new VerificationService();
         _managedUpdateService = new ManagedContentUpdateService(_paths, _modrinthService);
-
-        _discoverFilterBar = DiscoverPage.Children.OfType<Border>().FirstOrDefault(x => Grid.GetRow(x) == 1);
-        _discoverGalleryHost = DiscoverPage.Children.OfType<Grid>().FirstOrDefault(x => Grid.GetRow(x) == 2);
-
-        foreach (UIElement child in DiscoverPage.Children.Cast<UIElement>().ToList())
-        {
-            var row = Grid.GetRow(child);
-            if (row >= 1) Grid.SetRow(child, row + 1);
-        }
-        DiscoverPage.RowDefinitions.Insert(1, new RowDefinition { Height = GridLength.Auto });
-
-        var tabs = new Grid { Margin = new Thickness(0, 0, 0, 14) };
-        tabs.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        tabs.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        tabs.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        tabs.ColumnDefinitions.Add(new ColumnDefinition());
-
-        _tabModrinth = TabButton("Modrinth", DiscoverMode.Modrinth);
-        _tabCollection = TabButton("✦  LUMINA Collection", DiscoverMode.Collection);
-        _tabInstalled = TabButton("Installiert / Updates", DiscoverMode.Installed);
-        Grid.SetColumn(_tabModrinth, 0);
-        Grid.SetColumn(_tabCollection, 1);
-        Grid.SetColumn(_tabInstalled, 2);
-        _tabCollection.Margin = new Thickness(7, 0, 0, 0);
-        _tabInstalled.Margin = new Thickness(7, 0, 0, 0);
-        tabs.Children.Add(_tabModrinth);
-        tabs.Children.Add(_tabCollection);
-        tabs.Children.Add(_tabInstalled);
-
-        _curatorHint = new TextBlock
-        {
-            Text = "",
-            FontSize = 9,
-            Foreground = Brush("#6F7B91"),
-            VerticalAlignment = VerticalAlignment.Center,
-            HorizontalAlignment = HorizontalAlignment.Right
-        };
-        Grid.SetColumn(_curatorHint, 3);
-        tabs.Children.Add(_curatorHint);
-        Grid.SetRow(tabs, 1);
-        DiscoverPage.Children.Add(tabs);
-
-        _installedUpdatesView = new InstalledUpdatesView { Visibility = Visibility.Collapsed };
+        _installedUpdatesView = new InstalledUpdatesView();
         _installedUpdatesView.UpdateRequested += InstalledUpdate_Requested;
         _installedUpdatesView.RefreshRequested += async (_, _) => await LoadInstalledUpdatesAsync();
-        Grid.SetRow(_installedUpdatesView, 3);
-        DiscoverPage.Children.Add(_installedUpdatesView);
 
-        DiscoverSearch.KeyDown -= DiscoverSearch_KeyDown;
-        DiscoverSearch.KeyDown += EnhancedDiscoverSearch_KeyDown;
-        DiscoverKind.SelectionChanged -= DiscoverFilter_Changed;
-        DiscoverKind.SelectionChanged += EnhancedDiscoverFilter_Changed;
-        DiscoverSort.SelectionChanged -= DiscoverFilter_Changed;
-        DiscoverSort.SelectionChanged += EnhancedDiscoverFilter_Changed;
+        _discoverStorefront = new DiscoverStorefrontView();
+        _discoverStorefront.SetProjects(_gallery);
+        _discoverStorefront.SetInstalledView(_installedUpdatesView);
+        _discoverStorefront.SetInstanceContext(SelectedInstance);
+        _discoverStorefront.SearchRequested += Storefront_SearchRequested;
+        _discoverStorefront.InstallRequested += Storefront_InstallRequested;
+        _discoverStorefront.CurateRequested += Storefront_CurateRequested;
 
-        var searchButton = FindButton(DiscoverPage, x => x.Equals("Suchen", StringComparison.OrdinalIgnoreCase));
-        if (searchButton is not null)
-        {
-            searchButton.Click -= DiscoverSearch_Click;
-            searchButton.Click += EnhancedDiscoverSearch_Click;
-        }
-
-        GalleryList.PreviewMouseRightButtonUp += GalleryList_RightClick;
+        DiscoverPage.Children.Clear();
+        DiscoverPage.RowDefinitions.Clear();
+        DiscoverPage.Children.Add(_discoverStorefront);
         DiscoverPage.IsVisibleChanged += async (_, _) =>
         {
             if (DiscoverPage.Visibility == Visibility.Visible)
-                await RefreshDiscoverModeAsync();
+            {
+                _discoverStorefront.SetInstanceContext(SelectedInstance);
+                await RefreshStorefrontAsync();
+            }
         };
-        UpdateDiscoverTabs();
     }
 
-    private Button TabButton(string text, DiscoverMode mode)
+    private async void Storefront_SearchRequested(object? sender, DiscoverRequest request) =>
+        await RefreshStorefrontAsync(request);
+
+    private async Task RefreshStorefrontAsync(DiscoverRequest? request = null)
     {
-        var button = new Button
+        if (!_enhancedDiscoverReady || _discoverStorefront is null || SelectedInstance is null) return;
+
+        request ??= new DiscoverRequest(
+            _discoverStorefront.Query,
+            _discoverStorefront.Category,
+            _discoverStorefront.SourceMode);
+        _discoverStorefront.SetInstanceContext(SelectedInstance);
+
+        if (request.Source == DiscoverSourceMode.Installed)
         {
-            Content = text,
-            Style = (Style)FindResource("PillButton")
-        };
-        button.Click += async (_, _) =>
+            _discoverStorefront.ShowInstalled();
+            await LoadInstalledUpdatesAsync();
+            return;
+        }
+
+        _discoverStorefront.SetProjects(_gallery);
+        if (request.Source == DiscoverSourceMode.Collection)
         {
-            _discoverMode = mode;
-            UpdateDiscoverTabs();
-            await RefreshDiscoverModeAsync();
-        };
-        return button;
+            await LoadLuminaCollectionAsync(request.Category, request.Query);
+            return;
+        }
+
+        await LoadModrinthStorefrontAsync(request);
     }
 
-    private async void EnhancedDiscoverSearch_Click(object sender, RoutedEventArgs e) => await RefreshDiscoverModeAsync();
-
-    private async void EnhancedDiscoverSearch_KeyDown(object sender, KeyEventArgs e)
+    private async Task LoadModrinthStorefrontAsync(DiscoverRequest request)
     {
-        if (e.Key == Key.Enter) await RefreshDiscoverModeAsync();
-    }
+        if (SelectedInstance is null || _discoverStorefront is null) return;
+        var kind = StorefrontKind(request.Category);
 
-    private async void EnhancedDiscoverFilter_Changed(object sender, SelectionChangedEventArgs e)
-    {
-        if (_initializing || !_enhancedDiscoverReady) return;
-        await RefreshDiscoverModeAsync();
-    }
-
-    private async Task RefreshDiscoverModeAsync()
-    {
-        if (!_enhancedDiscoverReady || SelectedInstance is null) return;
-        UpdateDiscoverTabs();
-        await RefreshCuratorStateAsync();
-
-        switch (_discoverMode)
+        if (kind == "Mods" && SelectedInstance.Loader.Equals("Vanilla", StringComparison.OrdinalIgnoreCase))
         {
-            case DiscoverMode.Collection:
-                if (_discoverFilterBar is not null) _discoverFilterBar.Visibility = Visibility.Visible;
-                if (_discoverGalleryHost is not null) _discoverGalleryHost.Visibility = Visibility.Visible;
-                if (_installedUpdatesView is not null) _installedUpdatesView.Visibility = Visibility.Collapsed;
-                await LoadLuminaCollectionAsync();
-                break;
-            case DiscoverMode.Installed:
-                if (_discoverFilterBar is not null) _discoverFilterBar.Visibility = Visibility.Collapsed;
-                if (_discoverGalleryHost is not null) _discoverGalleryHost.Visibility = Visibility.Collapsed;
-                if (_installedUpdatesView is not null) _installedUpdatesView.Visibility = Visibility.Visible;
-                await LoadInstalledUpdatesAsync();
-                break;
-            default:
-                if (_discoverFilterBar is not null) _discoverFilterBar.Visibility = Visibility.Visible;
-                if (_discoverGalleryHost is not null) _discoverGalleryHost.Visibility = Visibility.Visible;
-                if (_installedUpdatesView is not null) _installedUpdatesView.Visibility = Visibility.Collapsed;
-                await SearchGalleryAsync();
-                break;
+            _gallery.Clear();
+            _discoverStorefront.SetEmpty(true,
+                "Vanilla lädt keine Modloader-Mods. Nutze Fabric, Forge, NeoForge oder Quilt.");
+            return;
+        }
+
+        SetDownloadStatus("Durchsuche Modrinth …");
+        try
+        {
+            var sort = request.Category == "Featured" ? "downloads" : "relevance";
+            var projects = await _modrinthService.SearchAsync(request.Query, kind, SelectedInstance, sort, 40);
+            _gallery.Clear();
+            foreach (var project in projects) _gallery.Add(project);
+            _discoverStorefront.SetEmpty(_gallery.Count == 0, "Keine kompatiblen Projekte gefunden.");
+            SetDownloadStatus("Bereit");
+        }
+        catch (Exception ex)
+        {
+            _gallery.Clear();
+            _discoverStorefront.SetEmpty(true, "Modrinth konnte gerade nicht geladen werden.");
+            AddLog("Discover / Modrinth: " + ex.Message);
+            SetDownloadStatus("Discover-Fehler");
+            ShowFeedback(NotificationKind.Error, "Discover", "Modrinth konnte nicht geladen werden. Minecraft-Start bleibt davon unberührt.");
         }
     }
 
-    private async Task LoadLuminaCollectionAsync()
+    private async Task LoadLuminaCollectionAsync(string category, string query)
     {
-        if (SelectedInstance is null || _luminaCollectionService is null) return;
-        DiscoverEmpty.Visibility = Visibility.Collapsed;
+        if (SelectedInstance is null || _luminaCollectionService is null || _discoverStorefront is null) return;
+        var kindText = StorefrontKind(category);
+        if (kindText == "Modpacks")
+        {
+            _gallery.Clear();
+            _discoverStorefront.SetEmpty(true, "Die LUMINA Collection unterstützt aktuell Mods, Shader und Resource Packs.");
+            return;
+        }
+
         SetDownloadStatus("Lade LUMINA Collection …");
         try
         {
-            var kindText = SelectedGalleryKind();
-            var category = CategoryForKind(kindText);
+            var collectionCategory = CategoryForKind(kindText);
             var contentKind = ModrinthService.KindToContentKind(kindText);
             var entries = (await _luminaCollectionService.GetAsync())
-                .Where(x => x.Category.Equals(category, StringComparison.OrdinalIgnoreCase))
+                .Where(x => x.Category.Equals(collectionCategory, StringComparison.OrdinalIgnoreCase))
                 .ToList();
 
             var compatibleIds = new List<string>();
@@ -194,11 +151,13 @@ public partial class MainWindow
                     if (CompatibilityService.ChoosePreferred(compatible) is not null)
                         compatibleIds.Add(entry.ProjectId);
                 }
-                catch { }
+                catch
+                {
+                    // One bad source project must not break the collection.
+                }
             }
 
             var projects = await _modrinthService.GetProjectsAsync(compatibleIds);
-            var query = DiscoverSearch.Text.Trim();
             if (!string.IsNullOrWhiteSpace(query))
                 projects = projects.Where(x =>
                     x.Title.Contains(query, StringComparison.OrdinalIgnoreCase) ||
@@ -206,19 +165,85 @@ public partial class MainWindow
 
             _gallery.Clear();
             foreach (var project in projects) _gallery.Add(project);
-            DiscoverEmptyText.Text = entries.Count == 0
-                ? "Die LUMINA Collection ist leer oder der Collection-Dienst ist gerade nicht erreichbar. Modrinth funktioniert weiterhin normal."
-                : "Für diese Instanz gibt es aktuell keinen kompatiblen Eintrag in der LUMINA Collection.";
-            DiscoverEmpty.Visibility = _gallery.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+            _discoverStorefront.SetEmpty(_gallery.Count == 0,
+                entries.Count == 0
+                    ? "Die LUMINA Collection ist leer oder gerade nicht erreichbar. Modrinth funktioniert weiterhin."
+                    : "Für diese Instanz gibt es aktuell keinen kompatiblen Collection-Eintrag.");
             SetDownloadStatus("Bereit");
         }
         catch (Exception ex)
         {
             _gallery.Clear();
-            DiscoverEmptyText.Text = "LUMINA Collection ist gerade nicht erreichbar. Nutze solange Modrinth.";
-            DiscoverEmpty.Visibility = Visibility.Visible;
+            _discoverStorefront.SetEmpty(true, "LUMINA Collection ist gerade nicht erreichbar. Nutze solange Modrinth.");
             AddLog("LUMINA Collection: " + ex.Message);
             SetDownloadStatus("Bereit");
+        }
+    }
+
+    private async void Storefront_InstallRequested(object? sender, GalleryProject project)
+    {
+        if (SelectedInstance is null || _discoverStorefront is null) return;
+        var kind = StorefrontKind(_discoverStorefront.Category);
+        if (kind == "Modpacks")
+        {
+            ShowFeedback(NotificationKind.Info, "Modpack", "Modpacks können bereits durchsucht werden; ein eigener Instanz-Import folgt getrennt, damit keine .mrpack-Datei fälschlich als Mod installiert wird.");
+            return;
+        }
+
+        try
+        {
+            var progress = new Progress<string>(message =>
+            {
+                SetDownloadStatus(message);
+                AddLog(message);
+            });
+            var result = await _modrinthService.InstallAsync(project, kind, SelectedInstance, _paths, progress);
+            AddLog($"Discover installiert: {project.Title} · {result.FilesInstalled} Datei(en)");
+            RefreshContent();
+            UpdateSelectedInstanceUi();
+            SetDownloadStatus($"{project.Title} installiert");
+            ShowFeedback(NotificationKind.Success, "Installiert", $"{project.Title} ist jetzt in {SelectedInstance.Name} installiert.");
+        }
+        catch (Exception ex)
+        {
+            AddLog($"Discover-Installation fehlgeschlagen: {ex}");
+            ShowFeedback(NotificationKind.Error, "Installation fehlgeschlagen", ex.Message);
+        }
+    }
+
+    private async void Storefront_CurateRequested(object? sender, GalleryProject project)
+    {
+        if (_verificationService is null || _luminaCollectionService is null || _discoverStorefront is null) return;
+        if (!_accountService.IsSignedIn || _accountService.Session is null)
+        {
+            ShowFeedback(NotificationKind.Info, "Anmeldung erforderlich", "Melde dich an, um die LUMINA Collection zu verwalten.");
+            return;
+        }
+
+        _curatorVerified = await _verificationService.IsVerifiedAsync(_accountService.PlayerId);
+        if (_curatorVerified != true)
+        {
+            ShowFeedback(NotificationKind.Info, "LUMINA Collection", "Nur verifizierte LUMINA-Kuratoren können Projekte zur globalen Collection hinzufügen.");
+            return;
+        }
+
+        var kind = StorefrontKind(_discoverStorefront.Category);
+        if (kind == "Modpacks")
+        {
+            ShowFeedback(NotificationKind.Warning, "LUMINA Collection", "Modpacks sind für die Collection noch nicht freigeschaltet.");
+            return;
+        }
+
+        try
+        {
+            await _luminaCollectionService.AddAsync(project.ProjectId, CategoryForKind(kind), "", _accountService.Session);
+            AddLog($"LUMINA Collection: {project.Title} hinzugefügt");
+            ShowFeedback(NotificationKind.Success, "LUMINA Collection", $"{project.Title} wurde zur Collection hinzugefügt.");
+        }
+        catch (Exception ex)
+        {
+            AddLog("Collection hinzufügen: " + ex.Message);
+            ShowFeedback(NotificationKind.Warning, "LUMINA Collection", ex.Message);
         }
     }
 
@@ -238,6 +263,7 @@ public partial class MainWindow
             AddLog("Update-Prüfung: " + ex.Message);
             _installedUpdatesView.SetItems([]);
             SetDownloadStatus("Update-Prüfung fehlgeschlagen");
+            ShowFeedback(NotificationKind.Warning, "Updates", "Installierter Content konnte gerade nicht vollständig geprüft werden.");
         }
     }
 
@@ -255,100 +281,28 @@ public partial class MainWindow
             AddLog($"Update installiert: {item.Title} · {result.FilesInstalled} Datei(en)");
             RefreshContent();
             await LoadInstalledUpdatesAsync();
+            ShowFeedback(NotificationKind.Success, "Update installiert", $"{item.Title} wurde aktualisiert.");
         }
         catch (Exception ex)
         {
             AddLog("Update fehlgeschlagen: " + ex);
-            MessageBox.Show(this, ex.Message, "LUMINA Update", MessageBoxButton.OK, MessageBoxImage.Error);
+            ShowFeedback(NotificationKind.Error, "Update fehlgeschlagen", ex.Message);
         }
     }
 
-    private async Task RefreshCuratorStateAsync()
+    private static string StorefrontKind(string category) => category switch
     {
-        if (_curatorHint is null || _verificationService is null) return;
-        if (!_accountService.IsSignedIn)
-        {
-            _curatorVerified = false;
-            _curatorHint.Text = "";
-            return;
-        }
-
-        if (_curatorVerified is null)
-            _curatorVerified = await _verificationService.IsVerifiedAsync(_accountService.PlayerId);
-        _curatorHint.Text = _curatorVerified == true
-            ? "Verifizierter Kurator · Rechtsklick auf Projekt zum Hinzufügen"
-            : "";
-    }
-
-    private async void GalleryList_RightClick(object sender, MouseButtonEventArgs e)
-    {
-        if (_discoverMode != DiscoverMode.Modrinth || _verificationService is null || _luminaCollectionService is null) return;
-        if (!_accountService.IsSignedIn) return;
-
-        _curatorVerified = await _verificationService.IsVerifiedAsync(_accountService.PlayerId);
-        if (_curatorVerified != true) return;
-        if (FindDataContext<GalleryProject>(e.OriginalSource as DependencyObject) is not { } project) return;
-
-        var menu = new ContextMenu();
-        var add = new MenuItem { Header = "✦ Zur LUMINA Collection hinzufügen" };
-        add.Click += async (_, _) =>
-        {
-            try
-            {
-                var session = _accountService.Session ?? throw new InvalidOperationException("Microsoft-Sitzung fehlt.");
-                await _luminaCollectionService.AddAsync(project.ProjectId, CategoryForKind(SelectedGalleryKind()), "", session);
-                AddLog($"LUMINA Collection: {project.Title} hinzugefügt");
-                MessageBox.Show(this, $"{project.Title} wurde zur LUMINA Collection hinzugefügt.", "LUMINA Collection", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, ex.Message, "LUMINA Collection", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-        };
-        menu.Items.Add(add);
-        menu.IsOpen = true;
-        e.Handled = true;
-    }
-
-    private void UpdateDiscoverTabs()
-    {
-        SetTab(_tabModrinth, _discoverMode == DiscoverMode.Modrinth);
-        SetTab(_tabCollection, _discoverMode == DiscoverMode.Collection);
-        SetTab(_tabInstalled, _discoverMode == DiscoverMode.Installed);
-        if (SelectedInstance is not null)
-        {
-            var suffix = _discoverMode switch
-            {
-                DiscoverMode.Collection => "LUMINA Collection",
-                DiscoverMode.Installed => "Installiert & Updates",
-                _ => "Modrinth"
-            };
-            DiscoverContext.Text = $"{SelectedInstance.Name} · Minecraft {SelectedInstance.Version} · {SelectedInstance.Loader} · {suffix}";
-        }
-    }
-
-    private static void SetTab(Button? button, bool active)
-    {
-        if (button is null) return;
-        button.Background = Brush(active ? "#6F55E8" : "#151B27");
-        button.Foreground = Brush(active ? "#FFFFFF" : "#A8B1C5");
-    }
+        "Shaders" => "Shaders",
+        "Resource Packs" => "Resource Packs",
+        "Modpacks" => "Modpacks",
+        _ => "Mods"
+    };
 
     private static string CategoryForKind(string kind) => kind switch
     {
         "Resource Packs" => "resourcepack",
         "Shaders" => "shader",
+        "Modpacks" => "modpack",
         _ => "mod"
     };
-
-    private static T? FindDataContext<T>(DependencyObject? start) where T : class
-    {
-        var current = start;
-        while (current is not null)
-        {
-            if (current is FrameworkElement { DataContext: T value }) return value;
-            current = VisualTreeHelper.GetParent(current);
-        }
-        return null;
-    }
 }
