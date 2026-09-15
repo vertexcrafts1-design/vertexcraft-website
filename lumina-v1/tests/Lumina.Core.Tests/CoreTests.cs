@@ -1,4 +1,5 @@
 using Lumina.Core;
+using Xunit;
 
 namespace Lumina.Core.Tests;
 
