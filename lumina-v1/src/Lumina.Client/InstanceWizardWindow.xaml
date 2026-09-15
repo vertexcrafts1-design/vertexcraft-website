@@ -1,0 +1,112 @@
+<Window x:Class="Lumina.Client.InstanceWizardWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="LUMINA · Instanz" Width="820" Height="620"
+        MinWidth="820" MinHeight="620" MaxWidth="820" MaxHeight="620"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        Background="{StaticResource Bg}" Foreground="{StaticResource PrimaryText}">
+    <Grid Margin="28">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock x:Name="WizardTitle" Text="Neue Instanz" FontSize="27" FontWeight="Bold"/>
+                <TextBlock x:Name="WizardSubtitle" Text="Schritt 1 von 5 · Name" Margin="0,5,0,0" FontSize="11" Foreground="{StaticResource SecondaryText}"/>
+            </StackPanel>
+            <Border Grid.Column="1" Background="#111722" BorderBrush="#232D3F" BorderThickness="1" CornerRadius="11" Padding="12,8" VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse Width="7" Height="7" Fill="#54E1A5" Margin="0,0,7,0"/>
+                    <TextBlock x:Name="AccountLabel" Text="Microsoft angemeldet" FontSize="10" Foreground="#AAB4C9"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <UniformGrid Grid.Row="1" Columns="5" Margin="0,22,0,18">
+            <Border x:Name="Step1Badge" Background="#6F55E8" CornerRadius="10" Padding="10,8" Margin="0,0,5,0"><TextBlock Text="1 · Name" HorizontalAlignment="Center" FontSize="10" FontWeight="SemiBold"/></Border>
+            <Border x:Name="Step2Badge" Background="#111722" CornerRadius="10" Padding="10,8" Margin="2"><TextBlock Text="2 · Minecraft" HorizontalAlignment="Center" FontSize="10" Foreground="#7C879D"/></Border>
+            <Border x:Name="Step3Badge" Background="#111722" CornerRadius="10" Padding="10,8" Margin="2"><TextBlock Text="3 · Loader" HorizontalAlignment="Center" FontSize="10" Foreground="#7C879D"/></Border>
+            <Border x:Name="Step4Badge" Background="#111722" CornerRadius="10" Padding="10,8" Margin="2"><TextBlock Text="4 · Version" HorizontalAlignment="Center" FontSize="10" Foreground="#7C879D"/></Border>
+            <Border x:Name="Step5Badge" Background="#111722" CornerRadius="10" Padding="10,8" Margin="5,0,0,0"><TextBlock Text="5 · Fertig" HorizontalAlignment="Center" FontSize="10" Foreground="#7C879D"/></Border>
+        </UniformGrid>
+
+        <Border Grid.Row="2" Style="{StaticResource CardBorder}" Padding="28">
+            <Grid>
+                <Grid x:Name="NameStep">
+                    <StackPanel VerticalAlignment="Center" MaxWidth="520">
+                        <TextBlock Text="Wie soll die Instanz heißen?" FontSize="21" FontWeight="SemiBold"/>
+                        <TextBlock Text="Der Name kann später unabhängig von Minecraft-Version und Loader geändert werden." TextWrapping="Wrap" Margin="0,8,0,20" FontSize="11" Foreground="#7E899F"/>
+                        <TextBlock Text="INSTANZNAME" FontSize="9" FontWeight="Bold" Foreground="#687389" Margin="1,0,0,7"/>
+                        <TextBox x:Name="NameText" TextChanged="WizardValue_Changed"/>
+                        <TextBlock x:Name="NameError" Text="" Margin="1,9,0,0" FontSize="10" Foreground="#FF7B8C"/>
+                    </StackPanel>
+                </Grid>
+
+                <Grid x:Name="MinecraftStep" Visibility="Collapsed">
+                    <StackPanel VerticalAlignment="Center" MaxWidth="560">
+                        <TextBlock Text="Minecraft-Version" FontSize="21" FontWeight="SemiBold"/>
+                        <TextBlock x:Name="CurrentVersionHint" Text="Wähle eine konkrete Version aus dem offiziellen Minecraft-Katalog." TextWrapping="Wrap" Margin="0,8,0,20" FontSize="11" Foreground="#7E899F"/>
+                        <TextBlock Text="VERSION" FontSize="9" FontWeight="Bold" Foreground="#687389" Margin="1,0,0,7"/>
+                        <ComboBox x:Name="MinecraftCombo" DisplayMemberPath="DisplayName" SelectionChanged="Minecraft_Changed"/>
+                        <CheckBox x:Name="SnapshotsCheck" Content="Snapshots anzeigen" Margin="1,15,0,0" Checked="Snapshots_Changed" Unchecked="Snapshots_Changed"/>
+                        <TextBlock x:Name="MinecraftStatus" Text="Lade Minecraft-Katalog …" Margin="1,12,0,0" FontSize="10" Foreground="#7E899F"/>
+                    </StackPanel>
+                </Grid>
+
+                <Grid x:Name="LoaderStep" Visibility="Collapsed">
+                    <StackPanel VerticalAlignment="Center" MaxWidth="560">
+                        <TextBlock Text="Modloader" FontSize="21" FontWeight="SemiBold"/>
+                        <TextBlock Text="Vanilla startet ohne Modloader. Für Mods kannst du Fabric, Quilt, Forge oder NeoForge wählen." TextWrapping="Wrap" Margin="0,8,0,20" FontSize="11" Foreground="#7E899F"/>
+                        <TextBlock Text="LOADER" FontSize="9" FontWeight="Bold" Foreground="#687389" Margin="1,0,0,7"/>
+                        <ComboBox x:Name="LoaderCombo" SelectionChanged="Loader_Changed"/>
+                        <TextBlock x:Name="LoaderStatus" Text="" Margin="1,12,0,0" FontSize="10" Foreground="#7E899F"/>
+                    </StackPanel>
+                </Grid>
+
+                <Grid x:Name="LoaderVersionStep" Visibility="Collapsed">
+                    <StackPanel VerticalAlignment="Center" MaxWidth="560">
+                        <TextBlock Text="Loader-Version" FontSize="21" FontWeight="SemiBold"/>
+                        <TextBlock x:Name="LoaderVersionDescription" Text="Wähle die konkrete Loader-Version." TextWrapping="Wrap" Margin="0,8,0,20" FontSize="11" Foreground="#7E899F"/>
+                        <TextBlock Text="LOADER VERSION" FontSize="9" FontWeight="Bold" Foreground="#687389" Margin="1,0,0,7"/>
+                        <ComboBox x:Name="LoaderVersionCombo" SelectionChanged="WizardValue_Changed"/>
+                        <TextBlock x:Name="LoaderVersionStatus" Text="" Margin="1,12,0,0" FontSize="10" Foreground="#7E899F"/>
+                    </StackPanel>
+                </Grid>
+
+                <Grid x:Name="SummaryStep" Visibility="Collapsed">
+                    <StackPanel VerticalAlignment="Center" MaxWidth="590">
+                        <TextBlock Text="Zusammenfassung" FontSize="21" FontWeight="SemiBold"/>
+                        <TextBlock Text="LUMINA speichert nur diese konkreten Werte. Es werden keine latest-* Platzhalter verwendet." TextWrapping="Wrap" Margin="0,8,0,19" FontSize="11" Foreground="#7E899F"/>
+                        <Border Background="#090D14" BorderBrush="#1D2635" BorderThickness="1" CornerRadius="14" Padding="18">
+                            <Grid>
+                                <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition/></Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/></Grid.RowDefinitions>
+                                <TextBlock Text="NAME" FontSize="8" Foreground="#667188"/><TextBlock Grid.Column="1" x:Name="SummaryName" FontWeight="SemiBold" HorizontalAlignment="Right"/>
+                                <TextBlock Grid.Row="1" Text="MINECRAFT" Margin="0,13,0,0" FontSize="8" Foreground="#667188"/><TextBlock Grid.Row="1" Grid.Column="1" x:Name="SummaryMinecraft" Margin="0,13,0,0" FontWeight="SemiBold" HorizontalAlignment="Right"/>
+                                <TextBlock Grid.Row="2" Text="LOADER" Margin="0,13,0,0" FontSize="8" Foreground="#667188"/><TextBlock Grid.Row="2" Grid.Column="1" x:Name="SummaryLoader" Margin="0,13,0,0" FontWeight="SemiBold" HorizontalAlignment="Right"/>
+                                <TextBlock Grid.Row="3" Text="LOADER VERSION" Margin="0,13,0,0" FontSize="8" Foreground="#667188"/><TextBlock Grid.Row="3" Grid.Column="1" x:Name="SummaryLoaderVersion" Margin="0,13,0,0" FontWeight="SemiBold" HorizontalAlignment="Right"/>
+                            </Grid>
+                        </Border>
+                        <Border x:Name="ValidationBox" Background="#10241D" BorderBrush="#235B48" BorderThickness="1" CornerRadius="11" Padding="13" Margin="0,14,0,0">
+                            <TextBlock x:Name="ValidationText" Text="Konfiguration ist gültig." FontSize="10" Foreground="#72E0AE" TextWrapping="Wrap"/>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="3" Margin="0,18,0,0">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+            <Button Style="{StaticResource GhostButton}" Click="Cancel_Click" Content="Abbrechen"/>
+            <TextBlock Grid.Column="1" x:Name="FooterStatus" Text="" VerticalAlignment="Center" Margin="14,0" FontSize="10" Foreground="#7D879B"/>
+            <Button Grid.Column="2" x:Name="BackButton" Style="{StaticResource SecondaryButton}" Click="Back_Click" Content="← Zurück" Visibility="Collapsed"/>
+            <Button Grid.Column="3" x:Name="NextButton" Style="{StaticResource GradientButton}" Click="Next_Click" Margin="9,0,0,0" Content="Weiter →"/>
+            <Button Grid.Column="3" x:Name="CreateButton" Style="{StaticResource GradientButton}" Click="Create_Click" Margin="9,0,0,0" Content="Instanz erstellen" Visibility="Collapsed" IsEnabled="False"/>
+        </Grid>
+    </Grid>
+</Window>
