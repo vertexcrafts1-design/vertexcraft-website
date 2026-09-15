@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import re
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -13,7 +12,7 @@ def default_config() -> dict[str, Any]:
         'width': 1280,
         'height': 720,
         'client_id': '',
-        'redirect_uri': 'http://localhost',
+        'redirect_uri': 'http://localhost:53682',
         'close_launcher_on_game_start': False,
         'selected_instance_id': '',
     }
