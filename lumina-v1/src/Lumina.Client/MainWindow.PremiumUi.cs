@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Media;
 
@@ -107,7 +108,7 @@ public partial class MainWindow
         grid.Children.Add(logo);
 
         var text = new StackPanel { Margin = new Thickness(10, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
-        text.Children.Add(new TextBlock { Text = "LUMINA", FontSize = 15, FontWeight = FontWeights.Bold, CharacterSpacing = 50 });
+        text.Children.Add(new TextBlock { Text = "LUMINA", FontSize = 15, FontWeight = FontWeights.Bold });
         text.Children.Add(new TextBlock { Text = "MINECRAFT CLIENT", FontSize = 8, FontWeight = FontWeights.SemiBold, Foreground = Brush("#69758B"), Margin = new Thickness(0, 2, 0, 0) });
         Grid.SetColumn(text, 1);
         grid.Children.Add(text);
