@@ -9,10 +9,11 @@ public sealed class ModrinthService
     private readonly HttpClient _http;
     private const string Api = "https://api.modrinth.com/v2";
 
-    public ModrinthService()
+    public ModrinthService(HttpClient? httpClient = null)
     {
-        _http = new HttpClient();
-        _http.DefaultRequestHeaders.UserAgent.ParseAdd("LUMINA/1.1 (Minecraft Client)");
+        _http = httpClient ?? new HttpClient();
+        if (!_http.DefaultRequestHeaders.UserAgent.Any())
+            _http.DefaultRequestHeaders.UserAgent.ParseAdd("LUMINA/1.2 (Minecraft Client)");
         _http.Timeout = TimeSpan.FromSeconds(60);
     }
 
@@ -57,66 +58,85 @@ public sealed class ModrinthService
         IProgress<string>? progress = null,
         CancellationToken cancellationToken = default)
     {
-        var target = kind switch
-        {
-            "Resource Packs" => paths.ResourcePacks(instance.Id),
-            "Shaders" => paths.ShaderPacks(instance.Id),
-            _ => paths.Mods(instance.Id)
-        };
-        Directory.CreateDirectory(target);
-
-        var installed = new List<string>();
-        var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        await InstallProjectInternal(project.ProjectId, kind, instance, target, installed, visited, progress, cancellationToken);
-        return new GalleryInstallResult(installed.Count, installed);
+        var plan = await BuildInstallPlanAsync(project.ProjectId, kind, instance, cancellationToken);
+        return await ApplyInstallPlanAsync(plan, instance, paths, progress, cancellationToken);
     }
 
-    private async Task InstallProjectInternal(
+    public async Task<ModrinthInstallPlan> BuildInstallPlanAsync(
         string projectId,
         string kind,
         InstanceProfile instance,
-        string target,
-        List<string> installed,
+        CancellationToken cancellationToken = default)
+    {
+        var contentKind = KindToContentKind(kind);
+        var files = new List<ModrinthPlannedFile>();
+        var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        await ResolveProjectAsync(projectId, contentKind, instance, files, visited, cancellationToken);
+        return new ModrinthInstallPlan(files);
+    }
+
+    private async Task ResolveProjectAsync(
+        string projectId,
+        ContentKind kind,
+        InstanceProfile instance,
+        List<ModrinthPlannedFile> files,
         HashSet<string> visited,
-        IProgress<string>? progress,
         CancellationToken cancellationToken)
     {
         if (!visited.Add(projectId)) return;
 
-        var versions = await GetCompatibleVersions(projectId, kind, instance, cancellationToken);
-        var version = versions.FirstOrDefault(v => string.Equals(v.VersionType, "release", StringComparison.OrdinalIgnoreCase))
-                      ?? versions.FirstOrDefault()
-                      ?? throw new InvalidOperationException("Für diese Minecraft-Version und diesen Loader gibt es keine kompatible Version.");
+        var versions = await GetCompatibleVersionsAsync(projectId, kind, instance, cancellationToken);
+        var compatible = versions.Where(v => CompatibilityService.Check(instance, kind, v.Descriptor).IsCompatible).ToList();
+        var version = CompatibilityService.ChoosePreferred(compatible)
+                      ?? throw new InvalidOperationException(
+                          $"Für '{projectId}' gibt es keine kompatible Release- oder Beta-Version für Minecraft {instance.Version} / {instance.Loader}.");
 
         var file = version.Files.FirstOrDefault(f => f.Primary) ?? version.Files.FirstOrDefault()
-                   ?? throw new InvalidOperationException("Modrinth hat für diese Version keine herunterladbare Datei geliefert.");
+                   ?? throw new InvalidOperationException("Modrinth hat für die ausgewählte Version keine Datei geliefert.");
 
-        progress?.Report($"Lade {file.Filename} …");
-        var output = Path.Combine(target, SanitizeFileName(file.Filename));
-        await DownloadFile(file.Url, output, cancellationToken);
-        installed.Add(Path.GetFileName(output));
+        file.Hashes.TryGetValue("sha512", out var sha512);
+        file.Hashes.TryGetValue("sha1", out var sha1);
+        files.Add(new ModrinthPlannedFile(
+            version.ProjectId,
+            version.Id,
+            SanitizeFileName(file.Filename),
+            file.Url,
+            sha512,
+            sha1,
+            kind));
 
-        if (!string.Equals(kind, "Mods", StringComparison.OrdinalIgnoreCase)) return;
+        if (kind != ContentKind.Mod) return;
 
-        foreach (var dep in version.Dependencies.Where(d => d.DependencyType == "required" && !string.IsNullOrWhiteSpace(d.ProjectId)))
+        foreach (var dependency in version.Dependencies.Where(d =>
+                     d.DependencyType.Equals("required", StringComparison.OrdinalIgnoreCase)))
         {
-            progress?.Report("Installiere benötigte Abhängigkeit …");
-            await InstallProjectInternal(dep.ProjectId!, kind, instance, target, installed, visited, progress, cancellationToken);
+            var dependencyProjectId = dependency.ProjectId;
+            if (string.IsNullOrWhiteSpace(dependencyProjectId) && !string.IsNullOrWhiteSpace(dependency.VersionId))
+            {
+                var dependencyVersion = await GetVersionAsync(dependency.VersionId!, cancellationToken);
+                dependencyProjectId = dependencyVersion?.ProjectId;
+            }
+
+            if (string.IsNullOrWhiteSpace(dependencyProjectId))
+                throw new InvalidOperationException("Eine benötigte Modrinth-Abhängigkeit konnte nicht aufgelöst werden.");
+
+            await ResolveProjectAsync(dependencyProjectId, kind, instance, files, visited, cancellationToken);
         }
     }
 
-    private async Task<IReadOnlyList<ModrinthVersion>> GetCompatibleVersions(
+    public async Task<IReadOnlyList<ModrinthVersion>> GetCompatibleVersionsAsync(
         string projectId,
-        string kind,
+        ContentKind kind,
         InstanceProfile instance,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         var gameVersions = JsonSerializer.Serialize(new[] { instance.Version });
         var url = $"{Api}/project/{Uri.EscapeDataString(projectId)}/version?game_versions={Uri.EscapeDataString(gameVersions)}&include_changelog=false";
 
-        if (string.Equals(kind, "Mods", StringComparison.OrdinalIgnoreCase))
+        if (kind == ContentKind.Mod)
         {
             var loader = LoaderForModrinth(instance.Loader);
+            if (loader == "minecraft") return [];
             var loaders = JsonSerializer.Serialize(new[] { loader });
             url += $"&loaders={Uri.EscapeDataString(loaders)}";
         }
@@ -126,13 +146,88 @@ public sealed class ModrinthService
         return await response.Content.ReadFromJsonAsync<List<ModrinthVersion>>(cancellationToken: cancellationToken) ?? [];
     }
 
-    private async Task DownloadFile(string url, string output, CancellationToken cancellationToken)
+    public async Task<ModrinthVersion?> GetVersionAsync(string versionId, CancellationToken cancellationToken = default)
+    {
+        using var response = await _http.GetAsync($"{Api}/version/{Uri.EscapeDataString(versionId)}", cancellationToken);
+        if (!response.IsSuccessStatusCode) return null;
+        return await response.Content.ReadFromJsonAsync<ModrinthVersion>(cancellationToken: cancellationToken);
+    }
+
+    public async Task<GalleryInstallResult> ApplyInstallPlanAsync(
+        ModrinthInstallPlan plan,
+        InstanceProfile instance,
+        AppPaths paths,
+        IProgress<string>? progress = null,
+        CancellationToken cancellationToken = default)
+    {
+        if (plan.Files.Count == 0) return new GalleryInstallResult(0, []);
+
+        var store = new ManagedContentStore(paths);
+        var managed = store.Load(instance.Id).ToList();
+        var staged = new List<(ModrinthPlannedFile Item, string Temp, string Final)>();
+
+        try
+        {
+            foreach (var item in plan.Files)
+            {
+                var targetFolder = FolderFor(paths, instance.Id, item.Kind);
+                Directory.CreateDirectory(targetFolder);
+                var finalPath = Path.Combine(targetFolder, item.FileName);
+                var existingOwner = managed.FirstOrDefault(x =>
+                    x.Kind == item.Kind && x.FileName.Equals(item.FileName, StringComparison.OrdinalIgnoreCase));
+
+                if (File.Exists(finalPath) &&
+                    (existingOwner is null || !string.Equals(existingOwner.ProjectId, item.ProjectId, StringComparison.OrdinalIgnoreCase)))
+                    throw new InvalidOperationException(
+                        $"'{item.FileName}' existiert bereits als lokaler oder anderer Content. LUMINA überschreibt diese Datei nicht automatisch.");
+
+                var tempPath = FileIntegrityService.TemporaryPath(finalPath);
+                if (File.Exists(tempPath)) File.Delete(tempPath);
+                progress?.Report($"Lade {item.FileName} …");
+                await DownloadToAsync(item.Url, tempPath, cancellationToken);
+
+                if (!await FileIntegrityService.VerifyAsync(tempPath, item.Sha512, item.Sha1, cancellationToken))
+                    throw new InvalidDataException($"Hash-Prüfung für '{item.FileName}' fehlgeschlagen.");
+
+                staged.Add((item, tempPath, finalPath));
+            }
+
+            foreach (var entry in staged)
+            {
+                File.Move(entry.Temp, entry.Final, true);
+                var record = new ManagedContentRecord
+                {
+                    ProjectId = entry.Item.ProjectId,
+                    VersionId = entry.Item.VersionId,
+                    FileName = entry.Item.FileName,
+                    Sha512 = entry.Item.Sha512,
+                    Sha1 = entry.Item.Sha1,
+                    Kind = entry.Item.Kind,
+                    InstalledUtc = DateTime.UtcNow
+                };
+                store.Upsert(instance.Id, record);
+            }
+
+            return new GalleryInstallResult(staged.Count, staged.Select(x => x.Item.FileName).ToList());
+        }
+        catch
+        {
+            foreach (var entry in staged)
+            {
+                try { if (File.Exists(entry.Temp)) File.Delete(entry.Temp); }
+                catch { }
+            }
+            throw;
+        }
+    }
+
+    private async Task DownloadToAsync(string url, string path, CancellationToken cancellationToken)
     {
         using var response = await _http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
         response.EnsureSuccessStatusCode();
         await using var input = await response.Content.ReadAsStreamAsync(cancellationToken);
-        await using var file = File.Create(output);
-        await input.CopyToAsync(file, cancellationToken);
+        await using var output = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.None);
+        await input.CopyToAsync(output, cancellationToken);
     }
 
     public static string LoaderForModrinth(string loader) => loader.Trim().ToLowerInvariant() switch
@@ -144,11 +239,25 @@ public sealed class ModrinthService
         _ => "minecraft"
     };
 
+    public static ContentKind KindToContentKind(string kind) => kind switch
+    {
+        "Resource Packs" => ContentKind.ResourcePack,
+        "Shaders" => ContentKind.ShaderPack,
+        _ => ContentKind.Mod
+    };
+
     private static string KindToProjectType(string kind) => kind switch
     {
         "Resource Packs" => "resourcepack",
         "Shaders" => "shader",
         _ => "mod"
+    };
+
+    private static string FolderFor(AppPaths paths, string instanceId, ContentKind kind) => kind switch
+    {
+        ContentKind.ResourcePack => paths.ResourcePacks(instanceId),
+        ContentKind.ShaderPack => paths.ShaderPacks(instanceId),
+        _ => paths.Mods(instanceId)
     };
 
     private static string SanitizeFileName(string value)
