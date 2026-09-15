@@ -1,4 +1,6 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using Lumina.Core;
 
 namespace Lumina.Client.Services;
 
@@ -45,6 +47,29 @@ public static class ModrinthProjectExtensions
         var tasks = ids.Select(id => service.GetProjectAsync(id, cancellationToken));
         var values = await Task.WhenAll(tasks);
         return values.Where(x => x is not null).Select(x => x!).ToList();
+    }
+
+    public static async Task<IReadOnlyList<GalleryProject>> SearchModpacksAsync(
+        this ModrinthService _,
+        string query,
+        InstanceProfile instance,
+        string sort = "downloads",
+        int limit = 40,
+        CancellationToken cancellationToken = default)
+    {
+        var facets = JsonSerializer.Serialize(new[]
+        {
+            new[] { "project_type:modpack" },
+            new[] { $"versions:{instance.Version}" }
+        });
+        var url = "https://api.modrinth.com/v2/search" +
+                  $"?query={Uri.EscapeDataString(query ?? string.Empty)}" +
+                  $"&facets={Uri.EscapeDataString(facets)}" +
+                  $"&index={Uri.EscapeDataString(sort)}&limit={Math.Clamp(limit, 1, 100)}";
+        using var response = await Http.GetAsync(url, cancellationToken);
+        response.EnsureSuccessStatusCode();
+        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+        return (await JsonSerializer.DeserializeAsync<ModrinthSearchResponse>(stream, cancellationToken: cancellationToken))?.Hits ?? [];
     }
 
     private static string? String(JsonElement element, string property) =>
