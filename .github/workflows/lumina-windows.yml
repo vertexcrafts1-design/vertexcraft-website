@@ -1,0 +1,92 @@
+name: Build LUMINA Windows
+
+on:
+  push:
+    branches: [lumina-launcher-build]
+    paths:
+      - 'lumina/**'
+      - '.github/workflows/lumina-windows.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: lumina/requirements.txt
+
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r lumina/requirements.txt pyinstaller
+
+      - name: Run tests
+        shell: pwsh
+        working-directory: lumina
+        run: |
+          python -m py_compile launcher.py auth_service.py game_service.py core.py make_icon.py
+          python -m unittest discover -s tests -v
+
+      - name: Build icon
+        shell: pwsh
+        run: python lumina/make_icon.py
+
+      - name: Build portable app
+        shell: pwsh
+        run: |
+          python -m PyInstaller --noconfirm --clean --windowed --onedir `
+            --name LUMINA `
+            --icon lumina/lumina.ico `
+            --version-file lumina/version_info.txt `
+            --collect-all customtkinter `
+            --collect-all minecraft_launcher_lib `
+            --collect-all keyring `
+            --paths lumina `
+            lumina/launcher.py
+
+      - name: Build single EXE
+        shell: pwsh
+        run: |
+          python -m PyInstaller --noconfirm --clean --windowed --onefile `
+            --name LUMINA-Single `
+            --icon lumina/lumina.ico `
+            --version-file lumina/version_info.txt `
+            --collect-all customtkinter `
+            --collect-all minecraft_launcher_lib `
+            --collect-all keyring `
+            --paths lumina `
+            lumina/launcher.py
+
+      - name: Hash builds
+        shell: pwsh
+        run: |
+          Get-FileHash dist\LUMINA\LUMINA.exe -Algorithm SHA256 | Format-List | Out-File dist\LUMINA\SHA256.txt
+          Get-FileHash dist\LUMINA-Single.exe -Algorithm SHA256 | Format-List | Out-File dist\LUMINA-Single-SHA256.txt
+
+      - name: Upload portable
+        uses: actions/upload-artifact@v4
+        with:
+          name: LUMINA-Windows-Portable
+          path: dist/LUMINA/
+          if-no-files-found: error
+
+      - name: Upload single exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: LUMINA-Windows-SingleEXE
+          path: |
+            dist/LUMINA-Single.exe
+            dist/LUMINA-Single-SHA256.txt
+          if-no-files-found: error
