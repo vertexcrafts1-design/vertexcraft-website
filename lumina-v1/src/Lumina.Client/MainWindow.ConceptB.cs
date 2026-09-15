@@ -23,7 +23,7 @@ public partial class MainWindow
 
     private void ConceptB_ButtonClick(object sender, RoutedEventArgs e)
     {
-        if (e.OriginalSource is not Button { Tag: string tag } || !tag.StartsWith("ram:", StringComparison.OrdinalIgnoreCase))
+        if (e.Source is not Button { Tag: string tag } || !tag.StartsWith("ram:", StringComparison.OrdinalIgnoreCase))
             return;
 
         if (!int.TryParse(tag.AsSpan(4), out var ramMb)) return;
