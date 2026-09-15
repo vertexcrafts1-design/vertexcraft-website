@@ -17,7 +17,18 @@ public partial class MainWindow
         ActiveInstanceCombo.ItemsSource = _instances;
         ActiveInstanceCombo.SelectedItem = InstancesList.SelectedItem;
         InstancesList.SelectionChanged += ConceptBInstances_SelectionChanged;
+        AddHandler(Button.ClickEvent, new RoutedEventHandler(ConceptB_ButtonClick));
         _discoverStorefront?.SetInstanceContext(SelectedInstance);
+    }
+
+    private void ConceptB_ButtonClick(object sender, RoutedEventArgs e)
+    {
+        if (e.OriginalSource is not Button { Tag: string tag } || !tag.StartsWith("ram:", StringComparison.OrdinalIgnoreCase))
+            return;
+
+        if (!int.TryParse(tag.AsSpan(4), out var ramMb)) return;
+        RamSlider.Value = Math.Clamp(ramMb, (int)RamSlider.Minimum, (int)RamSlider.Maximum);
+        e.Handled = true;
     }
 
     private void ActiveInstanceCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
