@@ -15,6 +15,7 @@ public partial class MainWindow
     {
         base.OnInitialized(e);
         AttachFeedbackHost();
+        Loaded += (_, _) => AttachFeedbackHost();
     }
 
     private void AttachFeedbackHost()
