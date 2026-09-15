@@ -1,0 +1,81 @@
+<UserControl x:Class="Lumina.Client.Ui.DiscoverStorefrontView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Margin="0,0,0,16">
+            <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock Text="Discover" FontSize="28" FontWeight="Bold"/>
+                <TextBlock x:Name="ContextText" Text="Kompatibler Content für deine aktive Instanz." FontSize="10.5" Foreground="{StaticResource LuminaTextMuted}" Margin="0,4,0,0"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                <Button x:Name="SourceModrinth" Style="{StaticResource LuminaTabButton}" Tag="Modrinth" Click="Source_Click" Content="Modrinth"/>
+                <Button x:Name="SourceCollection" Style="{StaticResource LuminaTabButton}" Tag="Collection" Click="Source_Click" Content="✦  LUMINA Collection" Margin="7,0,0,0"/>
+                <Button x:Name="SourceInstalled" Style="{StaticResource LuminaTabButton}" Tag="Installed" Click="Source_Click" Content="Installiert / Updates" Margin="7,0,0,0"/>
+            </StackPanel>
+        </Grid>
+
+        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Margin="0,0,0,12">
+            <StackPanel Orientation="Horizontal">
+                <Button Style="{StaticResource LuminaTabButton}" Tag="Featured" Click="Category_Click" Content="Featured" Margin="0,0,7,0"/>
+                <Button Style="{StaticResource LuminaTabButton}" Tag="Modpacks" Click="Category_Click" Content="Modpacks" Margin="0,0,7,0"/>
+                <Button Style="{StaticResource LuminaTabButton}" Tag="Mods" Click="Category_Click" Content="Mods" Margin="0,0,7,0"/>
+                <Button Style="{StaticResource LuminaTabButton}" Tag="Shaders" Click="Category_Click" Content="Shaders" Margin="0,0,7,0"/>
+                <Button Style="{StaticResource LuminaTabButton}" Tag="Resource Packs" Click="Category_Click" Content="Resource Packs"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Border Grid.Row="2" Style="{StaticResource LuminaCard}" Padding="10" Margin="0,0,0,14">
+            <Grid>
+                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="180"/><ColumnDefinition Width="170"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                <TextBox x:Name="SearchBox" KeyDown="SearchBox_KeyDown" Margin="0,0,8,0" ToolTip="Mods, Shader und Packs suchen"/>
+                <ComboBox x:Name="DiscoverVersionFilter" Grid.Column="1" Margin="0,0,8,0" IsReadOnly="True" IsHitTestVisible="False"/>
+                <ComboBox x:Name="DiscoverLoaderFilter" Grid.Column="2" Margin="0,0,8,0" IsReadOnly="True" IsHitTestVisible="False"/>
+                <Button Grid.Column="3" Style="{StaticResource LuminaPrimaryButton}" Click="Search_Click" Content="Suchen"/>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="3">
+            <ScrollViewer x:Name="ProjectsScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <ItemsControl x:Name="ProjectList">
+                    <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource LuminaCard}" Width="258" Margin="0,0,12,12" ClipToBounds="True">
+                                <Grid>
+                                    <Grid.RowDefinitions><RowDefinition Height="126"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                                    <Border Background="#151E31" CornerRadius="17,17,0,0">
+                                        <Grid>
+                                            <Image Source="{Binding IconUrl}" Stretch="Uniform" Margin="28"/>
+                                            <Border Background="#22101A2D"/>
+                                            <Border HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10" Background="#C9101522" CornerRadius="8" Padding="8,4"><TextBlock Text="{Binding ProjectType}" FontSize="8" FontWeight="SemiBold" Foreground="#C8D0DF"/></Border>
+                                        </Grid>
+                                    </Border>
+                                    <StackPanel Grid.Row="1" Margin="15,14,15,15">
+                                        <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock Text="{Binding Title}" FontSize="13.5" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/><Button Grid.Column="1" Style="{StaticResource LuminaSecondaryButton}" Tag="{Binding}" Click="Curate_Click" Content="⋯" Width="30" Height="30" Padding="0" Margin="7,-5,-5,0"/></Grid>
+                                        <TextBlock Text="{Binding Description}" FontSize="9.5" Foreground="#8590A6" TextWrapping="Wrap" MaxHeight="42" Margin="0,6,0,0"/>
+                                        <Grid Margin="0,11,0,0"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock Text="{Binding DownloadsText}" FontSize="8.5" Foreground="#69758D" VerticalAlignment="Center"/><Button Grid.Column="1" Style="{StaticResource LuminaPrimaryButton}" Tag="{Binding}" Click="Install_Click" Content="Installieren" Padding="12,7"/></Grid>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <ContentControl x:Name="InstalledHost" Visibility="Collapsed"/>
+            <StackPanel x:Name="EmptyState" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock Text="✦" FontSize="38" Foreground="#5A4A82" HorizontalAlignment="Center"/>
+                <TextBlock x:Name="EmptyText" Text="Keine kompatiblen Projekte gefunden." Foreground="#7C879C" Margin="0,9,0,0"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>
