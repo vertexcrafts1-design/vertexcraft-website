@@ -30,5 +30,8 @@
     <None Include="../../src/Lumina.Client/InstanceWizardWindow.xaml"
           Link="InstanceWizardUnderTest.xaml"
           CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../src/Lumina.Client/Ui/MessageBoxAdapter.cs"
+          Link="MessageBoxAdapterUnderTest.cs"
+          CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
