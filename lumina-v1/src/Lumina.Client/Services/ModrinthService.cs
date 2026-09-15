@@ -27,15 +27,15 @@ public sealed class ModrinthService
         var projectType = KindToProjectType(kind);
         var facets = new List<string[]>
         {
-            [$"project_type:{projectType}"],
-            [$"versions:{instance.Version}"]
+            new[] { $"project_type:{projectType}" },
+            new[] { $"versions:{instance.Version}" }
         };
 
         if (projectType == "mod")
         {
             var loader = LoaderForModrinth(instance.Loader);
             if (loader == "minecraft") return [];
-            facets.Add([$"categories:{loader}"]);
+            facets.Add(new[] { $"categories:{loader}" });
         }
 
         var facetsJson = JsonSerializer.Serialize(facets);
