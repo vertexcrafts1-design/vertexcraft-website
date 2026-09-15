@@ -27,5 +27,8 @@
     <None Include="../../src/Lumina.Client/Ui/DiscoverStorefrontView.xaml"
           Link="DiscoverStorefrontUnderTest.xaml"
           CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../src/Lumina.Client/InstanceWizardWindow.xaml"
+          Link="InstanceWizardUnderTest.xaml"
+          CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
