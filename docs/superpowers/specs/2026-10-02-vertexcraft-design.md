@@ -1,0 +1,11 @@
+# VertexCraft website and shop
+
+Fabio wants a complete rebuild of his existing Minecraft website and shop. The site should sound like his community, be usable on phones, explain Season 2 accurately, and preserve player statistics, team authentication, Stripe payments and Minecraft fulfillment.
+
+Keep GitHub Pages, both CNAMEs and the existing Worker URL. Use German copy, the existing logo and images, calm purple accents and plain navigation. No invented player counts, event dates, testimonials, fake popularity badges or generated reward tables. Season 2 starts 3 October 2026; no weekday or unconfirmed start time. The pass has 100 levels on each track. PvP includes duels, a training bot and a public knockback arena. Cosmetics use vote points.
+
+Rebuild home, join guide, game modes, PvP, battle pass, votes, events, rules, help, rank lists and error page. Restyle legal pages without inventing operator details. Preserve the authenticated team dashboard and real endpoints. Replace fabricated public punishments with a link to support and the protected team view.
+
+Shop: preserve the exact payment-link identity-to-command mapping. A typed player name is purchase attribution, not account authentication. Validate with the existing public API before payment. Accept valid Bedrock prefixes. Never treat a URL query as proof of payment. Keep Stripe-hosted checkout, verified server-side webhooks and idempotent fulfillment. Prices on site must match payment links. Rank target prices: 299/499/799 cents for 30 days, 1299/1999/2999 cents permanent. Current perks must be described accurately until an actual server change. Prepare smaller home limits, equal teleport delay and removal of gameplay perks as a separately applied server change. Do not label the server non-pay-to-win while paid repair, survival flight or gameplay currency remain active. Profit is not guaranteed; include payment fees and fixed server costs in the owner handoff.
+
+Verification: check local links, syntax, mobile/desktop layouts, navigation, live API failure handling, player validation, keyboard dismissal and no payment confirmation from an untrusted query. Never make a real payment as a test. Publish completed compatible changes in the existing repositories; state any remaining server rollout or end-to-end testing clearly.
