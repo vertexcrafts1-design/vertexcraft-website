@@ -29,23 +29,26 @@
 
 Files: `vertex.css`, `script.js`, all public HTML, `stats.js`; new join/game/PvP/vote/help pages. Use existing assets and source API.
 
-- [ ] Build shared navigation and complete public pages from the spec.
-- [ ] Preserve legal body and actual dashboard endpoints; restyle dashboard and extract its inline script.
-- [ ] Verify local links, syntax, representative layouts and honest failure states.
+- [x] Build shared navigation and complete public pages from the spec.
+- [x] Preserve legal body and actual dashboard endpoints; restyle dashboard and extract its inline script.
+- [x] Verify local links, syntax, representative layouts and honest failure states.
 
 ### Task 2: Shop and payment safety
 
 Files: shop `index.html`, `vertex-shop.css`, `shop-v3.js`, `catalog.js`, tests.
 
-- [ ] Write and run failing tests for forged success, Bedrock names and revalidation before checkout.
-- [ ] Build rank comparison, duration choice, full product information, accessible player dialog and payment review.
-- [ ] Keep legacy payment-link identities. Read current Stripe records before changing prices; prepare new price/link rollout without losing plugin mapping.
-- [ ] Verify tests, site/checkout price agreement and API errors. No real charge.
+- [x] Write and run failing tests for forged success, Bedrock names and revalidation before checkout.
+- [x] Build rank comparison, duration choice, full product information, accessible player dialog and payment review.
+- [x] Keep legacy payment-link identities. Read current Stripe records before changing prices; prepare new price/link rollout without losing plugin mapping.
+- [x] Verify tests, site/checkout price agreement and API errors. No real charge.
 
 ### Task 3: Delivery
 
 Files: release notes and server migration documentation.
 
-- [ ] Verify webhook and plugin identity mappings from current available source; explicitly distinguish local verification from live server verification.
-- [ ] Review completed changes and fix important defects, then publish compatible site changes to the original repositories.
-- [ ] Prepare any server-side changes as a concrete package; do not claim installation without access.
+- [x] Verify webhook and plugin identity mappings from current available source; explicitly distinguish local verification from live server verification.
+- [x] Review completed changes and fix important defects, then publish compatible site changes to the original repositories.
+- [x] Prepare any server-side changes as a concrete package; do not claim installation without access.
+
+## Remaining activation dependency
+The compatible site rebuild is published. Actual fair perks and new Payment Links are not activated: require current VertexPerksShop source and a server/Cloudflare installation path. Exact lower-price Stripe records are inactive in the shop integration catalog. Mobile 390px/200% zoom and live auth/delivery have not been verified.

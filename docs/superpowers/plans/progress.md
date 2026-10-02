@@ -13,3 +13,12 @@ Meaningful shop tests written; browser installation required before baseline run
 - Local Playwright browser could not install (network downloads incomplete). Cloud browser local loopback denied. Browser UI inspection deferred to deployed existing domains; no UI-test passing claim yet.
 - Public Worker request in this environment returns Cloudflare 403/error1010. Do not infer the server is down. No live auth, real charge or Minecraft fulfillment test performed.
 - Current plugin source and server/Cloudflare installation access absent. Fair plugin rebuild + new Payment Links and mapping activation remain blocked; concrete migration packet prepared.
+
+## Published result
+- Main release c55d36bb5a2e8a6c57cef9a036d7ff7f541d0b4e; shop release 17cbe3b9d8da455480fe7cd79d205cb3c7893509. Both GitHub Pages runs succeeded.
+- All 26 live pages return HTTP200 and match released local HTML exactly.
+- Live browser observed main desktop layout, Java/Bedrock join instructions, shop duration price changes, category switch, forged payment-return message, native player dialog and Escape focus returning to trigger. No real charge.
+- Live .Gamefly lookup reaches friendly unavailable state; cannot establish upstream availability from this browser. Store/API failure behavior remains closed.
+- Actual handler harness: missing player, offline API, wrong canonical name, valid Bedrock recipient, canceled pending checkout and forgotten recipient all pass.
+- New scoped dashboard focus styles, menu aria/expanded/Escape and honest loaded-count labels applied.
+- Live authentication, real fulfillment/deduplication, fair plugin installation and phone/200% zoom layout remain unverified; do not claim complete fair rollout.
